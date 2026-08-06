@@ -77,3 +77,24 @@ Dense, sparse, and hybrid retrieval → Streamlit UI → DeepEval testing → do
 | 21-Jun-2026 | https://directai.blog/2026/06/21/gen-ai-developer-classroom-notes-21-jun-2026/ | Async subagents, context engineering, context compression, context isolation, memory management, customer churn agent project |
 | 19-Jul-2026 | https://directai.blog/2026/07/19/gen-ai-developer-classroom-notes-19-jul-2026/ | Customer churn signalling agent, synthetic data generation, SQLite setup, SQL agents, subagent design, retention analytics |
 
+# MCP and Foundation for Gen AI - Topics Summary
+
+## MCP
+
+| Class Date | Blog URL | Topics Covered |
+|---|---|---|
+| 23-May-2026 | https://directai.blog/2026/05/23/gen-ai-developer-classroom-notes-23-may-2026/ | Library MCP implementation, MCP Inspector, MCP client setup, REST API to MCP design, OAuth/JWT authorization, Docker deployment |
+| 20-May-2026 | https://directai.blog/2026/05/20/gen-ai-developer-classroom-notes-20-may-2026/ | MCP enhancements, library MCP exercises, issue_book implementation, top-performing books analytics |
+| 19-May-2026 | https://directai.blog/2026/05/19/gen-ai-developer-classroom-notes-19-may-2026/ | College Library MCP design, librarian/student workflows, MCP tools and resources, database schema, analytics and reporting |
+| 17-May-2026 | https://directai.blog/2026/05/17/gen-ai-developer-classroom-notes-17-may-2026/ | MCP client development with FastMCP, LangChain integration, AI agent using MCP servers |
+| 16-May-2026 | https://directai.blog/2026/05/16/gen-ai-developer-classroom-notes-16-may-2026/ | Library MCP, MySQL connectivity, database operations, MCP integration with Claude |
+| 14-May-2026 | https://directai.blog/2026/05/14/gen-ai-developer-classroom-notes-14-may-2026-2/ | Enterprise MCP deployment, Docker containers, MySQL, phpMyAdmin, environment variables, database integration |
+
+## Foundation For Gen AI
+
+| Class Date | Blog URL | Topics Covered |
+|---|---|---|
+| 21-Apr-2026 | https://directai.blog/2026/04/21/gen-ai-developer-classroom-notes-21-apr-2026/ | AI foundations, Machine Learning, Neural Networks, Deep Learning, Vector Representations, GPUs, LLM deployment approaches |
+| 22-Apr-2026 | https://directai.blog/2026/04/22/gen-ai-developer-classroom-notes-22-apr-2026/ | LLM fundamentals, next-token prediction, multimodal AI (text, image, audio, video, code), token generation process |
+| 23-Apr-2026 | https://directai.blog/2026/04/23/gen-ai-developer-classroom-notes-23-apr-2026/ | LLM training pipeline, supervised fine-tuning (SFT), RLHF, distillation, reasoning models |
+| 26-Apr-2026 | https://directai.blog/2026/04/26/gen-ai-developer-classroom-notes-26-apr-2026/ | Tool calling, interaction with external systems, MCP fundamentals, MCP client-server architecture, MCP ecosystem and use cases |
