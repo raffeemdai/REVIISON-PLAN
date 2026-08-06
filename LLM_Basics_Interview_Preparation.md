@@ -1,3 +1,1532 @@
+
+# LLM Basics — Interview Preparation
+
+> **How to use this guide:** The questions below are kept exactly as in the original interview-preparation material.  
+> The answers are intentionally written in a natural, conversational style so you can **understand the flow and explain it in your own words**, rather than memorizing textbook definitions.
+>
+> A good interview pattern is:
+>
+> **Simple idea → Why it is needed → Small example → Connect it to the next LLM concept**
+
+---
+
+## Q1. What is an LLM?
+
+An LLM, or Large Language Model, is basically a neural-network model that has learned language patterns from a very large amount of text.
+
+The easiest way I think about it is that an LLM is trained mainly to **predict what token should come next**. For example, if I give it:
+
+```text
+The capital of France is ...
+```
+
+it has learned from training that `Paris` is a very likely next token.
+
+Of course, modern LLMs do much more than complete sentences. Because they have learned patterns from huge amounts of text, they can answer questions, summarize documents, generate code, translate text, and carry on conversations.
+
+Most modern LLMs are built using the **Transformer architecture**. So the overall idea is:
+
+```text
+Large amount of text
+        ↓
+Transformer model learns patterns
+        ↓
+Next-token prediction
+        ↓
+Generate useful language
+```
+
+This naturally connects to the next question, because **next-token prediction is the basic mechanism behind how an LLM generates text**.
+
+---
+
+## Q2. What is next-token prediction?
+
+Next-token prediction means the model looks at all the tokens it has already received and tries to predict what token is most likely to come next.
+
+For example:
+
+```text
+The sky is ...
+```
+
+The model may internally assign probabilities such as:
+
+```text
+blue   → 80%
+clear  → 10%
+dark   → 5%
+other  → 5%
+```
+
+It then selects or samples one of those possible tokens.
+
+The important point is that the model does not generate an entire paragraph in one shot. It generates **one token at a time**.
+
+For example:
+
+```text
+Once
+↓
+Once upon
+↓
+Once upon a
+↓
+Once upon a time
+```
+
+Every new token is added to the existing context, and then the model predicts again.
+
+So next-token prediction leads directly to another important concept: **What exactly is a token?**
+
+---
+
+## Q3. What is a token?
+
+A token is simply a small unit of text that the LLM works with.
+
+People sometimes assume one token always means one word, but that is not necessarily true. A token can be:
+
+- a full word,
+- part of a word,
+- punctuation,
+- or another small character sequence.
+
+For example, depending on the tokenizer:
+
+```text
+playing
+```
+
+might be represented roughly as:
+
+```text
+play + ing
+```
+
+The reason we need tokens is that a neural network cannot directly process normal text like humans do. We first break the text into manageable pieces.
+
+The flow is:
+
+```text
+Text
+ ↓
+Tokens
+ ↓
+Token IDs
+ ↓
+Embeddings
+```
+
+So after understanding tokens, the next important distinction is **tokenization versus embedding**.
+
+---
+
+## Q4. Tokenization vs embedding?
+
+I separate these two concepts because they happen one after another.
+
+**Tokenization** is about breaking the text into pieces.
+
+For example:
+
+```text
+"I am learning AI"
+```
+
+might become something like:
+
+```text
+["I", "am", "learning", "AI"]
+```
+
+Each token then gets a numeric token ID.
+
+But a token ID is only an identifier. It does not by itself carry a rich mathematical meaning for the neural network.
+
+That is where **embeddings** come in.
+
+An embedding converts each token into a vector of numbers, something conceptually like:
+
+```text
+AI
+↓
+[0.21, -0.54, 0.83, ...]
+```
+
+So I remember it as:
+
+```text
+Tokenization = divide text into units
+
+Embedding = represent those units as meaningful numerical vectors
+```
+
+Once we have embeddings, those representations are sent into the **Transformer**.
+
+---
+
+## Q5. What is a Transformer?
+
+A Transformer is the neural-network architecture used by most modern LLMs.
+
+The main reason Transformers became so important is that they use **attention** to understand relationships between tokens.
+
+For example, consider:
+
+```text
+The animal didn't cross the road because it was tired.
+```
+
+To understand the word `it`, the model needs to recognize that it probably refers to `animal`, not `road`.
+
+Attention helps the model learn that relationship.
+
+A simplified Transformer flow is:
+
+```text
+Token embeddings
+      ↓
+Self-attention
+      ↓
+Feed-forward network
+      ↓
+Repeat through many Transformer layers
+      ↓
+Context-aware representations
+```
+
+Compared with older RNN or LSTM approaches, Transformers are also much easier to scale because training can be parallelized much more effectively.
+
+The core idea inside a Transformer is therefore **self-attention**.
+
+---
+
+## Q6. What is self-attention?
+
+Self-attention is the mechanism that allows every token to look at other tokens in the same input and decide which ones are important for understanding its context.
+
+For example:
+
+```text
+The dog chased the ball because it was excited.
+```
+
+When the model processes the word `it`, it looks at the other words and tries to determine which ones are most relevant.
+
+It may give more attention to:
+
+```text
+dog
+excited
+```
+
+than to unrelated words.
+
+So instead of treating every word independently, self-attention builds a **context-aware representation**.
+
+This is important because the same word can have different meanings in different sentences.
+
+For example:
+
+```text
+river bank
+```
+
+and
+
+```text
+bank account
+```
+
+The word `bank` is the same, but attention to the surrounding words helps the model understand the intended meaning.
+
+Technically, self-attention is calculated using **Query, Key and Value vectors**, which leads to the next question.
+
+---
+
+## Q7. Explain Query, Key and Value.
+
+I usually explain Query, Key and Value using a search analogy.
+
+For every token, the model creates three different vectors:
+
+- **Query** — What information am I looking for?
+- **Key** — What kind of information do I contain?
+- **Value** — What actual information can I contribute?
+
+Suppose the sentence is:
+
+```text
+The animal didn't cross the road because it was tired.
+```
+
+When processing the token `it`, the model's Query is compared against the Keys of other tokens.
+
+If the Query for `it` matches the Key for `animal` strongly, then `animal` receives a high attention score.
+
+The flow is roughly:
+
+```text
+Query
+  ↓
+Compare with Keys
+  ↓
+Attention scores
+  ↓
+Softmax converts them to attention weights
+  ↓
+Use those weights to combine Values
+  ↓
+Context-aware output
+```
+
+So Q and K decide **where to pay attention**, while V contains the **information that is actually passed forward**.
+
+Once Q, K and V are understood, it becomes easier to understand why token order still needs to be added separately through **positional encoding**.
+
+---
+
+## Q8. Why is positional encoding needed?
+
+Transformers use attention to compare tokens, but attention by itself does not naturally understand the order of those tokens.
+
+For example:
+
+```text
+Dog bites man
+```
+
+and
+
+```text
+Man bites dog
+```
+
+contain almost the same words, but the meaning is completely different because the order changed.
+
+So the model needs information about whether a token appears first, second, third, and so on.
+
+That position information is combined with the token representation.
+
+Conceptually:
+
+```text
+Token embedding
+      +
+Position information
+      ↓
+Position-aware representation
+```
+
+This allows the Transformer to understand both:
+
+1. **what the token means**, through its embedding, and
+2. **where the token appears**, through positional information.
+
+After that, the model can apply attention. And instead of doing only one type of attention calculation, Transformers usually use **multi-head attention**.
+
+---
+
+## Q9. Why multi-head attention?
+
+A single attention mechanism may learn one kind of relationship between tokens, but language contains many relationships at the same time.
+
+For example, in one sentence the model may need to understand:
+
+- which word is the subject,
+- which word is the verb,
+- which noun a pronoun refers to,
+- semantic similarity,
+- and long-distance dependencies.
+
+Multi-head attention allows several attention calculations to happen in parallel.
+
+You can think of it like several people reading the same sentence with different jobs:
+
+```text
+Head 1 → looks for grammatical relationships
+Head 2 → looks for semantic relationships
+Head 3 → looks for long-range context
+Head 4 → looks for other useful patterns
+```
+
+The outputs from those heads are then combined.
+
+So multi-head attention gives the model a richer understanding than relying on only one attention pattern.
+
+All of this operates on numerical representations called **embeddings**, which is why embeddings are so important.
+
+---
+
+## Q10. What is an embedding?
+
+An embedding is a numerical vector that represents a token in a form the neural network can work with.
+
+For example, the word:
+
+```text
+cat
+```
+
+may internally be represented as something like:
+
+```text
+[0.42, -0.18, 0.76, ...]
+```
+
+The individual numbers are not something we normally interpret manually. The important part is that the complete vector captures learned relationships.
+
+Words or concepts that are related can have related representations in the model's vector space.
+
+So instead of the network receiving the literal string `"cat"`, it receives a mathematical representation.
+
+The flow is:
+
+```text
+Text
+ ↓
+Token
+ ↓
+Token ID
+ ↓
+Embedding vector
+ ↓
+Transformer
+```
+
+During training, the model learns how to use these embeddings along with many other learned values. Those learned values are what we call **parameters**.
+
+---
+
+## Q11. What are parameters in an LLM?
+
+Parameters are the numerical values the model learns during training.
+
+The most common examples are **weights and biases**.
+
+You can think of parameters as the model's adjustable internal settings.
+
+At the beginning of training, the model does not know useful language patterns. It makes predictions, compares them with the correct next token, calculates an error, and then adjusts its parameters.
+
+This happens repeatedly:
+
+```text
+Prediction
+   ↓
+Calculate error
+   ↓
+Backpropagation
+   ↓
+Adjust parameters
+   ↓
+Better future prediction
+```
+
+Large models may contain billions of these learned parameters.
+
+The important point is that when we say a model has "learned something," that learning is represented through patterns distributed across these parameters.
+
+After the Transformer processes the input using these learned parameters, the final layer produces **logits**.
+
+---
+
+## Q12. What are logits?
+
+Logits are the raw scores the model produces for possible next tokens.
+
+Suppose the current prompt is:
+
+```text
+The capital of France is
+```
+
+The model may produce raw scores like:
+
+```text
+Paris   → 8.2
+London  → 4.1
+Berlin  → 2.8
+```
+
+These values tell us that the model prefers `Paris`, but they are not probabilities yet.
+
+They do not have to add up to 1 or 100%.
+
+So the generation flow at this stage is:
+
+```text
+Transformer output
+      ↓
+Linear output layer
+      ↓
+Logits
+```
+
+To turn those raw scores into something easier to interpret as a probability distribution, we use **softmax**.
+
+---
+
+## Q13. What does softmax do?
+
+Softmax takes the raw logits and converts them into a probability distribution.
+
+For example, if the logits favor `Paris`, softmax might give:
+
+```text
+Paris   → 0.80
+London  → 0.15
+Berlin  → 0.05
+```
+
+Now the values are normalized and add up to 1.
+
+So I remember:
+
+```text
+Logits = raw scores
+
+Softmax = probabilities
+```
+
+During **inference**, those probabilities are used to decide which next token to generate.
+
+During **training**, those probabilities are compared with the correct next token. That comparison is measured using **cross-entropy loss**.
+
+So softmax connects the forward pass directly to the training loss.
+
+---
+
+## Q14. What is cross-entropy loss?
+
+Cross-entropy loss tells us how wrong the model's next-token prediction was.
+
+Suppose the correct next token is:
+
+```text
+Paris
+```
+
+If the model gives `Paris` a probability of 95%, that is a good prediction, so the loss will be low.
+
+If it gives `Paris` only 2% probability and strongly predicts another word, the loss will be high.
+
+The simple idea is:
+
+```text
+Correct token gets high probability
+           ↓
+        Low loss
+```
+
+and:
+
+```text
+Correct token gets low probability
+           ↓
+        High loss
+```
+
+Loss by itself only tells us **how bad the prediction was**.
+
+The model still needs to know **which parameters should be changed and in what direction**.
+
+That is the role of backpropagation.
+
+---
+
+## Q15. What is backpropagation?
+
+Backpropagation is the process used during training to figure out how the model's parameters contributed to the prediction error.
+
+The flow is:
+
+```text
+Input
+ ↓
+Forward pass
+ ↓
+Prediction
+ ↓
+Calculate loss
+ ↓
+Backpropagation
+ ↓
+Calculate gradients
+ ↓
+Optimizer updates weights
+```
+
+The **gradient** tells us approximately how changing a parameter would affect the loss.
+
+Then an optimizer, such as AdamW in many Transformer training setups, uses those gradients to update the weights.
+
+So I would summarize the training loop as:
+
+```text
+Forward pass → Loss → Backpropagation → Weight update
+```
+
+This happens repeatedly during **pretraining**, which is the first major stage in building an LLM.
+
+---
+
+## Q16. What happens during pretraining?
+
+Pretraining is the stage where the model learns general language patterns from a huge amount of text.
+
+The model sees text from sources such as books, websites, code, articles, and other datasets.
+
+It repeatedly performs next-token prediction.
+
+For example:
+
+```text
+Input:
+The sky is
+
+Actual next token:
+blue
+```
+
+The model predicts a probability distribution.
+
+Then:
+
+```text
+Prediction
+ ↓
+Compare with "blue"
+ ↓
+Calculate cross-entropy loss
+ ↓
+Backpropagation
+ ↓
+Optimizer updates weights
+```
+
+This happens at enormous scale.
+
+Over time, the model learns patterns involving grammar, sentence structure, semantics, code, relationships between concepts, and statistical knowledge.
+
+The important thing is that humans do not need to manually label every training example. That is why this process is called **self-supervised learning**.
+
+---
+
+## Q17. Why is LLM pretraining self-supervised?
+
+LLM pretraining is called self-supervised because the training data itself provides the correct answer.
+
+For example, suppose the original text already contains:
+
+```text
+The sky is blue.
+```
+
+We can create a training example automatically:
+
+```text
+Input:
+The sky is
+
+Target:
+blue
+```
+
+No person has to manually label `blue` as the correct answer. It already exists in the text.
+
+We can repeat the same idea across huge amounts of data.
+
+So:
+
+```text
+Existing text
+     ↓
+Previous tokens become input
+     ↓
+Next token becomes target
+```
+
+That makes it possible to create extremely large training datasets automatically.
+
+After pretraining, we get a **base model**. But a base model is not necessarily a good conversational assistant yet, which is why we distinguish between base and instruct models.
+
+---
+
+## Q18. Base model vs instruct model?
+
+A base model has mainly learned how language works through next-token prediction.
+
+It is very good at continuing text, but it may not naturally understand that we want it to behave like a helpful assistant.
+
+For example, if we ask:
+
+```text
+What is the capital of France?
+```
+
+a base model may simply continue the text in a style similar to its training data.
+
+An instruct model has gone through additional post-training, such as supervised fine-tuning, so it learns:
+
+```text
+User gives instruction
+        ↓
+Understand the request
+        ↓
+Produce a useful assistant-style response
+```
+
+So I think of it as:
+
+```text
+Pretraining
+   ↓
+Base model
+   ↓
+Instruction tuning / SFT
+   ↓
+Instruct model
+```
+
+This naturally leads to the difference between **pretraining and SFT**.
+
+---
+
+## Q19. Pretraining vs SFT?
+
+The main difference is what we are trying to teach the model and what kind of data we use.
+
+During **pretraining**, we use massive amounts of general text so the model learns language through next-token prediction.
+
+For example:
+
+```text
+The capital of France is → Paris
+```
+
+During **Supervised Fine-Tuning, or SFT**, we use curated instruction-response examples.
+
+For example:
+
+```text
+User:
+Explain gravity simply.
+
+Assistant:
+Gravity is the force that...
+```
+
+Pretraining teaches:
+
+```text
+How language works
+```
+
+SFT teaches:
+
+```text
+How to follow an instruction and respond like an assistant
+```
+
+Both can still involve next-token prediction. The major difference is the training data and the behavior we are trying to create.
+
+Even after SFT, we may want to further improve which kinds of responses humans prefer. That is where **RLHF** comes in.
+
+---
+
+## Q20. What is RLHF?
+
+RLHF stands for Reinforcement Learning from Human Feedback.
+
+After SFT, a model can follow instructions, but some answers may still be less useful, unsafe, poorly written, or simply not what users prefer.
+
+RLHF introduces human preference information.
+
+A simplified flow is:
+
+```text
+Prompt
+ ↓
+Model generates multiple answers
+ ↓
+Humans rank the answers
+ ↓
+Learn what humans prefer
+ ↓
+Use that signal to improve the model
+```
+
+For example:
+
+```text
+Response A → preferred
+Response B → acceptable
+Response C → poor
+```
+
+Instead of asking humans to evaluate every model output forever, the classic RLHF approach trains another model to learn those preferences.
+
+That model is called a **reward model**.
+
+---
+
+## Q21. What is a reward model?
+
+A reward model is like an automated judge that has learned from human preferences.
+
+It receives something like:
+
+```text
+Prompt + Model Response
+```
+
+and produces a score.
+
+For example:
+
+```text
+Helpful answer → high reward
+Poor answer    → low reward
+```
+
+The reward model itself is trained using examples where humans ranked responses.
+
+So the overall RLHF idea becomes:
+
+```text
+Humans rank responses
+       ↓
+Train reward model
+       ↓
+Reward model scores new responses
+       ↓
+Use scores to improve the LLM
+```
+
+In classic RLHF, one of the algorithms historically used to update the LLM from this reward signal is **PPO**.
+
+---
+
+## Q22. What is PPO?
+
+PPO stands for Proximal Policy Optimization.
+
+For a general GenAI interview, I would not go deeply into the mathematics unless the interviewer asks.
+
+The practical idea is that PPO is a reinforcement-learning algorithm that can update the language model based on reward signals.
+
+In classic RLHF:
+
+```text
+LLM generates response
+        ↓
+Reward model scores it
+        ↓
+PPO uses reward signal
+        ↓
+Adjust LLM behavior
+```
+
+If a certain type of response receives a better reward, the training process tries to make that type of behavior more likely.
+
+But there is a risk: if we optimize too aggressively only for reward, the model can change too much or exploit weaknesses in the reward model.
+
+That is why classic RLHF also uses ideas such as **KL-divergence control**.
+
+---
+
+## Q23. Why use KL-divergence in RLHF?
+
+KL-divergence is used as a control mechanism so the RLHF-trained model does not move too far away from the original supervised fine-tuned model.
+
+Imagine we have:
+
+```text
+SFT model
+   ↓
+RLHF optimization
+   ↓
+Improved model
+```
+
+We want the model to improve, but we do not want it to change so aggressively that it loses useful language behavior or starts exploiting the reward model.
+
+So conceptually the objective is:
+
+```text
+Improve reward
+     +
+Stay reasonably close to the original model
+```
+
+KL-divergence helps measure that difference.
+
+So in an interview, I would connect it to **training stability and preventing excessive model drift or reward hacking**.
+
+That entire RLHF process happens during training/post-training. At runtime, we normally perform **inference**, which is different.
+
+---
+
+## Q24. Training vs inference?
+
+Training is when the model learns.
+
+Inference is when we use the already-trained model.
+
+During training:
+
+```text
+Input
+ ↓
+Prediction
+ ↓
+Loss
+ ↓
+Backpropagation
+ ↓
+Update weights
+```
+
+So the parameters change.
+
+During inference:
+
+```text
+User prompt
+ ↓
+Forward pass
+ ↓
+Logits
+ ↓
+Probabilities
+ ↓
+Generate token
+```
+
+The model's learned weights normally stay fixed.
+
+A simple memory trick is:
+
+```text
+Training = learning
+
+Inference = using what was learned
+```
+
+During inference, we can still control **how the model chooses tokens** using generation settings such as temperature, Top-K and Top-P.
+
+---
+
+## Q25. What does temperature control?
+
+Temperature controls how conservative or random token selection is during generation.
+
+The model already has a probability distribution for possible next tokens.
+
+With a **low temperature**, the distribution becomes more focused on high-probability choices.
+
+That usually gives:
+
+- more predictable output,
+- more consistent output,
+- less randomness.
+
+With a **higher temperature**, the model gives lower-probability alternatives more of a chance.
+
+That gives:
+
+- more variation,
+- more creativity,
+- but also more unpredictability.
+
+So I use:
+
+```text
+Low temperature  → focused / predictable
+
+High temperature → diverse / creative
+```
+
+Temperature works with the probability distribution. Two other common ways to restrict which tokens can be sampled are **Top-K and Top-P**.
+
+---
+
+## Q26. Top-K vs Top-P?
+
+Both Top-K and Top-P limit the candidate tokens the model considers during generation, but they do it differently.
+
+### Top-K
+
+Top-K keeps a fixed number of the highest-probability tokens.
+
+For example:
+
+```text
+Top-K = 5
+```
+
+means only the five most likely next tokens are considered.
+
+### Top-P
+
+Top-P keeps enough high-probability tokens to reach a chosen cumulative probability.
+
+For example:
+
+```text
+Top-P = 0.90
+```
+
+means we keep the smallest group of likely tokens whose total probability reaches roughly 90%.
+
+The easiest way I remember it is:
+
+```text
+Top-K = count
+
+Top-P = probability mass
+```
+
+Top-P is more adaptive because the number of candidate tokens can change depending on how confident the model is.
+
+Another type of generation control deals with repeated words or topics: **frequency and presence penalties**.
+
+---
+
+## Q27. Frequency penalty vs presence penalty?
+
+Both are related to repetition, but they look at repetition differently.
+
+**Frequency penalty** considers how many times a token has already appeared.
+
+If something has been repeated many times, the penalty becomes stronger.
+
+So I think:
+
+```text
+Frequency = How often?
+```
+
+**Presence penalty** mainly considers whether a token has already appeared at all.
+
+It can encourage the model to introduce something new rather than staying with the same vocabulary or topic.
+
+So I remember:
+
+```text
+Presence = Has it appeared?
+```
+
+These are generation-time controls, just like temperature and Top-P.
+
+Another important decision during generation is the **decoding strategy**. The simplest one is greedy decoding.
+
+---
+
+## Q28. What is greedy decoding?
+
+Greedy decoding means that at every generation step, the model simply chooses the token with the highest probability.
+
+For example:
+
+```text
+Paris   → 70%
+London  → 20%
+Berlin  → 10%
+```
+
+Greedy decoding always selects:
+
+```text
+Paris
+```
+
+The advantage is that it is simple and deterministic.
+
+But the disadvantage is that choosing the locally best token at every step does not always produce the best overall sentence, and the output can sometimes become repetitive.
+
+So greedy decoding follows only one path.
+
+**Beam search**, on the other hand, keeps several possible paths alive at the same time.
+
+---
+
+## Q29. What is beam search?
+
+Beam search is a decoding strategy where the model keeps multiple candidate sequences instead of immediately committing to only one.
+
+For example, instead of keeping just:
+
+```text
+The cat is ...
+```
+
+it might keep several promising continuations.
+
+Conceptually:
+
+```text
+Start
+ ↓
+Generate multiple candidates
+ ↓
+Score them
+ ↓
+Keep the best few
+ ↓
+Expand those candidates
+ ↓
+Repeat
+```
+
+The number of candidates kept is called the beam width.
+
+This can be useful for tasks where the quality of the complete sequence matters, such as traditional machine translation.
+
+Compared with greedy decoding:
+
+```text
+Greedy → one path
+
+Beam search → multiple promising paths
+```
+
+Generation strategies describe how a dense model chooses output tokens. Another architectural idea used to make very large models more compute-efficient is **Mixture of Experts**.
+
+---
+
+## Q30. What is Mixture of Experts?
+
+Mixture of Experts, or MoE, is a model architecture where we have multiple specialized neural-network "experts," but we do not use every expert for every token.
+
+A simple analogy is a company.
+
+Suppose a company has specialists in:
+
+- finance,
+- legal,
+- engineering,
+- sales.
+
+If a technical problem arrives, we do not ask every employee to solve it. We route it to the most relevant specialists.
+
+MoE does something similar.
+
+```text
+Token
+ ↓
+Router
+ ↓
+Select a few experts
+ ↓
+Selected experts process token
+ ↓
+Combine their outputs
+```
+
+The benefit is that the model can have a very large total number of parameters while activating only part of the model for each token.
+
+The component that decides which experts receive a token is called the **MoE router**.
+
+---
+
+## Q31. What does the MoE router do?
+
+The MoE router decides which experts should process each token.
+
+For a token, the router produces scores for the available experts.
+
+Then it may select the top one, top two, or another small subset.
+
+Conceptually:
+
+```text
+Token
+ ↓
+Router scores experts
+ ↓
+Expert 1 → 0.10
+Expert 2 → 0.75
+Expert 3 → 0.05
+Expert 4 → 0.65
+ ↓
+Choose top experts
+ ↓
+Process token
+```
+
+So the router is essentially the traffic controller of an MoE model.
+
+One challenge is that we do not want every token to go to the same expert, because then some experts would be overloaded while others would not learn enough. That is why MoE systems often use load-balancing techniques.
+
+MoE tries to make large models more efficient. Another technique for efficiency is to create a **smaller model from a larger model**, which is called knowledge distillation.
+
+---
+
+## Q32. What is knowledge distillation?
+
+Knowledge distillation is a technique where a large model, called the **Teacher**, is used to train a smaller model, called the **Student**.
+
+The idea is:
+
+```text
+Large Teacher Model
+        ↓
+Transfers useful behavior/knowledge
+        ↓
+Smaller Student Model
+```
+
+Why do this?
+
+Because a very large model may give excellent results but can be:
+
+- expensive,
+- slower,
+- memory intensive,
+- difficult to deploy.
+
+A smaller student model can be cheaper and faster while still learning useful behavior from the teacher.
+
+The teacher can transfer information in different ways. Two common approaches are **soft-label and hard-label distillation**.
+
+---
+
+## Q33. Soft-label vs hard-label distillation?
+
+The difference is how much information from the Teacher model is given to the Student.
+
+### Soft-label distillation
+
+The Student learns from the Teacher's complete probability distribution.
+
+For example:
+
+```text
+Paris   → 70%
+London  → 20%
+Berlin  → 10%
+```
+
+This gives the Student more information because it can see not only what the Teacher selected, but also how confident the Teacher was about alternatives.
+
+### Hard-label distillation
+
+The Student receives only the Teacher's selected answer, for example:
+
+```text
+Paris
+```
+
+This is simpler and cheaper to store, but it loses some information about the Teacher's probability distribution.
+
+So:
+
+```text
+Soft label → full distribution / richer signal
+
+Hard label → final selected output / simpler signal
+```
+
+The fact that models can transfer behavior this way also raises an important question: **What information is actually stored inside an LLM?**
+
+---
+
+## Q34. What does an LLM actually store?
+
+I would be careful not to describe an LLM as if it were a normal database.
+
+A database might explicitly store something like:
+
+```text
+France → Paris
+Japan  → Tokyo
+India  → New Delhi
+```
+
+An LLM does not normally store knowledge as clean rows and columns like that.
+
+Instead, during training, patterns are learned across billions of model parameters.
+
+So the model's knowledge is **distributed across its weights**.
+
+That is why an LLM can often answer factual questions, but it is not doing a guaranteed database lookup.
+
+It is generating an answer based on learned statistical patterns.
+
+That also helps explain hallucinations: the model can sometimes generate an answer that fits learned language patterns but is factually incorrect.
+
+To bring all of these ideas together, the most useful final interview question is explaining the complete LLM flow end to end.
+
+---
+
+## Q35. Explain an LLM end-to-end in one minute.
+
+I would explain the complete flow like this:
+
+When a user sends a prompt, the first step is **tokenization**. The text is split into tokens, and each token is mapped to a token ID.
+
+Those token IDs are converted into **embeddings**, which are numerical vectors the neural network can process. We also include **positional information** so the model understands the order of the tokens.
+
+Those representations then pass through many **Transformer layers**.
+
+Inside the Transformer, **self-attention** allows each token to look at other tokens and determine which ones are relevant. The attention calculation uses **Query, Key and Value vectors**. Multi-head attention performs several types of these attention calculations in parallel, and feed-forward networks further transform the token representations.
+
+After all Transformer layers are processed, the final representation goes through an output layer that produces **logits** for all possible next tokens.
+
+Softmax or the model's output scoring pipeline gives us a probability distribution over possible next tokens.
+
+Then a decoding or sampling strategy—such as greedy decoding, Top-K or Top-P, often influenced by temperature—chooses the next token.
+
+That token is added to the context, and the entire process repeats one token at a time until the response is complete.
+
+So the inference flow is:
+
+```text
+Prompt
+ ↓
+Tokenization
+ ↓
+Token IDs
+ ↓
+Embeddings + Position Information
+ ↓
+Transformer Layers
+ ↓
+Self-Attention using Q / K / V
+ ↓
+Feed-Forward Processing
+ ↓
+Logits
+ ↓
+Next-token probabilities
+ ↓
+Decoding / Sampling
+ ↓
+Next Token
+ ↓
+Append to Context
+ ↓
+Repeat
+```
+
+And if the interviewer asks how the model learned to do this, I connect it to the training lifecycle:
+
+```text
+Massive text data
+ ↓
+Pretraining using next-token prediction
+ ↓
+Cross-entropy loss
+ ↓
+Backpropagation
+ ↓
+Optimizer updates weights
+ ↓
+Base Model
+ ↓
+Supervised Fine-Tuning (SFT)
+ ↓
+Instruction-following Model
+ ↓
+Preference / Alignment Training such as RLHF
+ ↓
+Assistant Model
+```
+
+That connects the full story—from **how the model learns** to **what happens when a user actually sends a prompt**.
+
+---
+
+# Interview Revision Flow
+
+Instead of memorizing 35 separate answers, remember how the topics connect.
+
+## 1. Input Processing
+
+```text
+User Prompt
+    ↓
+Tokenization
+    ↓
+Tokens
+    ↓
+Token IDs
+    ↓
+Embeddings
+    +
+Positional Information
+```
+
+## 2. Transformer Processing
+
+```text
+Embeddings
+    ↓
+Transformer
+    ↓
+Self-Attention
+    ↓
+Query / Key / Value
+    ↓
+Multi-Head Attention
+    ↓
+Feed-Forward Network
+    ↓
+Context-Aware Representation
+```
+
+## 3. Output Generation
+
+```text
+Final Representation
+    ↓
+Logits
+    ↓
+Next-token probabilities
+    ↓
+Temperature / Top-K / Top-P
+    ↓
+Decoding
+    ↓
+Next Token
+    ↓
+Repeat
+```
+
+## 4. Model Training
+
+```text
+Training Text
+    ↓
+Next-token prediction
+    ↓
+Cross-Entropy Loss
+    ↓
+Backpropagation
+    ↓
+Gradients
+    ↓
+Optimizer
+    ↓
+Update Weights
+```
+
+## 5. Model Lifecycle
+
+```text
+Pretraining
+    ↓
+Base Model
+    ↓
+SFT / Instruction Tuning
+    ↓
+Instruct Model
+    ↓
+Preference / Alignment Training
+    ↓
+Assistant Model
+```
+
+---
+
+# Five Important Comparisons to Remember
+
+| Concept 1 | Concept 2 | Easy Difference |
+|---|---|---|
+| Tokenization | Embedding | Split text vs convert token to numerical vector |
+| Logits | Probabilities | Raw scores vs normalized likelihoods |
+| Training | Inference | Learn/update weights vs use fixed trained weights |
+| Base Model | Instruct Model | Text completion capability vs instruction-following behavior |
+| Top-K | Top-P | Fixed token count vs cumulative probability threshold |
+
+---
+
+# How to Answer Naturally in an Interview
+
+For almost every LLM question, use this structure:
+
+```text
+1. Start with the simple idea.
+2. Explain why we need it.
+3. Give a small example.
+4. Connect it to the next step in the LLM flow.
+```
+
+For example, if asked about tokenization:
+
+> Tokenization is the first step where we break the user's text into smaller units called tokens. We need this because the neural network cannot directly process normal text. Each token gets a token ID, and then that token ID is converted into an embedding. Those embeddings are what we actually send into the Transformer.
+
+This sounds much more natural than only saying:
+
+> Tokenization is the process of converting text into tokens.
+
+The goal is to show the interviewer that you understand **where the concept fits in the complete LLM system**.
+
+---
+
+# 15-Minute Final Revision
+
+Remember this one chain before the interview:
+
+```text
+LLM
+ ↓
+Transformer-based neural network
+ ↓
+Text becomes tokens
+ ↓
+Tokens become embeddings
+ ↓
+Position information is included
+ ↓
+Transformer layers
+ ↓
+Self-attention
+ ↓
+Q / K / V
+ ↓
+Multi-head attention
+ ↓
+Feed-forward processing
+ ↓
+Logits
+ ↓
+Next-token probabilities
+ ↓
+Temperature / Top-K / Top-P
+ ↓
+Next token selected
+ ↓
+Repeat autoregressively
+```
+
+And training:
+
+```text
+Text Data
+ ↓
+Next-token prediction
+ ↓
+Loss
+ ↓
+Backpropagation
+ ↓
+Optimizer updates parameters
+ ↓
+Base Model
+ ↓
+SFT
+ ↓
+Instruct Model
+ ↓
+Alignment / Preference Training
+ ↓
+Assistant Model
+```
+
+
 # LLM Basics — Interview Preparation Guide
 
 **Source basis:** Prepared only from the attached:
