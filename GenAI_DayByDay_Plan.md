@@ -1,177 +1,164 @@
-# Gen AI — Day-by-Day Study Plan (Basics → Advanced)
 
-**Order:** Foundation for Gen AI → RAG → Fine-tuning → Agentic AI → MCP → Deep Agents → Interview Prep
 
-One topic/link per day. Each day: read the notes (45–60 min), do a small hands-on exercise from the linked repo (45–60 min), write a 3-line summary in your own words.
 
-Total: **~90 study days** (about 13 weeks at one day per weekday, or compress by doing 2 days' worth on weekends).
+# RAG — Date-wise Topics Covered
 
----
+## Date-wise Blog Summary
 
-## Stage 1 — Foundation for Gen AI (Days 1–6)
-*LLM basics, tokens, embeddings, transformer concepts, prompt engineering*
+| Date | Main topics covered | Blog URL |
+|---|---|---|
+| **25 July 2026** | **Handling document updates in RAG:** full re-indexing, content hashing with incremental upsert, LangChain Indexing API, document versioning, soft deletion, and the **NCERT Book RAG project**. | https://directai.blog/2026/07/25/gen-ai-developer-classroom-notes-25-jul-2026/ |
+| **23 July 2026** | **LLM and RAG evaluation:** why exact-text comparison does not work for nondeterministic LLM outputs; introduction to **DeepEval**; test cases, evaluation metrics, evaluation runners, and integration with pytest. | https://directai.blog/2026/07/23/gen-ai-developer-classroom-notes-23-jul-2026/ |
+| **22 July 2026** | **RAG user interface development:** invoking RAG through a JavaScript chat interface; Streamlit and Gradio for prototypes; Streamlit application setup, session state, widget keys, callbacks, `cache_data`, and `cache_resource`. | https://directai.blog/2026/07/22/gen-ai-developer-classroom-notes-22-jul-2026-2/ |
+| **21 July 2026** | **Vector-database retrieval techniques:** dense semantic retrieval, sparse keyword retrieval, and hybrid or fusion retrieval; combining dense and BM25 results with weights; ChromaDB and `rank_bm25`. | https://directai.blog/2026/07/21/gen-ai-developer-classroom-notes-21-jul-2026/ |
+| **16 July 2026** | **Advanced chunking and vector storage:** recursive character splitting; NCERT document chunking fixes; vector storage contents; Flat, IVF, and HNSW indexes; cosine similarity, dot product, and Euclidean distance; hybrid search, metadata filtering, and CRUD operations. | https://directai.blog/2026/07/16/gen-ai-developer-classroom-notes-16-jul-2026/ |
+| **15 July 2026** | **Section-aware chunking:** combining chapter pages, detecting sections using regular expressions, recursive splitting by section and length, chunk overlap, metadata organization, and enforcing maximum chunk size. | https://directai.blog/2026/07/15/gen-ai-developer-classroom-notes-15-jul-2026/ |
+| **13 July 2026** | **Handling images in RAG:** extracting an image’s meaning through captions, directly embedding images, multimodal RAG, and generating useful image captions for retrieval. | https://directai.blog/2026/07/13/gen-ai-developer-classroom-notes-13-jul-2026-2/ |
+| **11 July 2026** | **RAG productionization:** production chunking, vector stores, RAG scoring, guardrails, text and image data; CBSE or NCERT Teacher RAG idea; extracting and organizing PDF text and images by chapters and sections; filtering blank or incorrectly extracted images, tables, and flowcharts. | https://directai.blog/2026/07/11/gen-ai-developer-classroom-notes-11-jul-2026/ |
+| **9 July 2026** | **RAG with relational databases:** building RAG applications over structured data, understanding database schemas, and using database information to answer natural-language questions. | https://directai.blog/2026/07/09/gen-ai-developer-classroom-notes-09-jul-2026/ |
+| **8 July 2026** | **Building the first RAG application:** implementing a simple end-to-end RAG flow that retrieves relevant information and passes the retrieved context to an LLM. | https://directai.blog/2026/07/08/gen-ai-developer-classroom-notes-08-jul-2026/ |
+| **7 July 2026** | **Embeddings and vector databases:** meaning represented as vectors; Word2Vec and embedding evolution; open-source and cloud embedding models; LangChain `embed_query` and `embed_documents`; Chroma, FAISS, pgvector, MongoDB, Pinecone, and Weaviate; building an indexing pipeline with metadata. | https://directai.blog/2026/07/07/gen-ai-developer-classroom-notes-07-jul-2026/ |
+| **6 July 2026** | **Document chunking and splitting:** relationship between LLMs and embedding models; why documents are split for retrieval; chunk size and overlap; LangChain text splitters; loading and splitting together; adding ingestion date and project metadata. | https://directai.blog/2026/07/06/gen-ai-developer-classroom-notes-06-jul-2026/ |
+| **4 July 2026** | **Documents and document loaders:** LangChain `Document` objects; loading documents instead of manually creating them; TextLoader, PDF loader, CSV loader, and directory loader; required external packages and loader experiments. | https://directai.blog/2026/07/04/gen-ai-developer-classroom-notes-04-jul-2026/ |
+| **2 July 2026** | **Setting up Google Cloud with LangChain:** installing the Google Cloud SDK, selecting the GCP project, configuring authentication, and preparing the GCP or Vertex AI environment for LangChain model integration. | https://directai.blog/2026/07/02/gen-ai-developer-classroom-notes-02-jul-2026/ |
+| **30 June 2026** | **LangChain Runnable and RAG introduction:** `invoke`, `ainvoke`, `batch`, and `stream`; LCEL chains; BaseChatModel and BaseMessage; RAG indexing and retrieval phases; vector databases; chunking, embeddings, retrievers, document loaders, and document types. | https://directai.blog/2026/06/30/gen-ai-developer-classroom-notes-30-jun-2026/ |
+| **29 June 2026** | **LangChain chaining:** combining prompts, LLMs, and output-processing components into chains using the pipe operator; introduction to composable LLM workflows. | https://directai.blog/2026/06/29/gen-ai-developer-classroom-notes-29-jun-2026/ |
+| **27 June 2026** | **Vector fundamentals:** vectors as multidimensional mathematical points, semantic relationships between words, and vector arithmetic such as the commonly used “king − man + woman” example. | https://directai.blog/2026/06/27/gen-ai-developer-classroom-notes-27-jun-2026/ |
 
-| Day | Topic |
-|---|---|
-| 1 | [21st April – Foundation](https://directai.blog/2026/04/21/gen-ai-developer-classroom-notes-21-apr-2026/) |
-| 2 | [22nd April – Foundation](https://directai.blog/2026/04/22/gen-ai-developer-classroom-notes-22-apr-2026/) |
-| 3 | [23rd April – Foundation](https://directai.blog/2026/04/23/gen-ai-developer-classroom-notes-23-apr-2026/) |
-| 4 | [26th April – Foundation](https://directai.blog/2026/04/26/gen-ai-developer-classroom-notes-26-apr-2026/) |
-| 5 | [23rd June – Foundation](https://directai.blog/2026/06/23/gen-ai-developer-classroom-notes-23-jun-2026/) |
-| 6 | [26th June – Foundation](https://directai.blog/2026/06/26/gen-ai-developer-classroom-notes-26-jun-2026/) |
+## Overall RAG Learning Sequence
 
-**Reference throughout:** [prompt_engineering_notes_euri.md](https://github.com/raffeemdai/LangChain_LangGraph/blob/main/prompt_engineering_notes_euri.md), [AI Engineering Guidebook (PDF)](https://github.com/raffeemdai/RAG_BY_ME/blob/main/AI%20Engineering%20Guidebook%20Full-compressed.pdf)
+### 1. Foundations — 27 June to 2 July
 
-**Checkpoint (end of Day 6):** Explain tokens vs. embeddings, how attention works at a high level, and 2 prompt engineering techniques — out loud, no notes.
+Vectors → LangChain chaining → Runnable interface → RAG architecture → GCP and LangChain setup.
 
----
+### 2. Data Ingestion — 4 to 6 July
 
-## Stage 2 — RAG (Days 7–23)
-*Chunking, embeddings, vector DBs, retrieval strategies, evaluation*
+Document loaders → loading files → document chunking → chunk overlap → metadata.
 
-| Day | Topic |
-|---|---|
-| 7 | [27th June](https://directai.blog/2026/06/27/gen-ai-developer-classroom-notes-27-jun-2026/) |
-| 8 | [29th June](https://directai.blog/2026/06/29/gen-ai-developer-classroom-notes-29-jun-2026/) |
-| 9 | [30th June](https://directai.blog/2026/06/30/gen-ai-developer-classroom-notes-30-jun-2026/) |
-| 10 | [2nd July](https://directai.blog/2026/07/02/gen-ai-developer-classroom-notes-02-jul-2026/) |
-| 11 | [4th July](https://directai.blog/2026/07/04/gen-ai-developer-classroom-notes-04-jul-2026/) |
-| 12 | [6th July](https://directai.blog/2026/07/06/gen-ai-developer-classroom-notes-06-jul-2026/) |
-| 13 | [7th July](https://directai.blog/2026/07/07/gen-ai-developer-classroom-notes-07-jul-2026/) |
-| 14 | [8th July](https://directai.blog/2026/07/08/gen-ai-developer-classroom-notes-08-jul-2026/) |
-| 15 | [9th July](https://directai.blog/2026/07/09/gen-ai-developer-classroom-notes-09-jul-2026/) |
-| 16 | [11th July](https://directai.blog/2026/07/11/gen-ai-developer-classroom-notes-11-jul-2026/) |
-| 17 | [13th July](https://directai.blog/2026/07/13/gen-ai-developer-classroom-notes-13-jul-2026-2/) |
-| 18 | [15th July](https://directai.blog/2026/07/15/gen-ai-developer-classroom-notes-15-jul-2026/) |
-| 19 | [16th July](https://directai.blog/2026/07/16/gen-ai-developer-classroom-notes-16-jul-2026/) |
-| 20 | [21st July](https://directai.blog/2026/07/21/gen-ai-developer-classroom-notes-21-jul-2026/) |
-| 21 | [22nd July](https://directai.blog/2026/07/22/gen-ai-developer-classroom-notes-22-jul-2026-2/) |
-| 22 | [23rd July](https://directai.blog/2026/07/23/gen-ai-developer-classroom-notes-23-jul-2026/) |
-| 23 | [25th July](https://directai.blog/2026/07/25/gen-ai-developer-classroom-notes-25-jul-2026/) |
+### 3. Embeddings and Retrieval — 7 to 9 July
 
-**Hands-on repo:** [RAG_BY_ME](https://github.com/raffeemdai/RAG_BY_ME) — build chunking → embedding → retrieval → generation piece by piece as you go.
+Embedding models → vector databases → indexing pipeline → first RAG application → structured-data RAG.
 
-**Checkpoint (end of Day 23):** Have a working RAG pipeline on your own dataset. Explain how you'd evaluate it (faithfulness, relevance, hallucination rate).
+### 4. Production Document Processing — 11 to 16 July
 
----
+PDF text and image extraction → multimodal RAG → section-aware chunking → recursive splitting → vector indexes and distance metrics.
 
-## Stage 3 — Fine-tuning (Days 24–38)
-*LoRA/QLoRA, dataset prep, when to fine-tune vs. prompt/RAG*
+### 5. Application and Quality — 21 to 25 July
 
-| Day | Topic |
-|---|---|
-| 24 | [17th Feb](https://directai.blog/2026/02/17/gen-ai-developer-classroom-notes-17-feb-2026/) |
-| 25 | [18th Feb](https://directai.blog/2026/02/18/gen-ai-developer-classroom-notes-18-feb-2026/) |
-| 26 | [19th Feb](https://directai.blog/2026/02/19/gen-ai-developer-classroom-notes-19-feb-2026/) |
-| 27 | [21st Feb](https://directai.blog/2026/02/21/gen-ai-developer-classroom-notes-21-feb-2026/) |
-| 28 | [22nd Feb](https://directai.blog/2026/02/22/gen-ai-developer-classroom-notes-22-feb-2026/) |
-| 29 | [24th Feb](https://directai.blog/2026/02/24/gen-ai-developer-classroom-notes-24-feb-2026/) |
-| 30 | [25th Feb](https://directai.blog/2026/02/25/gen-ai-developer-classroom-notes-25-feb-2026-2/) |
-| 31 | [26th Feb](https://directai.blog/2026/02/26/gen-ai-developer-classroom-notes-26-feb-2026/) |
-| 32 | [28th Feb](https://directai.blog/2026/02/28/gen-ai-developer-classroom-notes-28-feb-2026/) |
-| 33 | [2nd March](https://directai.blog/2026/03/02/gen-ai-developer-classroom-notes-02-mar-2026/) |
-| 34 | [5th March](https://directai.blog/2026/03/05/gen-ai-developer-classroom-notes-05-mar-2026/) |
-| 35 | [7th March](https://directai.blog/2026/03/07/gen-ai-developer-classroom-notes-07-mar-2026-2/) |
-| 36 | [9th March](https://directai.blog/2026/03/09/gen-ai-developer-classroom-notes-09-mar-2026/) |
-| 37 | [10th March](https://directai.blog/2026/03/10/gen-ai-developer-classroom-notes-10-mar-2026/) |
-| 38 | [11th March](https://directai.blog/2026/03/11/gen-ai-developer-classroom-notes-11-mar-2026/) |
+Dense, sparse, and hybrid retrieval → Streamlit UI → DeepEval testing → document update and re-indexing strategies.
 
-**Checkpoint (end of Day 38):** Explain LoRA/QLoRA in plain terms, and when you'd choose fine-tuning over RAG or better prompting (cost, data volume, latency).
 
----
+RAG
 
-## Stage 4 — Agentic AI (Days 39–62)
-*Agent architectures, tool calling, reasoning loops, decision-making*
+25th/July/2026 – [Click Here](https://directai.blog/2026/07/25/gen-ai-developer-classroom-notes-25-jul-2026/)
+23rd/July/2026 – [Click Here](https://directai.blog/2026/07/23/gen-ai-developer-classroom-notes-23-jul-2026/)
+22nd /July/2026 – [Click Here](https://directai.blog/2026/07/22/gen-ai-developer-classroom-notes-22-jul-2026-2/)
+21st/July/2026 – [Click Here](https://directai.blog/2026/07/21/gen-ai-developer-classroom-notes-21-jul-2026/)
+16th/July/2026 – [Click Here](https://directai.blog/2026/07/16/gen-ai-developer-classroom-notes-16-jul-2026/)
+15th/July/2026 – [Click Here](https://directai.blog/2026/07/15/gen-ai-developer-classroom-notes-15-jul-2026/)
+13th/July/2026 – [Click Here](https://directai.blog/2026/07/13/gen-ai-developer-classroom-notes-13-jul-2026-2/)
+11th/July/2026 – [Click Here](https://directai.blog/2026/07/11/gen-ai-developer-classroom-notes-11-jul-2026/)
+9th/July/2026 – [Click Here](https://directai.blog/2026/07/09/gen-ai-developer-classroom-notes-09-jul-2026/)
+8th/July/2026 – [Click Here](https://directai.blog/2026/07/08/gen-ai-developer-classroom-notes-08-jul-2026/)
+7th/july/2026 – [Click Here](https://directai.blog/2026/07/07/gen-ai-developer-classroom-notes-07-jul-2026/)
+6th/July/2026 – [Click Here](https://directai.blog/2026/07/06/gen-ai-developer-classroom-notes-06-jul-2026/)
+4th/July/2026 – [Click Here](https://directai.blog/2026/07/04/gen-ai-developer-classroom-notes-04-jul-2026/)
+2nd July/2026 – [Click Here](https://directai.blog/2026/07/02/gen-ai-developer-classroom-notes-02-jul-2026/)
+30th/June/2026 – [Click Here](https://directai.blog/2026/06/30/gen-ai-developer-classroom-notes-30-jun-2026/)
+29th/June/2026 – [Click Here](https://directai.blog/2026/06/29/gen-ai-developer-classroom-notes-29-jun-2026/)
+27th/June/2026 – [Click Here](https://directai.blog/2026/06/27/gen-ai-developer-classroom-notes-27-jun-2026/)
+Foundation For Gen Ai
 
-| Day | Topic |
-|---|---|
-| 39 | [13th March](https://directai.blog/2026/03/13/gen-ai-developer-classroom-notes-13-mar-2026/) |
-| 40 | [16th March](https://directai.blog/2026/03/16/gen-ai-developer-classroom-notes-16-mar-2026/) |
-| 41 | [17th March](https://directai.blog/2026/03/17/gen-ai-developer-classroom-notes-17-mar-2026/) |
-| 42 | [18th March](https://directai.blog/2026/03/18/gen-ai-developer-classroom-notes-18-mar-2026-2/) |
-| 43 | [20th March](https://directai.blog/2026/03/20/gen-ai-developer-classroom-notes-20-mar-2026/) |
-| 44 | [23rd March](https://directai.blog/2026/03/23/gen-ai-developer-classroom-notes-23-mar-2026/) |
-| 45 | [24th March](https://directai.blog/2026/03/24/gen-ai-developer-classroom-notes-24-mar-2026/) |
-| 46 | [25th March](https://directai.blog/2026/03/25/gen-ai-developer-classroom-notes-25-mar-2026/) |
-| 47 | [28th March](https://directai.blog/2026/03/28/gen-ai-developer-classroom-notes-28-mar-2026/) |
-| 48 | [29th March](https://directai.blog/2026/03/29/gen-ai-developer-classroom-notes-29-mar-2026/) |
-| 49 | [31st March](https://directai.blog/2026/03/31/gen-ai-developer-classroom-notes-31-mar-2026/) |
-| 50 | [1st April](https://directai.blog/2026/04/01/gen-ai-developer-classroom-notes-01-apr-2026/) |
-| 51 | [2nd April](https://directai.blog/2026/04/02/gen-ai-developer-classroom-notes-02-apr-2026/) |
-| 52 | [4th April](https://directai.blog/2026/04/04/gen-ai-developer-classroom-notes-04-apr-2026-2/) |
-| 53 | [6th April](https://directai.blog/2026/04/06/gen-ai-developer-classroom-notes-06-apr-2026/) |
-| 54 | [7th April](https://directai.blog/2026/04/07/gen-ai-developer-classroom-notes-07-apr-2026/) |
-| 55 | [9th April](https://directai.blog/2026/04/09/gen-ai-developer-classroom-notes-09-apr-2026/) |
-| 56 | [11th April](https://directai.blog/2026/04/11/gen-ai-developer-classroom-notes-11-apr-2026/) |
-| 57 | [14th April](https://directai.blog/2026/04/14/gen-ai-developer-classroom-notes-14-apr-2026/) |
-| 58 | [18th April](https://directai.blog/2026/04/18/gen-ai-developer-classroom-notes-18-apr-2026/) |
-| 59 | [19th April](https://directai.blog/2026/04/19/gen-ai-developer-classroom-notes-19-apr-2026-2/) |
-| 60 | [22nd April](https://directai.blog/2026/04/22/gen-ai-developer-classroom-notes-22-apr-2026-3/) |
-| 61 | [27th April](https://directai.blog/2026/04/27/gen-ai-developer-classroom-notes-27-apr-2026/) |
-| 62 | [7th June](https://directai.blog/2026/06/07/gen-ai-developer-classroom-notes-07-jun-2026/) |
+26th/June/2026 – [Click Here](https://directai.blog/2026/06/26/gen-ai-developer-classroom-notes-26-jun-2026/)
+23rd/June/2026 – [Click Here](https://directai.blog/2026/06/23/gen-ai-developer-classroom-notes-23-jun-2026/)
+Deep Agents
 
-**Hands-on repo:** [LangChain_LangGraph](https://github.com/raffeemdai/LangChain_LangGraph) — build a basic tool-calling agent.
+18th/July/2026 – [Click Here](https://directai.blog/2026/07/19/gen-ai-developer-classroom-notes-19-jul-2026/)
+21st/June/2026 – [Click Here](https://directai.blog/2026/06/21/gen-ai-developer-classroom-notes-21-jun-2026/)
+18th/June/2026 – [Click Here](https://directai.blog/2026/06/18/gen-ai-developer-classroom-notes-18-jun-2026/)
+17th/June/2026 – [Click Here](https://directai.blog/2026/06/17/gen-ai-developer-classroom-notes-17-jun-2026/)
+15th/June/2026 – [Click Here](https://directai.blog/2026/06/15/gen-ai-developer-classroom-notes-15-jun-2026/)
+12th/June/2026 – [Click Here](https://directai.blog/2026/06/12/gen-ai-developer-classroom-notes-12-jun-2026/)
+11th/June/2026 – [Click Here](https://directai.blog/2026/06/11/gen-ai-developer-classroom-notes-11-jun-2026/)
+9th/June/2026 – [Click Here](https://directai.blog/2026/06/09/gen-ai-developer-classroom-notes-09-jun-2026/)
+8th/June/2026 – [Click Here](https://directai.blog/2026/06/08/gen-ai-developer-classroom-notes-08-jun-2026/)
+5th/June/2026 – [Click Here](https://directai.blog/2026/06/05/gen-ai-developer-classroom-notes-05-jun-2026/)
+4th/June/2026 – [Click Here](https://directai.blog/2026/06/04/gen-ai-developer-classroom-notes-04-jun-2026/)
+29th/May/2026 – [Click Here](https://directai.blog/2026/05/29/gen-ai-developer-classroom-notes-29-may-2026/)
+27th/May/2026 – [Click Here](https://directai.blog/2026/05/27/gen-ai-developer-classroom-notes-27-may-2026/)
+26th/May/2026 – [Click Here](https://directai.blog/2026/05/26/gen-ai-developer-classroom-notes-26-may-2026/)
+25th/May/2026 – [Click Here](https://directai.blog/2026/05/25/gen-ai-developer-classroom-notes-25-may-2026/)
+21st/May/2026 – [Click Here](https://directai.blog/2026/05/21/gen-ai-developer-classroom-notes-21-may-2026/)
+MCP
 
-**Checkpoint (end of Day 62):** Explain the difference between a chain and an agent, and how an agent decides which tool to call.
+23rd/May/2026 – [Click Here](https://directai.blog/2026/05/23/gen-ai-developer-classroom-notes-23-may-2026/)
+20th/May/2026 – [Click Here](https://directai.blog/2026/05/20/gen-ai-developer-classroom-notes-20-may-2026/)
+19th/May/2026 – [Click Here](https://directai.blog/2026/05/19/gen-ai-developer-classroom-notes-19-may-2026/)
+17th/May/2026 – [Click Here](https://directai.blog/2026/05/17/gen-ai-developer-classroom-notes-17-may-2026/)
+16th/May/2026 – [Click Here](https://directai.blog/2026/05/16/gen-ai-developer-classroom-notes-16-may-2026/)
+14th/May/2026 – [Click Here](https://directai.blog/2026/05/14/gen-ai-developer-classroom-notes-14-may-2026-2/)
+13th/May/2026 – [Click Here](https://directai.blog/2026/05/13/gen-ai-developer-classroom-notes-13-may-2026/)
+12th/May/2026 – [Click Here](https://directai.blog/2026/05/12/gen-ai-developer-classroom-notes-12-may-2026/)
+10th/May/2026 – [Click Here](https://directai.blog/2026/05/10/gen-ai-developer-classroom-notes-10-may-2026/)
+9th/May2026 – [Click Here](https://directai.blog/2026/05/09/gen-ai-developer-classroom-notes-09-may-2026/)
+6th/May/2026 – [Click Here](https://directai.blog/2026/05/06/gen-ai-developer-classroom-notes-06-may-2026/)
+5th/May/2026 – [Click Here](https://directai.blog/2026/05/05/gen-ai-developer-classroom-notes-05-may-2026-2/)
+4th/May/2026 – [Click Here](https://directai.blog/2026/05/04/gen-ai-developer-classroom-notes-04-may-2026/)
+30th/April/2026 – [Click Here](https://directai.blog/2026/04/30/gen-ai-developer-classroom-notes-30-apr-2026/)
+Foundation For Gen Ai
 
----
+26th/April/2026 – [Click Here](https://directai.blog/2026/04/26/gen-ai-developer-classroom-notes-26-apr-2026/)
+23rd/April/2026 – [Click Here](https://directai.blog/2026/04/23/gen-ai-developer-classroom-notes-23-apr-2026/)
+22nd/April/2026 – [Click Here](https://directai.blog/2026/04/22/gen-ai-developer-classroom-notes-22-apr-2026/)
+21st/April/2026 – [Click Here](https://directai.blog/2026/04/21/gen-ai-developer-classroom-notes-21-apr-2026/)
+Agentic AI
 
-## Stage 5 — MCP (Model Context Protocol) (Days 63–76)
-*Standardizing how agents connect to tools/data*
+7th/June/2026 – [Click Here](https://directai.blog/2026/06/07/gen-ai-developer-classroom-notes-07-jun-2026/)
+27th/April/2026 – [Click Here](https://directai.blog/2026/04/27/gen-ai-developer-classroom-notes-27-apr-2026/)
+22nd/April/2026 – [Click Here](https://directai.blog/2026/04/22/gen-ai-developer-classroom-notes-22-apr-2026-3/)
+19th/April/2026 – [Click Here](https://directai.blog/2026/04/19/gen-ai-developer-classroom-notes-19-apr-2026-2/)
+18th/April/2026 – [Click Here](https://directai.blog/2026/04/18/gen-ai-developer-classroom-notes-18-apr-2026/)
+15th/April/2026 – [Click Here](https://directai.blog/2026/04/15/gen-ai-developer-classroom-notes-15-apr-2026-2/)
+14th/April/2026 – [Click Here](https://directai.blog/2026/04/14/gen-ai-developer-classroom-notes-14-apr-2026/)
+11th/April/2026 – [Click Here](https://directai.blog/2026/04/11/gen-ai-developer-classroom-notes-11-apr-2026/)
+9th/April/2026 – [Click Here](https://directai.blog/2026/04/09/gen-ai-developer-classroom-notes-09-apr-2026/)
+7th/April/2026 – [Click Here](https://directai.blog/2026/04/07/gen-ai-developer-classroom-notes-07-apr-2026/)
+6th/April/2026 – [Click Here](https://directai.blog/2026/04/06/gen-ai-developer-classroom-notes-06-apr-2026/)
+4th/April/2026 – [Click Here](https://directai.blog/2026/04/04/gen-ai-developer-classroom-notes-04-apr-2026-2/)
+2nd/April/2026 – [Click Here](https://directai.blog/2026/04/02/gen-ai-developer-classroom-notes-02-apr-2026/)
+1st/April/2026 – [Click Here](https://directai.blog/2026/04/01/gen-ai-developer-classroom-notes-01-apr-2026/)
+31st/March/2026 – [Click Here](https://directai.blog/2026/03/31/gen-ai-developer-classroom-notes-31-mar-2026/)
+29th/March/2026 – [Click Here](https://directai.blog/2026/03/29/gen-ai-developer-classroom-notes-29-mar-2026/)
+28th/March/2026 – [Click Here](https://directai.blog/2026/03/28/gen-ai-developer-classroom-notes-28-mar-2026/)
+25th/March/2026 – [Click Here](https://directai.blog/2026/03/25/gen-ai-developer-classroom-notes-25-mar-2026/)
+24th/March/2026 – [Click Here](https://directai.blog/2026/03/24/gen-ai-developer-classroom-notes-24-mar-2026/)
+23rd/March/2026 – [Click Here](https://directai.blog/2026/03/23/gen-ai-developer-classroom-notes-23-mar-2026/)
+20th/March/2026 – [Click Here](https://directai.blog/2026/03/20/gen-ai-developer-classroom-notes-20-mar-2026/)
+18th/March/2026 – [Click Here](https://directai.blog/2026/03/18/gen-ai-developer-classroom-notes-18-mar-2026-2/)
+17th/March/2026 – [Click Here](https://directai.blog/2026/03/17/gen-ai-developer-classroom-notes-17-mar-2026/)
+16th/March/2026 – [Click Here](https://directai.blog/2026/03/16/gen-ai-developer-classroom-notes-16-mar-2026/)
+14th/March/2026 – [Click Here](https://directai.blog/2025/02/14/gen-ai-classroom-notes-14-02-2025/)
+13th/March/2026 – [Click Here](https://directai.blog/2026/03/13/gen-ai-developer-classroom-notes-13-mar-2026/)
+Fine tuning
 
-| Day | Topic |
-|---|---|
-| 63 | [30th April](https://directai.blog/2026/04/30/gen-ai-developer-classroom-notes-30-apr-2026/) |
-| 64 | [4th May](https://directai.blog/2026/05/04/gen-ai-developer-classroom-notes-04-may-2026/) |
-| 65 | [5th May](https://directai.blog/2026/05/05/gen-ai-developer-classroom-notes-05-may-2026-2/) |
-| 66 | [6th May](https://directai.blog/2026/05/06/gen-ai-developer-classroom-notes-06-may-2026/) |
-| 67 | [9th May](https://directai.blog/2026/05/09/gen-ai-developer-classroom-notes-09-may-2026/) |
-| 68 | [10th May](https://directai.blog/2026/05/10/gen-ai-developer-classroom-notes-10-may-2026/) |
-| 69 | [12th May](https://directai.blog/2026/05/12/gen-ai-developer-classroom-notes-12-may-2026/) |
-| 70 | [13th May](https://directai.blog/2026/05/13/gen-ai-developer-classroom-notes-13-may-2026/) |
-| 71 | [14th May](https://directai.blog/2026/05/14/gen-ai-developer-classroom-notes-14-may-2026-2/) |
-| 72 | [16th May](https://directai.blog/2026/05/16/gen-ai-developer-classroom-notes-16-may-2026/) |
-| 73 | [17th May](https://directai.blog/2026/05/17/gen-ai-developer-classroom-notes-17-may-2026/) |
-| 74 | [19th May](https://directai.blog/2026/05/19/gen-ai-developer-classroom-notes-19-may-2026/) |
-| 75 | [20th May](https://directai.blog/2026/05/20/gen-ai-developer-classroom-notes-20-may-2026/) |
-| 76 | [23rd May](https://directai.blog/2026/05/23/gen-ai-developer-classroom-notes-23-may-2026/) |
-
-**Checkpoint (end of Day 76):** Explain what problem MCP solves that raw function-calling doesn't, and sketch a simple MCP server/client setup.
-
----
-
-## Stage 6 — Deep Agents (Days 77–85)
-*Planning, memory, sub-agent delegation — the most advanced patterns*
-
-| Day | Topic |
-|---|---|
-| 77 | [8th June](https://directai.blog/2026/06/08/gen-ai-developer-classroom-notes-08-jun-2026/) |
-| 78 | [9th June](https://directai.blog/2026/06/09/gen-ai-developer-classroom-notes-09-jun-2026/) |
-| 79 | [11th June](https://directai.blog/2026/06/11/gen-ai-developer-classroom-notes-11-jun-2026/) |
-| 80 | [12th June](https://directai.blog/2026/06/12/gen-ai-developer-classroom-notes-12-jun-2026/) |
-| 81 | [15th June](https://directai.blog/2026/06/15/gen-ai-developer-classroom-notes-15-jun-2026/) |
-| 82 | [17th June](https://directai.blog/2026/06/17/gen-ai-developer-classroom-notes-17-jun-2026/) |
-| 83 | [18th June](https://directai.blog/2026/06/18/gen-ai-developer-classroom-notes-18-jun-2026/) |
-| 84 | [21st June](https://directai.blog/2026/06/21/gen-ai-developer-classroom-notes-21-jun-2026/) |
-| 85 | [18th/19th July](https://directai.blog/2026/07/19/gen-ai-developer-classroom-notes-19-jul-2026/) |
-
-**Checkpoint (end of Day 85):** Design a "deep agent" for a multi-step task (e.g., research assistant) covering planning, memory, and sub-agent delegation.
-
----
-
-## Stage 7 — Interview Prep (Days 86–90)
-
-| Day | Focus |
-|---|---|
-| 86 | Go through [ai-engineering-interview-questions](https://github.com/raffeemdai/ai-engineering-interview-questions) — Foundation & RAG questions |
-| 87 | Interview questions — Fine-tuning & Agentic AI |
-| 88 | Interview questions — MCP & Deep Agents |
-| 89 | Polish your portfolio project (RAG or agent build) — clean README, clear write-up of design decisions |
-| 90 | Mock interview: walk through your project end-to-end out loud, including one failure and how you fixed it |
-
----
-
-## How to use this
-- One day = one link. Don't skip ahead even if a day looks short — later topics assume you've internalized earlier ones.
-- If you miss a day, don't try to "double up" on notes — just shift the schedule. Skipping the hands-on part is worse than skipping a reading.
-- Re-do the checkpoint question at the start of the *next* stage as a warm-up — this is your spaced repetition.
+11th/March/2026 – [Click Here](https://directai.blog/2026/03/11/gen-ai-developer-classroom-notes-11-mar-2026/)
+10th/March/2026 – [Click Here](https://directai.blog/2026/03/10/gen-ai-developer-classroom-notes-10-mar-2026/)
+9th/March/2026 – [Click Here](https://directai.blog/2026/03/09/gen-ai-developer-classroom-notes-09-mar-2026/)
+7th/March/2026 – [Click Here](https://directai.blog/2026/03/07/gen-ai-developer-classroom-notes-07-mar-2026-2/)
+5th/March/2026 – [Click Here](https://directai.blog/2026/03/05/gen-ai-developer-classroom-notes-05-mar-2026/)
+2nd /Mar/2026 – [Click Here](https://directai.blog/2026/03/02/gen-ai-developer-classroom-notes-02-mar-2026/)
+28th/Feb/2026 – [Click Here](https://directai.blog/2026/02/28/gen-ai-developer-classroom-notes-28-feb-2026/)
+26th/Feb/2026 – [Click Here](https://directai.blog/2026/02/26/gen-ai-developer-classroom-notes-26-feb-2026/)
+25th/Feb/2026 – [Click Here](https://directai.blog/2026/02/25/gen-ai-developer-classroom-notes-25-feb-2026-2/)
+24th/Feb/2026 – [Click Here](https://directai.blog/2026/02/24/gen-ai-developer-classroom-notes-24-feb-2026/)
+22nd/Feb/2026 – [Click Here](https://directai.blog/2026/02/22/gen-ai-developer-classroom-notes-22-feb-2026/)
+21st/Feb/2026 – [Click Here](https://directai.blog/2026/02/21/gen-ai-developer-classroom-notes-21-feb-2026/)
+19th/Feb/2026 – [Click Here](https://directai.blog/2026/02/19/gen-ai-developer-classroom-notes-19-feb-2026/)
+18th/Feb/2026 – [Click Here](https://directai.blog/2026/02/18/gen-ai-developer-classroom-notes-18-feb-2026/)
+17th/Feb/2026 – [Click Here](https://directai.blog/2026/02/17/gen-ai-developer-classroom-notes-17-feb-2026/)
+https://github.com/raffeemdai/LangChain_LangGraph
+https://github.com/raffeemdai/RAG_BY_ME
+https://github.com/raffeemdai/RAG_BY_ME/blob/main/AI%20Engineering%20Guidebook%20Full-compressed.pdf   this book is from dailydose datascience author
+https://github.com/raffeemdai/ai-engineering-interview-questions
+https://github.com/raffeemdai/LangChain_LangGraph
+https://github.com/raffeemdai/LangChain_LangGraph/blob/main/prompt_engineering_notes_euri.md
