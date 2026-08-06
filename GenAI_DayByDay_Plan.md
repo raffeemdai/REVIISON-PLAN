@@ -1,4 +1,33 @@
+
+
+
+
+
 # Gen AI Developer Classroom Notes
+
+
+
+## Fine Tuning Topic Group (ascending date order)
+
+| Class Date  | Topics Covered                                                                                                                                                                                                                                                 | Blog URL                                                                                 |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 17 Feb 2026 | Introduction to Large Language Models — what LLMs are, content types they generate (text, code, images, audio, video); hosting options (self-hosted, cloud-hosted via AWS/Azure/GCP, direct provider hosting); open-source vs proprietary LLMs                | <https://directai.blog/2026/02/17/gen-ai-developer-classroom-notes-17-feb-2026/>            |
+| 18 Feb 2026 | How LLMs work — ELIZA (1966) as an early example; ML model as a mathematical function; text-to-number conversion; word2vec (2013) and vector embeddings; semantic search; tokenization; LLMs as next-token-prediction neural networks; role of transformers    | <https://directai.blog/2026/02/18/gen-ai-developer-classroom-notes-18-feb-2026/>            |
+| 19 Feb 2026 | How LLMs work continued — LLM as a deep learning model; supervised vs unsupervised ML; neural networks modeled on the human brain; neurons arranged in layers; activation functions                                                                            | <https://directai.blog/2026/02/19/gen-ai-developer-classroom-notes-19-feb-2026/>            |
+| 21 Feb 2026 | How Transformers and Attention work — transformer architecture and components; prompting exercises to explain transformer components in order and trace what each component does to a sample sentence; transformer visualizer tool                            | <https://directai.blog/2026/02/21/gen-ai-developer-classroom-notes-21-feb-2026/>            |
+| 22 Feb 2026 | How LLMs are trained — three major phases (Pretraining, Supervised Fine-Tuning, Alignment/RLHF); simple and technical walkthroughs of each phase (data collection, tokenization, forward pass, loss, backpropagation, instruction datasets, reward models, PPO); LLaMA 1 training dataset mix | <https://directai.blog/2026/02/22/gen-ai-developer-classroom-notes-22-feb-2026/>            |
+| 24 Feb 2026 | Fine-tuning motivation via ACME Airline case study — comparing Prompting, RAG, and Fine-Tuning approaches for FAQs/complaints; why fine-tuning suits brand tone (empathy, soft tone); Full Fine-Tuning vs PEFT overview                                         | <https://directai.blog/2026/02/24/gen-ai-developer-classroom-notes-24-feb-2026/>            |
+| 25 Feb 2026 | Distillation; pre-trained vs instruct base models and when to choose each (dataset size, who tunes them); Full Fine-Tuning vs PEFT; LoRA (adapters reduce trainable parameters); QLoRA                                                                          | <https://directai.blog/2026/02/25/gen-ai-developer-classroom-notes-25-feb-2026-2/>          |
+| 26 Feb 2026 | Fine-tuning tooling with Unsloth; GPU fundamentals (parallel processing, FLOPS/TFLOPS/PFLOPS); CUDA and CUDA cores; Tensor cores; VRAM contents during fine-tuning (weights, activations, gradients, optimizer states); TPUs                                    | <https://directai.blog/2026/02/26/gen-ai-developer-classroom-notes-26-feb-2026/>            |
+| 28 Feb 2026 | Fine-tuning with Unsloth continued — dataset formats (Alpaca, ChatML, ShareGPT, Plain Text, JSONL, Custom Prompt, HuggingFace Dataset); LoRA hyperparameters overview; end-to-end fine-tuning workflow from defining objective through deployment and monitoring | <https://directai.blog/2026/02/28/gen-ai-developer-classroom-notes-28-feb-2026/>            |
+| 2 Mar 2026  | ACME Bharat Airlines scenario — choosing base model (Qwen 8B instruct vs LLaMA/Mistral); dataset planning (SOPs, scenario buckets like delays, cancellations, baggage, refunds); ShareGPT format deep dive (single-turn, multi-turn, metadata keys); 90/10 train-test split | <https://directai.blog/2026/03/02/gen-ai-developer-classroom-notes-02-mar-2026/>            |
+| 5 Mar 2026  | Synthetic data generation for fine-tuning — complaint categories (flight delay, cancellation); data generation pipeline (scenario generator → dataset generator → quality filter → final dataset → train/test split); few-shot prompting to generate realistic complaint datasets | <https://directai.blog/2026/03/05/gen-ai-developer-classroom-notes-05-mar-2026/>            |
+| 7 Mar 2026  | Building the fine-tuning dataset with Unsloth — converting an Excel complaints sheet into a ShareGPT-style JSONL dataset via prompting; setting up the Google Colab notebook and uploading the dataset for fine-tuning                                          | <https://directai.blog/2026/03/07/gen-ai-developer-classroom-notes-07-mar-2026-2/>          |
+| 9 Mar 2026  | Understanding fine-tuning parameters — CPU vs GPU vs TPU; Unsloth model naming conventions; max_seq_length; dtype selection (auto, bfloat16, float16, float32); load_in_4bit quantization; LoRA parameters (rank, lora_alpha, target_modules, lora_dropout)     | <https://directai.blog/2026/03/09/gen-ai-developer-classroom-notes-09-mar-2026/>            |
+| 10 Mar 2026 | Tuning hyperparameters and reading training loss — batch size, gradient accumulation, warmup steps, learning rate, optimizer, weight decay, LR scheduler; training loss quality bands; Unsloth QLoRA recommended starter config; response-only training and label-masking pitfalls; loss-troubleshooting flow (not decreasing, exploding, near zero) | <https://directai.blog/2026/03/10/gen-ai-developer-classroom-notes-10-mar-2026/>            |
+| 11 Mar 2026 | Loading the fine-tuned model into Ollama and other deployment targets; wrapping up the Google Colab fine-tuning notebook                                                                                                                                         | <https://directai.blog/2026/03/11/gen-ai-developer-classroom-notes-11-mar-2026/>            |
+
+*Topics above are taken directly from each post's actual heading/content, not just the source list's group label.*
 
 ## Agentic AI Topic Group (ascending date order)
 
