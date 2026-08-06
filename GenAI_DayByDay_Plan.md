@@ -3,98 +3,59 @@
 
 # RAG — Date-wise Topics Covered
 
-## Date-wise Blog Summary
+# Gen AI Developer Classroom Notes
 
-| Date | Main topics covered | Blog URL |
+| Class Date | Topics Covered | Blog URL |
 |---|---|---|
-| **25 July 2026** | **Handling document updates in RAG:** full re-indexing, content hashing with incremental upsert, LangChain Indexing API, document versioning, soft deletion, and the **NCERT Book RAG project**. | https://directai.blog/2026/07/25/gen-ai-developer-classroom-notes-25-jul-2026/ |
-| **23 July 2026** | **LLM and RAG evaluation:** why exact-text comparison does not work for nondeterministic LLM outputs; introduction to **DeepEval**; test cases, evaluation metrics, evaluation runners, and integration with pytest. | https://directai.blog/2026/07/23/gen-ai-developer-classroom-notes-23-jul-2026/ |
-| **22 July 2026** | **RAG user interface development:** invoking RAG through a JavaScript chat interface; Streamlit and Gradio for prototypes; Streamlit application setup, session state, widget keys, callbacks, `cache_data`, and `cache_resource`. | https://directai.blog/2026/07/22/gen-ai-developer-classroom-notes-22-jul-2026-2/ |
-| **21 July 2026** | **Vector-database retrieval techniques:** dense semantic retrieval, sparse keyword retrieval, and hybrid or fusion retrieval; combining dense and BM25 results with weights; ChromaDB and `rank_bm25`. | https://directai.blog/2026/07/21/gen-ai-developer-classroom-notes-21-jul-2026/ |
-| **16 July 2026** | **Advanced chunking and vector storage:** recursive character splitting; NCERT document chunking fixes; vector storage contents; Flat, IVF, and HNSW indexes; cosine similarity, dot product, and Euclidean distance; hybrid search, metadata filtering, and CRUD operations. | https://directai.blog/2026/07/16/gen-ai-developer-classroom-notes-16-jul-2026/ |
-| **15 July 2026** | **Section-aware chunking:** combining chapter pages, detecting sections using regular expressions, recursive splitting by section and length, chunk overlap, metadata organization, and enforcing maximum chunk size. | https://directai.blog/2026/07/15/gen-ai-developer-classroom-notes-15-jul-2026/ |
-| **13 July 2026** | **Handling images in RAG:** extracting an image’s meaning through captions, directly embedding images, multimodal RAG, and generating useful image captions for retrieval. | https://directai.blog/2026/07/13/gen-ai-developer-classroom-notes-13-jul-2026-2/ |
-| **11 July 2026** | **RAG productionization:** production chunking, vector stores, RAG scoring, guardrails, text and image data; CBSE or NCERT Teacher RAG idea; extracting and organizing PDF text and images by chapters and sections; filtering blank or incorrectly extracted images, tables, and flowcharts. | https://directai.blog/2026/07/11/gen-ai-developer-classroom-notes-11-jul-2026/ |
-| **9 July 2026** | **RAG with relational databases:** building RAG applications over structured data, understanding database schemas, and using database information to answer natural-language questions. | https://directai.blog/2026/07/09/gen-ai-developer-classroom-notes-09-jul-2026/ |
-| **8 July 2026** | **Building the first RAG application:** implementing a simple end-to-end RAG flow that retrieves relevant information and passes the retrieved context to an LLM. | https://directai.blog/2026/07/08/gen-ai-developer-classroom-notes-08-jul-2026/ |
-| **7 July 2026** | **Embeddings and vector databases:** meaning represented as vectors; Word2Vec and embedding evolution; open-source and cloud embedding models; LangChain `embed_query` and `embed_documents`; Chroma, FAISS, pgvector, MongoDB, Pinecone, and Weaviate; building an indexing pipeline with metadata. | https://directai.blog/2026/07/07/gen-ai-developer-classroom-notes-07-jul-2026/ |
-| **6 July 2026** | **Document chunking and splitting:** relationship between LLMs and embedding models; why documents are split for retrieval; chunk size and overlap; LangChain text splitters; loading and splitting together; adding ingestion date and project metadata. | https://directai.blog/2026/07/06/gen-ai-developer-classroom-notes-06-jul-2026/ |
-| **4 July 2026** | **Documents and document loaders:** LangChain `Document` objects; loading documents instead of manually creating them; TextLoader, PDF loader, CSV loader, and directory loader; required external packages and loader experiments. | https://directai.blog/2026/07/04/gen-ai-developer-classroom-notes-04-jul-2026/ |
-| **2 July 2026** | **Setting up Google Cloud with LangChain:** installing the Google Cloud SDK, selecting the GCP project, configuring authentication, and preparing the GCP or Vertex AI environment for LangChain model integration. | https://directai.blog/2026/07/02/gen-ai-developer-classroom-notes-02-jul-2026/ |
-| **30 June 2026** | **LangChain Runnable and RAG introduction:** `invoke`, `ainvoke`, `batch`, and `stream`; LCEL chains; BaseChatModel and BaseMessage; RAG indexing and retrieval phases; vector databases; chunking, embeddings, retrievers, document loaders, and document types. | https://directai.blog/2026/06/30/gen-ai-developer-classroom-notes-30-jun-2026/ |
-| **29 June 2026** | **LangChain chaining:** combining prompts, LLMs, and output-processing components into chains using the pipe operator; introduction to composable LLM workflows. | https://directai.blog/2026/06/29/gen-ai-developer-classroom-notes-29-jun-2026/ |
-| **27 June 2026** | **Vector fundamentals:** vectors as multidimensional mathematical points, semantic relationships between words, and vector arithmetic such as the commonly used “king − man + woman” example. | https://directai.blog/2026/06/27/gen-ai-developer-classroom-notes-27-jun-2026/ |
+| 25 Jul 2026 | Handling document updates in RAG (full re-index, content hashing + incremental upsert, LangChain's built-in indexing API, document-level versioning + soft delete); NCERT Book RAG project | https://directai.blog/2026/07/25/gen-ai-developer-classroom-notes-25-jul-2026/ |
+| 23 Jul 2026 | Evaluation frameworks for LLM outputs; DeepEval setup and its three building blocks (TestCase, Metric, Evaluation Runner) | https://directai.blog/2026/07/23/gen-ai-developer-classroom-notes-23-jul-2026/ |
+| 22 Jul 2026 | User interface options for RAG (chat API, Streamlit, Gradio); Streamlit basics — session state, widget keys vs plain variables, and caching (cache_data, cache_resource) | https://directai.blog/2026/07/22/gen-ai-developer-classroom-notes-22-jul-2026-2/ |
+| 21 Jul 2026 | Vector database retrieval techniques — Dense, Sparse (keyword/BM25), and Hybrid/Fuse search | https://directai.blog/2026/07/21/gen-ai-developer-classroom-notes-21-jul-2026/ |
+| 16 Jul 2026 | Recursive character splitting; vector storage challenges (source doc updates); embedding storage layer internals; indexing algorithms (Flat, IVF, HNSW); distance metrics (cosine, dot product, Euclidean); hybrid search; metadata filtering and CRUD updates | https://directai.blog/2026/07/16/gen-ai-developer-classroom-notes-16-jul-2026/ |
+| 15 Jul 2026 | Section-aware chunking for the NCERT book (splitting by section then by length with overlap) | https://directai.blog/2026/07/15/gen-ai-developer-classroom-notes-15-jul-2026/ |
+| 13 Jul 2026 | Dealing with images in RAG (image captioning vs image embedding) — Multi-modal RAG | https://directai.blog/2026/07/13/gen-ai-developer-classroom-notes-13-jul-2026-2/ |
+| 11 Jul 2026 | Productionizing RAG (chunking, vector stores, RAG scoring, guardrails, multi-modal data); CBSE Teacher idea — extracting text/images from PDFs, handling flowcharts/tables | https://directai.blog/2026/07/11/gen-ai-developer-classroom-notes-11-jul-2026/ |
+| 9 Jul 2026 | Building RAG with relational databases (schema understanding, NL-to-query); SQLDatabaseToolkit; NoSQL (MongoDB) | https://directai.blog/2026/07/09/gen-ai-developer-classroom-notes-09-jul-2026/ |
+| 8 Jul 2026 | Building the first simple RAG pipeline | https://directai.blog/2026/07/08/gen-ai-developer-classroom-notes-08-jul-2026/ |
+| 7 Jul 2026 | Embeddings (Word2Vec origins, embedding models); Vector databases (Chroma, FAISS, pgvector, MongoDB, Pinecone, Weaviate, cloud providers); indexing pipeline exercise | https://directai.blog/2026/07/07/gen-ai-developer-classroom-notes-07-jul-2026/ |
+| 6 Jul 2026 | Chunking/splitting strategies in RAG; chunk overlap; metadata during load-and-split | https://directai.blog/2026/07/06/gen-ai-developer-classroom-notes-06-jul-2026/ |
+| 4 Jul 2026 | Document and Document Loaders (text, PDF, CSV, directory loaders) | https://directai.blog/2026/07/04/gen-ai-developer-classroom-notes-04-jul-2026/ |
+| 2 Jul 2026 | Setting up GCP with LangChain (gcloud SDK, auth, Vertex AI project setup); ChatPromptTemplate; Output Parsers | https://directai.blog/2026/07/02/gen-ai-developer-classroom-notes-02-jul-2026/ |
+| 30 Jun 2026 | Runnable base class and its 4 methods (invoke, ainvoke, batch, stream); LCEL chains; RAG phases (indexing vs retrieval); vector databases and key RAG terms | https://directai.blog/2026/06/30/gen-ai-developer-classroom-notes-30-jun-2026/ |
+| 29 Jun 2026 | Chaining with LCEL; prompts (system/user); LangChain message types (SystemMessage, HumanMessage, AIMessage, ToolMessage); first LLM interaction setup with Gemini | https://directai.blog/2026/06/29/gen-ai-developer-classroom-notes-29-jun-2026/ |
+| 27 Jun 2026 | Vectors and vector arithmetic (king − man + woman = queen analogy); intro to vector databases; RAG trailer/overview | https://directai.blog/2026/06/27/gen-ai-developer-classroom-notes-27-jun-2026/ |
 
-## Overall RAG Learning Sequence
+*Topics above are taken directly from each post's actual heading/content, not just the source list's group label.*
 
-### 1. Foundations — 27 June to 2 July
+---
 
-Vectors → LangChain chaining → Runnable interface → RAG architecture → GCP and LangChain setup.
+## Agentic AI Topic Group
 
-### 2. Data Ingestion — 4 to 6 July
-
-Document loaders → loading files → document chunking → chunk overlap → metadata.
-
-### 3. Embeddings and Retrieval — 7 to 9 July
-
-Embedding models → vector databases → indexing pipeline → first RAG application → structured-data RAG.
-
-### 4. Production Document Processing — 11 to 16 July
-
-PDF text and image extraction → multimodal RAG → section-aware chunking → recursive splitting → vector indexes and distance metrics.
-
-### 5. Application and Quality — 21 to 25 July
-
-Dense, sparse, and hybrid retrieval → Streamlit UI → DeepEval testing → document update and re-indexing strategies.
-
-# Gen AI Developer Classroom Topics Summary
-
-## Foundation For Gen AI
-
-| Class Date | Blog URL | Topics Covered |
+| Class Date | Topics Covered | Blog URL |
 |---|---|---|
-| 23-Jun-2026 | https://directai.blog/2026/06/23/gen-ai-developer-classroom-notes-23-jun-2026/ | Introduction to LLMs, next-token prediction, probability distributions, temperature, prompting, transformers, SDKs (OpenAI/Gemini/Claude), LangChain overview |
-| 26-Jun-2026 | https://directai.blog/2026/06/26/gen-ai-developer-classroom-notes-26-jun-2026/ | How LLMs understand prompts, tokenization, embeddings, transformers, probability-based output generation |
-
-## Deep Agents
-
-| Class Date | Blog URL | Topics Covered |
-|---|---|---|
-| 21-May-2026 | https://directai.blog/2026/05/21/gen-ai-developer-classroom-notes-21-may-2026/ | Course overview, RAG, vector databases, agents, MCP, Deep Agents, fine-tuning, governance, guardrails, grounding, deployment, GenAI ecosystem |
-| 25-May-2026 | https://directai.blog/2026/05/25/gen-ai-developer-classroom-notes-25-may-2026/ | Journey into agents, model types (self-hosted/cloud/vendor), credentials, SDKs, LangChain abstractions |
-| 26-May-2026 | https://directai.blog/2026/05/26/gen-ai-developer-classroom-notes-26-may-2026/ | LLM fundamentals, multimodal models, tool calling, ReAct agents, context limits, context engineering, hallucinations, guardrails |
-| 27-May-2026 | https://directai.blog/2026/05/27/gen-ai-developer-classroom-notes-27-may-2026/ | Environment setup, cloud SDKs, authentication, Gemini connectivity, LangChain basics, first LLM application |
-| 29-May-2026 | https://directai.blog/2026/05/29/gen-ai-developer-classroom-notes-29-may-2026/ | AWS Bedrock integration, LangChain agents, tool creation, calculator agent example, agent architecture |
-| 04-Jun-2026 | https://directai.blog/2026/06/04/gen-ai-developer-classroom-notes-04-jun-2026/ | Deep Agents introduction, planning, todos, skills, subagents, filesystems, agent customization |
-| 05-Jun-2026 | https://directai.blog/2026/06/05/gen-ai-developer-classroom-notes-05-jun-2026/ | Deep Agent internals, orchestration, subagents, backends, middleware, travel planner example |
-| 08-Jun-2026 | https://directai.blog/2026/06/08/gen-ai-developer-classroom-notes-08-jun-2026/ | LangGraph Studio setup, LangSmith configuration, Deep Agent project creation, tools, middleware |
-| 09-Jun-2026 | https://directai.blog/2026/06/09/gen-ai-developer-classroom-notes-09-jun-2026/ | Middleware concepts, AgentMiddleware, todo-list middleware, travel planning agent workflow |
-| 11-Jun-2026 | https://directai.blog/2026/06/11/gen-ai-developer-classroom-notes-11-jun-2026/ | Deep Agent backends, StateBackend, FileSystemBackend, StoreBackend, CompositeBackend, article writer example |
-| 12-Jun-2026 | https://directai.blog/2026/06/12/gen-ai-developer-classroom-notes-12-jun-2026/ | Skills in Deep Agents, SKILL.md, FileSystemBackend integration, skill discovery and execution |
-| 15-Jun-2026 | https://directai.blog/2026/06/15/gen-ai-developer-classroom-notes-15-jun-2026/ | Advanced skills examples, subagents, subagent implementation patterns |
-| 17-Jun-2026 | https://directai.blog/2026/06/17/gen-ai-developer-classroom-notes-17-jun-2026/ | Subagents continuation, dictionary-based subagents, compiled LangGraph subagents, entrance-test generator example |
-| 18-Jun-2026 | https://directai.blog/2026/06/18/gen-ai-developer-classroom-notes-18-jun-2026/ | Structured output, response formats, async subagents, parallel execution, LangGraph multi-agent architecture |
-| 21-Jun-2026 | https://directai.blog/2026/06/21/gen-ai-developer-classroom-notes-21-jun-2026/ | Async subagents, context engineering, context compression, context isolation, memory management, customer churn agent project |
-| 19-Jul-2026 | https://directai.blog/2026/07/19/gen-ai-developer-classroom-notes-19-jul-2026/ | Customer churn signalling agent, synthetic data generation, SQLite setup, SQL agents, subagent design, retention analytics |
-
-# MCP and Foundation for Gen AI - Topics Summary
-
-## MCP
-
-| Class Date | Blog URL | Topics Covered |
-|---|---|---|
-| 23-May-2026 | https://directai.blog/2026/05/23/gen-ai-developer-classroom-notes-23-may-2026/ | Library MCP implementation, MCP Inspector, MCP client setup, REST API to MCP design, OAuth/JWT authorization, Docker deployment |
-| 20-May-2026 | https://directai.blog/2026/05/20/gen-ai-developer-classroom-notes-20-may-2026/ | MCP enhancements, library MCP exercises, issue_book implementation, top-performing books analytics |
-| 19-May-2026 | https://directai.blog/2026/05/19/gen-ai-developer-classroom-notes-19-may-2026/ | College Library MCP design, librarian/student workflows, MCP tools and resources, database schema, analytics and reporting |
-| 17-May-2026 | https://directai.blog/2026/05/17/gen-ai-developer-classroom-notes-17-may-2026/ | MCP client development with FastMCP, LangChain integration, AI agent using MCP servers |
-| 16-May-2026 | https://directai.blog/2026/05/16/gen-ai-developer-classroom-notes-16-may-2026/ | Library MCP, MySQL connectivity, database operations, MCP integration with Claude |
-| 14-May-2026 | https://directai.blog/2026/05/14/gen-ai-developer-classroom-notes-14-may-2026-2/ | Enterprise MCP deployment, Docker containers, MySQL, phpMyAdmin, environment variables, database integration |
-
-## Foundation For Gen AI
-
-| Class Date | Blog URL | Topics Covered |
-|---|---|---|
-| 21-Apr-2026 | https://directai.blog/2026/04/21/gen-ai-developer-classroom-notes-21-apr-2026/ | AI foundations, Machine Learning, Neural Networks, Deep Learning, Vector Representations, GPUs, LLM deployment approaches |
-| 22-Apr-2026 | https://directai.blog/2026/04/22/gen-ai-developer-classroom-notes-22-apr-2026/ | LLM fundamentals, next-token prediction, multimodal AI (text, image, audio, video, code), token generation process |
-| 23-Apr-2026 | https://directai.blog/2026/04/23/gen-ai-developer-classroom-notes-23-apr-2026/ | LLM training pipeline, supervised fine-tuning (SFT), RLHF, distillation, reasoning models |
-| 26-Apr-2026 | https://directai.blog/2026/04/26/gen-ai-developer-classroom-notes-26-apr-2026/ | Tool calling, interaction with external systems, MCP fundamentals, MCP client-server architecture, MCP ecosystem and use cases |
+| 7 Jun 2026 | Customer Support Tickets and grievance project — adding utils, state, SQL agent service, and a LangGraph graph; visualizing/fixing the graph in `langgraph dev` | https://directai.blog/2026/06/07/gen-ai-developer-classroom-notes-07-jun-2026/ |
+| 27 Apr 2026 | Customer Support Tickets and grievance — setting up the customer care Postgres DB with Docker/Docker Compose; SQLDatabaseToolkit + LangGraph natural-language DB queries | https://directai.blog/2026/04/27/gen-ai-developer-classroom-notes-27-apr-2026/ |
+| 22 Apr 2026 | Sub graphs in LangGraph | https://directai.blog/2026/04/22/gen-ai-developer-classroom-notes-22-apr-2026-3/ |
+| 19 Apr 2026 | Customer Support Tickets and grievance — case types (known/new/serious issues), candidate domains, MVP scope; things to learn (pause/resume workflows, human-in-the-loop, sub graphs, supervisor, langgraph-client, REST API exposure) | https://directai.blog/2026/04/19/gen-ai-developer-classroom-notes-19-apr-2026-2/ |
+| 18 Apr 2026 | Long-term memory in LangGraph (Runtime, store, Namespace) vs short-term memory; small capstone ideas (customer support, application failure analysis, proposal processing) | https://directai.blog/2026/04/18/gen-ai-developer-classroom-notes-18-apr-2026/ |
+| 15 Apr 2026 | LangGraph primitives — threads, config/thread_id, checkpointer, InMemorySaver, multi-session scenarios | https://directai.blog/2026/04/15/gen-ai-developer-classroom-notes-15-apr-2026-2/ |
+| 14 Apr 2026 | MessagesState shortcut and built-in add_messages reducer; making stateless graph invocations stateful (memory, checkpoints, threads) | https://directai.blog/2026/04/14/gen-ai-developer-classroom-notes-14-apr-2026/ |
+| 11 Apr 2026 | ReAct (Reasoning + Acting) technique; using LLMs in LangGraph with ToolNode; building and fixing a basic ReAct loop | https://directai.blog/2026/04/11/gen-ai-developer-classroom-notes-11-apr-2026/ |
+| 9 Apr 2026 | Conditional edges and loops in LangGraph | https://directai.blog/2026/04/09/gen-ai-developer-classroom-notes-09-apr-2026/ |
+| 7 Apr 2026 | LangGraph partial state updates at nodes; parallel graphs; handling state-update conflicts with reducers (operator.add, custom reducer) | https://directai.blog/2026/04/07/gen-ai-developer-classroom-notes-07-apr-2026/ |
+| 6 Apr 2026 | Intro to LangGraph (StateGraph, state, nodes, edges); building the first LangGraph app; running with `langgraph dev` / LangGraph Studio | https://directai.blog/2026/04/06/gen-ai-developer-classroom-notes-06-apr-2026/ |
+| 4 Apr 2026 | Tools in LangChain continued (@tool decorator, docstrings); third-party tools/toolkits; Tavily internet search; Yahoo Finance stock tool | https://directai.blog/2026/04/04/gen-ai-developer-classroom-notes-04-apr-2026-2/ |
+| 2 Apr 2026 | Tool calling fundamentals (bind_tools, ToolMessage); defining tools with @tool, type hints, docstrings; LangChain's create_agent (built on LangGraph) | https://directai.blog/2026/04/02/gen-ai-developer-classroom-notes-02-apr-2026/ |
+| 1 Apr 2026 | LangChain Prompt Templates (BasePromptTemplate); exercise building a simple chain for "top n facts about a topic" | https://directai.blog/2026/04/01/gen-ai-developer-classroom-notes-01-apr-2026/ |
+| 31 Mar 2026 | LangChain framework overview (Python/JS support, Runnable base class, BaseChatModel, message types, BasePromptTemplate); LangChain package structure (core, community, vendor packages); first project using GCP Vertex models | https://directai.blog/2026/03/31/gen-ai-developer-classroom-notes-31-mar-2026/ |
+| 29 Mar 2026 | Configuring models from AWS Bedrock (IAM, region, ChatBedrockConverse) and Azure AI Foundry (az login, serverless models, LangChain/LangGraph integration) | https://directai.blog/2026/03/29/gen-ai-developer-classroom-notes-29-mar-2026/ |
+| 28 Mar 2026 | Configuring the dev system for LLMs (git, python, uv, VS Code, GCP/AWS/Azure CLIs); enabling and calling Vertex AI (gemini-2.5-flash-lite) via LangChain | https://directai.blog/2026/03/28/gen-ai-developer-classroom-notes-28-mar-2026/ |
+| 25 Mar 2026 | AI Agents vs simple rule-based chatbots; autonomous multi-step agentic workflows and multi-agent systems; deep agents (plans/skills, todos); customer support agent example; agent use cases in a university setting | https://directai.blog/2026/03/25/gen-ai-developer-classroom-notes-25-mar-2026/ |
+| 24 Mar 2026 | Tool calling by LLMs — why it's needed (real-time data like stock price, weather, news); simulated agent–LLM tool-call exercises | https://directai.blog/2026/03/24/gen-ai-developer-classroom-notes-24-mar-2026/ |
+| 23 Mar 2026 | Prompt engineering continued — Chain of Thought prompting, multiple-answer/plan-evaluation prompts, anatomy of a good prompt (role, task, audience, examples, constraints, output format); context engineering and memory (short/long term) | https://directai.blog/2026/03/23/gen-ai-developer-classroom-notes-23-mar-2026/ |
+| 20 Mar 2026 | Writing effective prompts — clear/explicit prompts, structured prompting, few-shot prompting, role-based prompting exercise | https://directai.blog/2026/03/20/gen-ai-developer-classroom-notes-20-mar-2026/ |
+| 18 Mar 2026 | Writing effective prompts — clear/explicit prompts and structured prompting (partial repeat of the 20-Mar session) | https://directai.blog/2026/03/18/gen-ai-developer-classroom-notes-18-mar-2026-2/ |
+| 17 Mar 2026 | LLM terms (temperature, context length, tokens); LLM cost models (open-source vs proprietary); cloud LLM hosting (GCP Vertex, AWS Bedrock, Azure AI Foundry) and available models; lab credits plan; prompt engineering resources | https://directai.blog/2026/03/17/gen-ai-developer-classroom-notes-17-mar-2026/ |
+| 16 Mar 2026 | LLM evolution (AI → ML → Neural Networks → Deep Learning → NLP → LLMs); transformers and next-word prediction; embeddings and semantic search | https://directai.blog/2026/03/16/gen-ai-developer-classroom-notes-16-mar-2026/ |
+| 14 Mar 2026 | ⚠️ Source link is mismatched — it points to an older "How LLMs Work" post (Transformers, Attention, Temperature, Word Embeddings, Foundational Models like GPT/BERT) dated 14 Feb 2025, not a Mar 2026 session | https://directai.blog/2025/02/14/gen-ai-classroom-notes-14-02-2025/ |
+| 13 Mar 2026 | Using AI to learn (ChatGPT, Claude, Gemini, NotebookLM); anatomy of a basic prompt (role, understanding level, question, constraints); example study-plan prompt | https://directai.blog/2026/03/13/gen-ai-developer-classroom-notes-13-mar-2026/ |
