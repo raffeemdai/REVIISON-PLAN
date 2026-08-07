@@ -430,6 +430,186 @@ The important point is that when we say a model has "learned something," that le
 After the Transformer processes the input using these learned parameters, the final layer produces **logits**.
 
 ---
+# LLM Generation Parameters — Simple Interview Notes
+
+Plain-English explanations for each parameter. No formulas — just what it does, why it matters, and a one-line way to say it in an interview.
+
+---
+
+## 0. The Big Picture (say this first if asked to explain generation)
+
+> "When an LLM generates text, at every single step it's not just picking the 'best' next word — it's looking at a ranked list of possible next words, each with a confidence score. These parameters control **how that list gets narrowed down** and **which word actually gets picked** from it. A few of them also control **when the model should stop talking**."
+
+That's really it. Everything below is a variation on one of those two ideas: *narrowing the choices* or *deciding when to stop*.
+
+---
+
+## 1. Max Tokens
+
+**One-liner:** "The word limit for the response."
+
+**Simple explanation:**
+It's a hard cutoff on how long the response can be. Once the model hits that limit, it stops immediately — even if it was in the middle of a sentence.
+
+**Why it matters:**
+- Too low → answer gets cut off awkwardly.
+- Too high → you might pay for/wait for more than you need.
+
+**Interview soundbite:**
+> "Max tokens is just a length cap — it doesn't change what the model says, only how much of it you let it finish saying."
+
+---
+
+## 2. Temperature
+
+**One-liner:** "How random or safe the model's word choices are."
+
+**Simple explanation:**
+Think of the model as having a shortlist of possible next words, each more or less "confident." Temperature controls how much it's willing to gamble on a less-obvious choice.
+
+- **Low temperature** → always picks the safest, most obvious word. Predictable, focused, sometimes boring.
+- **High temperature** → more willing to pick surprising, creative words. More interesting, but riskier — can go off the rails.
+
+**Analogy:**
+> "It's like asking someone a question — at low temperature they give you the textbook answer every time. At high temperature they start improvising and going off-script."
+
+**When to use what:**
+- Low temperature → coding, facts, customer support.
+- High temperature → brainstorming, creative writing, poetry.
+
+**Interview soundbite:**
+> "Temperature controls the model's willingness to take risks with word choice — low is predictable, high is creative but noisier."
+
+---
+
+## 3. Top-k
+
+**One-liner:** "Only consider the top K most likely next words."
+
+**Simple explanation:**
+Before picking a word, the model narrows its options down to a fixed number — say, the top 10 most likely candidates — and only chooses from that shortlist. Everything else is thrown away, no matter how the rest of the list looks.
+
+**Analogy:**
+> "It's like a hiring manager who always looks at exactly the top 5 resumes, no matter how many great candidates there really are or aren't."
+
+**Trade-off:**
+- Too small K → responses feel repetitive and robotic.
+- Reasonable K → keeps things focused without being too rigid.
+
+**Interview soundbite:**
+> "Top-k limits the model to picking from a fixed number of top candidates — it's a simple, blunt way to cut out unlikely words."
+
+---
+
+## 4. Top-p (Nucleus Sampling)
+
+**One-liner:** "Only consider enough top words to cover, say, 90% of the confidence."
+
+**Simple explanation:**
+Instead of a fixed number of words like top-k, top-p keeps adding the next most-likely words until their combined confidence adds up to a target percentage (e.g., 90%). Then it picks from just that group.
+
+**Why it's smarter than top-k:**
+It automatically adjusts. If the model is very sure about the next word, the shortlist might just be 1–2 words. If the model is unsure, the shortlist naturally grows to include more options. Top-k can't do that — it always uses the same fixed count.
+
+**Analogy:**
+> "Instead of always looking at exactly 5 resumes, the hiring manager keeps reading resumes until they've covered '90% of the good candidates' — sometimes that's 2 resumes, sometimes it's 15, depending on how competitive the pool is."
+
+**Interview soundbite:**
+> "Top-p is the adaptive version of top-k — instead of a fixed count of words, it uses a fixed amount of confidence."
+
+---
+
+## 5. Frequency Penalty
+
+**One-liner:** "Discourages the model from repeating the same words too much."
+
+**Simple explanation:**
+The more a word has already been used in the response, the more the model gets discouraged from using it again. The penalty builds up the more times a word repeats.
+
+**Analogy:**
+> "Like a teacher telling a student, 'You've already used the word "amazing" four times — try something else.' The more you overuse a word, the stronger the nudge to stop."
+
+**When to use it:**
+- Turn it up for summaries/reports where you don't want redundant phrasing.
+- Turn it down (or make it negative) if some repetition is intentional, like in poetry.
+
+**Interview soundbite:**
+> "Frequency penalty punishes words based on how *often* they've already shown up — the more repeats, the bigger the penalty."
+
+---
+
+## 6. Presence Penalty
+
+**One-liner:** "Encourages the model to bring in new words/topics it hasn't used yet."
+
+**Simple explanation:**
+This one doesn't care *how many times* a word has been repeated — it only checks *has this word shown up at all yet?* If yes, it gets a small, flat penalty, encouraging the model to explore something new instead.
+
+**How it's different from frequency penalty:**
+- Frequency penalty = "you've used this word 5 times, stop."
+- Presence penalty = "you've used this word even once — try mixing in something new."
+
+**Analogy:**
+> "It's like a brainstorming coach saying 'you already mentioned that idea — what's something you haven't brought up yet?' — it doesn't matter if you mentioned it once or five times, the nudge is the same."
+
+**When to use it:**
+Great for brainstorming or idea generation, where you want breadth of topics rather than depth on one thing.
+
+**Interview soundbite:**
+> "Presence penalty nudges the model toward new topics it hasn't touched yet, regardless of how many times it repeated something else."
+
+---
+
+## 7. Stop Sequences
+
+**One-liner:** "Specific words/symbols that tell the model 'stop right here.'"
+
+**Simple explanation:**
+You give the model a list of trigger strings (like `"\n\n"`, `"END"`, or `"}"`). The moment the model produces one of those, generation halts immediately — no matter what else it might have been about to say.
+
+**Why it matters:**
+Super useful when you need clean, structured output — like JSON — where you don't want the model to add extra commentary after the actual answer is done.
+
+**Analogy:**
+> "It's like giving someone a magic word — the second they say it, they have to stop talking, mid-thought if necessary."
+
+**Interview soundbite:**
+> "Stop sequences are a hard, rule-based stop trigger — unlike max tokens, which is just a length cap, this stops generation based on *content*, not count."
+
+---
+
+## Quick Comparison Table (great for a whiteboard answer)
+
+| Parameter | What it controls | Simple mental model |
+|---|---|---|
+| Max tokens | Response length | "Word limit" |
+| Temperature | Randomness/creativity | "How much it gambles on unusual words" |
+| Top-k | Candidate pool (fixed size) | "Only look at the top K options" |
+| Top-p | Candidate pool (adaptive size) | "Only look at options covering X% confidence" |
+| Frequency penalty | Repetition (scales with count) | "Stop repeating that word so much" |
+| Presence penalty | Topic diversity (flat, one-time) | "Bring in something new" |
+| Stop sequences | Hard stop trigger | "Stop the moment you see this" |
+
+---
+
+## Likely Interview Questions + Simple Answers
+
+**Q: What's the difference between top-k and top-p?**
+> "Top-k always looks at a fixed number of word choices. Top-p instead looks at however many words it takes to cover a target confidence level — so it adjusts automatically depending on how sure the model is."
+
+**Q: What's the difference between frequency penalty and presence penalty?**
+> "Frequency penalty cares about *how many times* something's been repeated — the more repeats, the bigger the discouragement. Presence penalty is simpler — it just checks *has this been said before, yes or no* — and nudges toward new material either way."
+
+**Q: When would you use a low vs. high temperature?**
+> "Low temperature for anything that needs to be accurate and consistent — like code or factual Q&A. High temperature for anything creative — like brainstorming or storytelling — where you want variety over precision."
+
+**Q: Why would you use stop sequences instead of just max tokens?**
+> "Max tokens just cuts things off after a certain length, which can chop a sentence in half. Stop sequences let you end generation cleanly at a meaningful point — like right after a closing bracket in JSON — so the output stays clean and structured."
+
+**Q: Can you combine these parameters?**
+> "Yes, they're not exclusive — a typical setup might use a moderate temperature together with top-p to balance creativity and coherence, plus stop sequences to keep the output clean."
+
+---
 
 ## Q12. What are logits?
 
