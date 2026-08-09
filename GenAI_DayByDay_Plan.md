@@ -1,5 +1,162 @@
 
 
+# LLM / GenAI Preparation Roadmap
+
+
+
+## 1. LLMs
+
+- [ ] **What is an LLM?**
+- [ ] **Need for LLMs**
+- [ ] **What makes an LLM "large"?**
+- [ ] **How are LLMs built?**
+- [ ] **How to train LLM from scratch?**
+- [ ] **How do LLMs work?**
+- [ ] **7 LLM Generation Parameters**
+- [ ] **4 LLM Text Generation Strategies**
+- [ ] **3 Techniques to Train An LLM Using Another LLM**
+- [ ] **4 Ways to Run LLMs Locally**
+- [ ] **Transformer vs. Mixture of Experts in LLMs**
+
+---
+
+## 2. Prompt Engineering
+
+- [ ] **What is Prompt Engineering?**
+- [ ] **3 prompting techniques for reasoning in LLMs**
+- [ ] **Verbalized Sampling**
+- [ ] **JSON prompting for LLMs**
+
+---
+
+## 3. Fine-tuning
+
+- [ ] **What is Fine-tuning?**
+- [ ] **Issues with traditional fine-tuning**
+- [ ] **5 LLM Fine-tuning Techniques**
+- [ ] **Implementing LoRA From Scratch**
+- [ ] **How does LoRA work?**
+- [ ] **Implementation**
+- [ ] **Generate Your Own LLM Fine-tuning Dataset (IFT)**
+- [ ] **SFT vs RFT**
+- [ ] **Build a Reasoning LLM using GRPO [Hands On]**
+- [ ] **Bottleneck in Reinforcement Learning**
+- [ ] **The Solution: The OpenEnv Framework**
+- [ ] **Agent Reinforcement Trainer (ART)**
+
+---
+
+## 4. RAG
+
+- [ ] **What is RAG?**
+- [ ] **What are vector databases?**
+- [ ] **The purpose of vector databases in RAG**
+- [ ] **Workflow of a RAG system**
+- [ ] **5 chunking strategies for RAG**
+- [ ] **Prompting vs. RAG vs. Finetuning**
+- [ ] **8 RAG architectures**
+- [ ] **RAG vs Agentic RAG**
+- [ ] **Traditional RAG vs HyDE**
+- [ ] **Full-model Fine-tuning vs. LoRA vs. RAG**
+- [ ] **RAG vs REFRAG**
+- [ ] **RAG vs CAG**
+- [ ] **RAG, Agentic RAG and AI Memory**
+
+---
+
+## 5. Context Engineering
+
+- [ ] **What is Context Engineering?**
+- [ ] **Context Engineering for Agents**
+- [ ] **6 Types of Contexts for AI Agents**
+- [ ] **Build a Context Engineering workflow**
+- [ ] **Context Engineering in Claude Skills**
+- [ ] **Manual RAG Pipeline vs Agentic Context Engineering**
+
+---
+
+## 6. AI Agents
+
+- [ ] **What is an AI Agent?**
+- [ ] **Agent vs. LLM vs RAG**
+- [ ] **Building blocks of AI Agents**
+- [ ] **Memory Types in AI Agents**
+- [ ] **Importance of Memory for Agentic Systems**
+- [ ] **5 Agentic AI Design Patterns**
+- [ ] **ReAct Implementation from Scratch**
+- [ ] **5 Levels of Agentic AI Systems**
+- [ ] **30 Must-Know Agentic AI Terms**
+- [ ] **4 Layers of Agentic AI**
+- [ ] **7 Patterns in Multi-Agent Systems**
+- [ ] **Agent2Agent (A2A) Protocol**
+- [ ] **Agent-User Interaction Protocol (AG-UI)**
+- [ ] **Agent Protocol Landscape**
+- [ ] **Agent optimization with Opik**
+- [ ] **AI Agent Deployment Strategies**
+
+---
+
+## 7. MCP
+
+- [ ] **What is MCP?**
+- [ ] **Why was MCP created?**
+- [ ] **MCP Architecture Overview**
+- [ ] **Tools, Resources and Prompts**
+- [ ] **API versus MCP**
+- [ ] **MCP versus Function calling**
+- [ ] **6 Core MCP Primitives**
+- [ ] **Creating MCP Agents**
+- [ ] **Common Pitfall: Tool Overload**
+- [ ] **Solution: The Server Manager**
+- [ ] **Creating MCP Client**
+- [ ] **MCP Server**
+
+---
+
+## 8. LLM Optimization
+
+- [ ] **Why do we need optimization?**
+- [ ] **Model Compression**
+- [ ] **Regular ML Inference vs. LLM Inference**
+- [ ] **KV Caching in LLMs**
+
+---
+
+## 9. LLM Evaluation
+
+- [ ] **G-eval**
+- [ ] **LLM Arena-as-a-Judge**
+- [ ] **Multi-turn Evals for LLM Apps**
+- [ ] **Evaluating MCP-powered LLM apps**
+- [ ] **Component-level Evals for LLM Apps**
+- [ ] **Red teaming LLM apps**
+
+---
+
+## 10. LLM Deployment
+
+- [ ] **Why is LLM Deployment Different?**
+- [ ] **vLLM: An LLM Inference Engine**
+- [ ] **LitServe**
+
+---
+
+## 11. LLM Observability
+
+- [ ] **Evaluation vs Observability**
+- [ ] **Implementation**
+
+---
+
+# Recommended Study Order
+
+Follow the sections exactly in this sequence:
+
+**LLMs → Prompt Engineering → Fine-tuning → RAG → Context Engineering → AI Agents → MCP → LLM Optimization → LLM Evaluation → LLM Deployment → LLM Observability**
+
+This order moves from foundational LLM concepts to application development, agentic systems, optimization, evaluation, deployment, and production monitoring.
+
+
 
 
 
