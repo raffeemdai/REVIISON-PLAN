@@ -55,7 +55,7 @@ Embedding: Converts each token into a list of numbers (a vector). Similar-meanin
 
 Positional Encoding: Adds information about word order to each token's vector. This matters because the same words in a different order can mean something completely different.
 
-Attention: Lets each word look at other words in the sentence to understand context. For example, it helps the model figure out "bank" means riverbank or money-bank based on nearby words.
+Attention: Attention helps a word understand the words next to it, so the model knows the right meaning. For example, "bank" means something different in "bank of river" vs "money in the bank" — attention figures out which one based on nearby words..
 
 Softmax Layer: Takes the model's raw scores for possible next words and turns them into probabilities that add up to 1. The model then picks the next word based on these probabilities.
 
