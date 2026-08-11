@@ -49,7 +49,17 @@ The transformer diagram can look scary at first, but it breaks down into just th
 
 The transformer block is the most complex part. It's made of two components: **attention** and **feedforward**.
 
-![Transformer pipeline diagram]
+Tokenization: Tokenization means breaking your sentence into small pieces — like words or parts of words — so the model can understand and work with them one piece at a time.
+
+Embedding: Converts each token into a list of numbers (a vector). Similar-meaning tokens get similar numbers, so the model can understand meaning mathematically.
+
+Positional Encoding: Adds information about word order to each token's vector. This matters because the same words in a different order can mean something completely different.
+
+Attention: Lets each word look at other words in the sentence to understand context. For example, it helps the model figure out "bank" means riverbank or money-bank based on nearby words.
+
+Softmax Layer: Takes the model's raw scores for possible next words and turns them into probabilities that add up to 1. The model then picks the next word based on these probabilities.
+
+
 
 ## Tokenization
 
