@@ -2,16 +2,48 @@
 important chapters
 
 Ch 3 LangChain vs LangGraph
+
 Ch 4 Core Concepts
+
 Ch 5-8 Workflow Types
+
 Ch 10 Persistence
+
 Ch 17 Tools
+
 Ch 19 RAG
+
 Ch 20 HITL
+
 Ch 15-16 LangSmith
+
 Ch 21 Subgraphs
+
 Ch 22-24 Memory
+
 Ch 25 Planning Agent
+
+
+# LangGraph Interview Cheat Sheet
+
+## Chapter-wise Important Topics
+
+| Chapter | Chapter Name | Important Topics |
+|----------|-------------|------------------|
+| 3 | LangChain vs LangGraph | Stateful vs Stateless, Event-Driven Execution, Nested Workflows, Observability, Framework Selection, LangChain + LangGraph Together |
+| 4 | LangGraph Core Concepts | State, Nodes, Edges, Reducers, Execution Model, Supersteps, Message Passing, Workflow Patterns |
+| 5 | Sequential Workflows | StateGraph, START/END Nodes, Prompt Chaining, Graph Construction, invoke(), compile() |
+| 6 | Parallel Workflows | Parallel Execution, Reducers, Partial State Updates, Structured Output, State Merging |
+| 7 | Conditional Workflows | Routing Functions, add_conditional_edges(), Conditional Branching, Decision Logic |
+| 8 | Iterative (Looping) Workflows | Evaluation Loops, Feedback Loops, Evaluator-Optimizer Pattern, Max Iterations, Self-Improvement |
+| 10 | Persistence | Checkpointer, Checkpoints, Threads, Thread ID, MemorySaver, SqliteSaver, PostgresSaver, Time Travel, Fault Tolerance |
+| 15 | LangSmith Fundamentals | Observability, Tracing, Debugging, Monitoring, Project-Trace-Run Hierarchy, Evaluation |
+| 17 | Tools in LangGraph | ToolNode, @tool, bind_tools(), tools_condition(), Feedback Loop, Tool Calling Lifecycle |
+| 19 | RAG Integration | Embeddings, Chunking, Vector Store, Retriever, Similarity Search, RAG Tool, Agentic RAG |
+| 20 | Human-in-the-Loop (HITL) | interrupt(), Command(resume), Approval Workflows, Review/Edit Pattern, Escalation Pattern |
+| 21 | Subgraphs | Graph-in-Graph, Multi-Agent Systems, Failure Isolation, State Separation, Reusability |
+| 22 | Memory Fundamentals | LLM Statelessness, Context Window, In-Context Learning, STM vs LTM |
+| 23 | Short-Term 
 
 #################################################33333
 
