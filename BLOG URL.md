@@ -24,6 +24,7 @@ Ch 22-24 Memory
 Ch 25 Planning Agent
 
 
+
 # LangGraph Interview Cheat Sheet
 
 ## Chapter-wise Important Topics
@@ -43,7 +44,355 @@ Ch 25 Planning Agent
 | 20 | Human-in-the-Loop (HITL) | interrupt(), Command(resume), Approval Workflows, Review/Edit Pattern, Escalation Pattern |
 | 21 | Subgraphs | Graph-in-Graph, Multi-Agent Systems, Failure Isolation, State Separation, Reusability |
 | 22 | Memory Fundamentals | LLM Statelessness, Context Window, In-Context Learning, STM vs LTM |
-| 23 | Short-Term 
+| 23 | Short-Term Memory | Checkpointer, Threads, Conversation Buffer, Trimming, Deletion, Summarization |
+| 24 | Long-Term Memory | Memory Store, Namespace, Semantic Search, Episodic Memory, Semantic Memory, Procedural Memory |
+| 25 | Planning Agents | Planning vs Execution, Orchestrator-Worker Pattern, Dynamic Fanout, Send API, Reducer Pattern |
+
+---
+
+# Most Important Topics (High Interview Probability)
+
+| Rank | Topic | Related Chapters |
+|--------|--------|--------|
+| 1 | State Management | 3, 4 |
+| 2 | Reducers | 4, 6 |
+| 3 | Sequential Workflow | 5 |
+| 4 | Parallel Workflow | 6 |
+| 5 | Conditional Workflow | 7 |
+| 6 | Iterative Workflow | 8 |
+| 7 | Persistence & Thread ID | 10, 23 |
+| 8 | Tool Calling & ToolNode | 17 |
+| 9 | RAG Architecture | 19 |
+| 10 | Human-in-the-Loop | 20 |
+| 11 | LangSmith Observability | 15 |
+| 12 | Subgraphs | 21 |
+| 13 | STM vs LTM | 22, 23, 24 |
+| 14 | Planning Agents | 25 |
+
+---
+
+# Workflow Types (Must Know)
+
+| Workflow Type | Concept | Example |
+|---------------|----------|----------|
+| Sequential | One node after another | A → B → C |
+| Parallel | Multiple nodes simultaneously | A → (B, C, D) |
+| Conditional | Route based on decision | A → B or C |
+| Iterative | Loop until success | Generate → Evaluate → Improve |
+
+---
+
+# State Management
+
+| Topic | What to Know |
+|---------|-------------|
+| State | Shared memory across nodes |
+| Stateful Execution | Data flows from node to node |
+| TypedDict | Standard state definition |
+| State Propagation | Automatic state passing |
+| State Evolution | State changes over time |
+| State Access | Every node receives current state |
+
+Example:
+
+```python
+class State(TypedDict):
+    query: str
+    response: str
+```
+
+---
+
+# Reducers
+
+| Topic | What to Know |
+|---------|-------------|
+| Purpose | Handle parallel state updates |
+| Default Behavior | Replace old value |
+| Reducer Behavior | Merge or append values |
+| Annotated | Used for reducers |
+| operator.add | Common reducer |
+
+Example:
+
+```python
+messages: Annotated[list, add]
+```
+
+---
+
+# Persistence Topics
+
+| Topic | Description |
+|---------|-------------|
+| Checkpointer | Saves workflow state |
+| Checkpoint | Snapshot of state |
+| Thread ID | Unique conversation identifier |
+| MemorySaver | In-memory checkpointing |
+| SqliteSaver | SQLite persistence |
+| PostgresSaver | Production persistence |
+| RedisSaver | Scalable persistence |
+| Time Travel | Replay from checkpoint |
+| Fault Tolerance | Resume after failure |
+
+Example:
+
+```python
+config = {
+    "configurable": {
+        "thread_id": "123"
+    }
+}
+```
+
+---
+
+# Tool Calling Topics
+
+| Topic | What to Know |
+|---------|-------------|
+| ToolNode | Executes tool calls |
+| tools_condition | Determines Tool vs END |
+| bind_tools() | Binds tools to LLM |
+| Custom Tools | @tool decorator |
+| Prebuilt Tools | DuckDuckGo, Wikipedia, Tavily |
+| Feedback Loop | Tool → LLM → Tool → Final Answer |
+
+Tool Flow:
+
+```text
+User
+ ↓
+LLM
+ ↓
+ToolNode
+ ↓
+Tool
+ ↓
+LLM
+ ↓
+Answer
+```
+
+---
+
+# RAG Topics
+
+| Area | Topics |
+|--------|--------|
+| Document Processing | Document Loader, Chunking |
+| Embeddings | Text → Vector |
+| Storage | FAISS, Chroma, Pinecone |
+| Retrieval | Similarity Search, Top-K Retrieval |
+| Generation | Query + Context + LLM |
+| Agentic RAG | RAG Tool inside LangGraph |
+
+RAG Flow:
+
+```text
+Question
+ ↓
+Embedding
+ ↓
+Retriever
+ ↓
+Relevant Chunks
+ ↓
+LLM
+ ↓
+Answer
+```
+
+---
+
+# Human-in-the-Loop (HITL)
+
+| Topic | Description |
+|---------|-------------|
+| interrupt() | Pause execution |
+| Command(resume) | Resume execution |
+| Approval Workflow | Human approves actions |
+| Clarification Pattern | Ask user for clarification |
+| Escalation Pattern | Hand over to human |
+| Output Review | Human edits AI output |
+
+Example:
+
+```python
+decision = interrupt(...)
+```
+
+```python
+Command(resume="yes")
+```
+
+---
+
+# LangSmith Topics
+
+| Concept | Description |
+|----------|-------------|
+| Project | Complete application |
+| Trace | Single execution |
+| Run | Individual component execution |
+| Monitoring | Production metrics |
+| Evaluation | LLM quality checks |
+| Cost Tracking | Token usage & spend |
+| Latency Tracking | Response timings |
+| Debugging | Root cause analysis |
+
+Hierarchy:
+
+```text
+Project
+   ↓
+Trace
+   ↓
+Run
+```
+
+---
+
+# Subgraphs
+
+| Topic | Description |
+|----------|-------------|
+| Graph-in-Graph | Graph inside another graph |
+| Multi-Agent Systems | Each agent can be a subgraph |
+| Failure Isolation | One subgraph failure isolated |
+| State Separation | Independent state management |
+| Reusability | Reuse across workflows |
+
+### Method 1
+
+```python
+subgraph.invoke(...)
+```
+
+### Method 2
+
+```python
+parent.add_node(
+    "agent",
+    compiled_subgraph
+)
+```
+
+---
+
+# Memory Topics
+
+## Short-Term Memory (STM)
+
+| Topic | Description |
+|---------|-------------|
+| Conversation Buffer | Holds chat history |
+| Thread Scoped | Memory per conversation |
+| Checkpointer | Saves chat state |
+| Trimming | Keep recent messages |
+| Deletion | Remove old messages |
+| Summarization | Compress old history |
+
+---
+
+## Long-Term Memory (LTM)
+
+| Memory Type | Description | Example |
+|-------------|-------------|----------|
+| Episodic Memory | Past events | Last session user rejected plan A |
+| Semantic Memory | Facts & preferences | User prefers Python |
+| Procedural Memory | Strategies | Use window functions instead of subqueries |
+
+---
+
+## Long-Term Memory Components
+
+| Topic | Description |
+|---------|-------------|
+| Memory Store | Stores memories |
+| Namespace | Organizes memories |
+| Semantic Search | Retrieves relevant memories |
+| Embeddings | Memory vectorization |
+| PostgresStore | Production memory storage |
+
+---
+
+# Planning Agents
+
+| Component | Purpose |
+|------------|----------|
+| Planner | Creates execution plan |
+| Orchestrator | Manages workers |
+| Workers | Execute tasks |
+| Fanout | Create workers dynamically |
+| Send API | Spawn worker nodes |
+| Reducer | Merge worker outputs |
+| Planning Phase | Think first |
+| Execution Phase | Act later |
+
+Flow:
+
+```text
+Goal
+ ↓
+Plan
+ ↓
+Execute
+```
+
+Orchestrator-Worker Pattern:
+
+```text
+Topic
+ ↓
+Planner
+ ↓
+Tasks
+ ↓
+Workers
+ ↓
+Reducer
+ ↓
+Output
+```
+
+---
+
+# Top 10 Topics To Master Before Interview
+
+| Rank | Topic |
+|--------|--------|
+| 1 | State Management |
+| 2 | Reducers |
+| 3 | Workflow Types |
+| 4 | Persistence + Thread ID |
+| 5 | Tool Calling + ToolNode |
+| 6 | RAG |
+| 7 | Human-in-the-Loop (HITL) |
+| 8 | LangSmith |
+| 9 | Subgraphs |
+| 10 | STM vs LTM + Planning Agents |
+
+---
+
+# Interview Questions Mapping
+
+| Topic | Common Questions |
+|---------|-----------------|
+| State | What is State in LangGraph? |
+| Reducers | Why are Reducers required? |
+| Sequential | Explain Sequential Workflow |
+| Parallel | Explain Parallel Workflow |
+| Conditional | Explain add_conditional_edges() |
+| Iterative | How do you create loops in LangGraph? |
+| Persistence | What is a Checkpointer? |
+| Tools | Explain ToolNode and Tool Calling |
+| RAG | How would you implement RAG in LangGraph? |
+| HITL | How does interrupt() work? |
+| LangSmith | Difference between Project, Trace, Run |
+| Subgraphs | What are Subgraphs and why use them? |
+| STM/LTM | Difference between STM and LTM |
+| Planning Agents | Explain Orchestrator-Worker Pattern |
 
 #################################################33333
 
