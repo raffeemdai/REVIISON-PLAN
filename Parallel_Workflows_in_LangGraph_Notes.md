@@ -3,6 +3,12 @@
 **Theory · Full Code Walkthrough · Interview Q&A**
 Based on: Cricket Batsman Workflow (non-LLM) & UPSC Essay Evaluation Workflow (LLM-based)
 
+
+
+https://github.com/campusx-official/langgraph-tutorials/blob/main/4_batsman_workflow.ipynb
+
+https://github.com/campusx-official/langgraph-tutorials/blob/main/5_UPSC_essay_workflow.ipynb
+
 ---
 
 ## Table of Contents
