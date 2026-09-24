@@ -2,6 +2,7 @@
 
 refer  https://memgraph.com/blog/cypher-cheat-sheet
 
+APOC:
 
 https://neo4j.com/blog/developer/intro-user-defined-procedures-apoc/
 
@@ -13,6 +14,8 @@ https://neo4j.com/labs/apoc/
 
 https://www.youtube.com/playlist?list=PL9Hl4pk2FsvXEww23lDX_owoKoqqBQpdq
 
+Graph data science:
+https://graphacademy.neo4j.com/courses/gds-fundamentals
 
 . GraphGists (community-contributed, hands-on tutorials with live/interactive graphs)
 ## 1. How to Think About Neo4j if You Know Snowflake
