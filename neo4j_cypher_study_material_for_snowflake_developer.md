@@ -2,6 +2,19 @@
 
 refer  https://memgraph.com/blog/cypher-cheat-sheet
 
+
+https://neo4j.com/blog/developer/intro-user-defined-procedures-apoc/
+
+https://neo4j.com/videos/?query=apoc
+
+https://www.classcentral.com/classroom/youtube-neo4j-apoc-utility-library-howto-series-61357/61e627307ce8b
+
+https://neo4j.com/labs/apoc/
+
+https://www.youtube.com/playlist?list=PL9Hl4pk2FsvXEww23lDX_owoKoqqBQpdq
+
+
+. GraphGists (community-contributed, hands-on tutorials with live/interactive graphs)
 ## 1. How to Think About Neo4j if You Know Snowflake
 
 If you are coming from Snowflake, the easiest mental model is:
