@@ -20,6 +20,183 @@ Graph data science:
 https://graphacademy.neo4j.com/courses/gds-fundamentals
 
 . GraphGists (community-contributed, hands-on tutorials with live/interactive graphs)
+
+
+# Neo4j Fundamentals — Notes
+
+## 1. What is Neo4j?
+https://graphacademy.neo4j.com/courses/neo4j-fundamentals/1-graph-thinking/1-what-is-neo4j
+
+- **Neo4j** is a **graph database** — data is stored as a graph made of **nodes** and **relationships**.
+- Graph databases shine when the **connections between data** matter as much as the data itself.
+- Neo4j uses a **labelled property graph** model.
+
+### Core building blocks
+
+| Element | What it is | Example |
+|---|---|---|
+| **Node** | A circle/vertex — usually represents an object or entity | A person, a company, a location |
+| **Label** | Categorizes a node (what "type" it is) | `Person`, `Company`, `Location` |
+| **Relationship** | A line/edge — describes how two nodes are connected | `WORKS_AT`, `FOUNDED_IN` |
+| **Property** | Key–value data stored on nodes or relationships | `first name`, `last name`, `position` |
+
+### Key details
+
+- **Nodes** can have **multiple labels** (e.g. Michael is both `Person` and `Employee`).
+- Labels are usually a single noun (`Person`, `Product`, `Event`) and let you **distinguish/filter** between different types of nodes.
+- **Relationships** always have:
+  - a **type** (e.g. `WORKS_AT`)
+  - a **start node and an end node**
+  - a **direction** (e.g. "Michael works at Neo4j" ≠ "Neo4j works at Michael")
+- A node can have **multiple relationships**, and two relationships can represent a bidirectional connection (e.g. Michael `LOVES` Sarah / Sarah `LOVES` Michael) — you can't assume one direction implies the other.
+- **Properties** have a data type (integer, boolean, string, list, etc.) and can act as unique identifiers (keys) for a node label.
+- Nodes/relationships of the same type **don't need identical properties** — Neo4j is **schemaless**.
+
+> **Takeaway:** Neo4j gives equal priority to *data* and *relationships*, unlike traditional databases.
+
+### Example: nodes, labels, relationships & properties together
+
+```
+(Michael:Person:Employee {firstName: "Michael", lastName: "Faraday", born: "1791-09-22"})
+    -[:WORKS_AT {position: "Engineer"}]-> (Neo4j:Company {name: "Neo4j", website: "neo4j.com"})
+
+(Neo4j:Company) -[:FOUNDED_IN]-> (Sweden:Location {name: "Sweden", capital: "Stockholm"})
+
+(Sarah:Person {firstName: "Sarah", lastName: "Faraday"})
+```
+
+- **Properties can live on relationships too** — here `WORKS_AT` carries a `position` property.
+- This confirms nodes/relationships are flexible: `Michael` has `firstName`/`lastName`/`born`, while `Sarah` (also a `Person`) only has `firstName`/`lastName` — no need to match property sets.
+
+### Naming conventions worth remembering
+
+- **Node labels →** singular nouns: `Product`, `Event`, `Account`.
+- **Relationship types →** verbs, describing:
+  | Kind of connection | Example |
+  |---|---|
+  | Personal connection | `Person KNOWS Person`, `Person MARRIED_TO Person` |
+  | A fact | `Person LIVES_IN Location`, `Person OWNS Car`, `Person RATED Movie` |
+  | A hierarchy | `Parent PARENT_OF Child`, `Software DEPENDS_ON Library` |
+  | Any generic connection | `Entity CONNECTED_TO Entity` |
+
+---
+
+## 2. Why Graphs? (Relational vs Graph)
+
+- In **relational databases**, relationships are represented via **foreign keys and joins**, computed using indexes.
+- Problem: as data grows, the index grows, and **joins get slower** (related to Big O notation) — especially with:
+  - many-to-many relationships
+  - hierarchical data / trees
+  - paths of varying or unknown depth
+  - constantly changing datasets
+
+### NoSQL landscape (quick comparison)
+
+| Type | Strength |
+|---|---|
+| Document stores | Flexibility |
+| Wide-column stores | Scalability for large datasets |
+| Key-value stores | Simplicity, high performance |
+| **Graph databases** | Efficient modeling & querying of relationships |
+
+### How graphs solve it
+
+- When a relationship is created, Neo4j stores a **direct pointer** between the two nodes.
+- Reading data means **following pointers in memory** instead of relying on an index.
+- Result: **query time stays roughly constant**, regardless of overall database size.
+
+### When to use a graph database
+
+- Understanding relationships between entities
+- Self-referencing data (hierarchies)
+- Finding relationships of **varying/unknown depth**
+- Calculating routes/paths between points in a network
+
+---
+
+## 3. Graphs Are Everywhere (History & Use Cases)
+
+### Origin: Seven Bridges of Königsberg (1736)
+- Classic graph theory problem: can you cross all 7 bridges of the city exactly once without retracing steps?
+- **Euler** modeled land masses as **nodes** and bridges as **relationships/edges**.
+- He proved it was impossible (nodes need an even number of edges for such a path) — this laid the foundation of **graph theory**.
+
+### Real-world use cases
+
+1. **Customer Recommendations**
+   - Customers, products, categories connected via `PURCHASED` / `IN_CATEGORY`.
+   - Pattern: "customers who bought similar products also bought X" → drives recommendations.
+
+2. **Network & Security**
+   - Devices, users, servers connected via `LOGGED_INTO` / `CONNECTED_TO`.
+   - Helps detect **suspicious access patterns** (e.g. same user logging in from two places at once).
+
+3. **Fraud Detection**
+   - Transactions between accounts (`TRANSFERRED`) can form **cycles** (A → B → C → A).
+   - Cycles are hard to spot in tables but obvious in a graph — a strong fraud signal (money laundering).
+
+4. **Supply Chain**
+   - Suppliers → Parts → Products (`SUPPLIES`, `USED_IN`).
+   - A graph query can instantly show which products are affected if a supplier has a disruption.
+
+5. **Knowledge Graphs & Generative AI**
+   - AI agents need three types of memory, all representable as graphs:
+     - **Short-term memory** — sequence of conversation messages
+     - **Long-term memory** — knowledge graph of facts/entities across sessions
+     - **Reasoning memory** — audit trail linking reasoning steps to tool calls/entities
+   - Because all three live in one graph database, a single query can trace from a tool call → reasoning step → triggering message → referenced entity.
+   - Neo4j + GenAI combines **vector search**, **knowledge graphs**, and **data science**.
+
+---
+
+## 4. Cypher Basics
+
+- **Cypher** is Neo4j's query language for exploring/reading graph data.
+- Example dataset used: a **movies graph** with `Person`, `Movie`, `Genre` nodes and relationships like `ACTED_IN`, `DIRECTED`, `IN_GENRE`.
+
+### Example 1 — Find a node by property
+
+```cypher
+MATCH (p:Person {name: "Tom Hanks"})
+RETURN p
+```
+- Returns the single `Person` node with `name = "Tom Hanks"`.
+- Clicking the node shows its properties: `bio`, `born`, `bornIn`, `name`, etc.
+- Double-clicking a node expands its relationships (e.g. `ACTED_IN` → movie nodes).
+
+### Example 2 — Traverse a relationship
+
+```cypher
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie {title: "Toy Story"})
+RETURN p, m
+```
+- Finds all people who acted in the movie *Toy Story*.
+- Returns a **graph** result: the movie node + all connected `ACTED_IN` relationships/person nodes.
+
+### Example 3 — Traverse a different relationship type
+
+```cypher
+MATCH (m:Movie {title: "Toy Story"})-[:IN_GENRE]->(g:Genre)
+RETURN m, g
+```
+- Finds the genres of *Toy Story* (e.g. Adventure, Animation, Children).
+
+### Example 4 — Return tabular data instead of a graph
+
+```cypher
+MATCH (m:Movie {title: "Toy Story"})-[:IN_GENRE]->(g:Genre)
+RETURN m.title, g.name
+```
+- Returning **specific properties** (instead of whole nodes) gives back a **table**, not a graph visualization.
+
+---
+
+## Quick Recap
+
+- Graph = **nodes** (things) + **relationships** (connections) + **labels** (categories) + **properties** (data).
+- Graph databases avoid the join/index slowdown of relational databases by storing direct pointers between related nodes.
+- Graphs are useful anywhere relationships matter: recommendations, fraud detection, security, supply chains, AI knowledge graphs.
+- **Cypher** = Neo4j's query language, using `MATCH` (find), `RETURN` (output), and arrow syntax `-[:TYPE]->` to describe patterns.
 ## 1. How to Think About Neo4j if You Know Snowflake
 
 If you are coming from Snowflake, the easiest mental model is:
