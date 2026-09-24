@@ -3,6 +3,8 @@
 https://graphacademy.neo4j.com/categories/become-certified#curriculum
 
 refer  https://memgraph.com/blog/cypher-cheat-sheet
+https://dev.to/mangesh28/mastering-neo4j-cypher-a-practical-guide-to-graph-query-language-448k
+
 
 APOC:
 
