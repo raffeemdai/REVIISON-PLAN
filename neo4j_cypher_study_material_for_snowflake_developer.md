@@ -1,5 +1,7 @@
 # Neo4j Cypher Study Material for a Snowflake Developer
 
+refer  https://memgraph.com/blog/cypher-cheat-sheet
+
 ## 1. How to Think About Neo4j if You Know Snowflake
 
 If you are coming from Snowflake, the easiest mental model is:
