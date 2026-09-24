@@ -5,6 +5,11 @@ https://graphacademy.neo4j.com/categories/become-certified#curriculum
 refer  https://memgraph.com/blog/cypher-cheat-sheet
 https://dev.to/mangesh28/mastering-neo4j-cypher-a-practical-guide-to-graph-query-language-448k
 
+Neo4j using python : https://github.com/raffeemdai/Euron_Genai_Super/blob/main/Neo4jdb/graphdbneo4j.ipynb
+
+Graph Rag using python :
+https://github.com/raffeemdai/Euron_Genai_Super/blob/main/Neo4jdb/graphrag.ipynb
+
 
 APOC:
 
