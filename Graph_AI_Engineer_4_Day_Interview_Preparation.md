@@ -1367,7 +1367,7 @@ Alias:
 MATCH (p:Person)
 RETURN p.name AS employee_name;
 
-# Neo4j: `MATCH (n) RETURN n;`
+
 
 This query retrieves **all nodes** in the database.
 
@@ -1376,7 +1376,7 @@ MATCH (n)
 RETURN n;
 ```
 
-## Breakdown
+## Breakdown Neo4j: `MATCH (n) RETURN n;`
 
 ### `MATCH`
 - Similar to SQL's `SELECT`.
