@@ -1984,37 +1984,59 @@ REMOVE p:Employee;
 
 ---
 
+# Neo4j Cypher Notes (Part 4)
+
 # 18. DELETE
 
-Delete node with no relationships:
+## Delete a Node with No Relationships
 
 ```cypher
 MATCH (p:Person {name:"Alice"})
 DELETE p;
 ```
 
-Delete connected node:
+### What happens?
+
+- Deletes the node only if it has no relationships.
+- If relationships exist, Neo4j throws an error.
+
+### Memory Trick
+
+```text
+DELETE = node only
+```
+
+---
+
+## Delete a Connected Node
 
 ```cypher
 MATCH (p:Person {name:"Alice"})
 DETACH DELETE p;
 ```
 
+### What happens?
+
+- Deletes the node.
+- Deletes all relationships connected to the node.
+
 ### Memory Trick
 
-**DETACH DELETE = cut relationships + delete node**
+```text
+DETACH DELETE = cut relationships + delete node
+```
 
 ---
 
 # 19. OPTIONAL MATCH
 
-SQL equivalent:
+## SQL Equivalent
 
-```text
+```sql
 LEFT OUTER JOIN
 ```
 
-Cypher:
+## Cypher
 
 ```cypher
 MATCH (p:Person)
@@ -2022,7 +2044,26 @@ OPTIONAL MATCH (p)-[:WORKS_FOR]->(c:Company)
 RETURN p.name, c.name;
 ```
 
-If the company does not exist, the person row remains and company values become `null`.
+### What happens?
+
+- Returns all persons.
+- If a company exists, returns the company.
+- If no company exists, company values become `null`.
+
+Example:
+
+| Person | Company |
+|----------|----------|
+| Alice | OpenAI |
+| Bob | null |
+
+### Memory Trick
+
+```text
+MATCH = INNER JOIN
+
+OPTIONAL MATCH = LEFT OUTER JOIN
+```
 
 ---
 
@@ -2032,9 +2073,12 @@ If the company does not exist, the person row remains and company values become 
 
 Think of it as:
 
-> intermediate result / SQL CTE-like pipeline stage
+```text
+Intermediate result
+SQL CTE-like pipeline stage
+```
 
-Example:
+## Example
 
 ```cypher
 MATCH (p:Person)-[:PURCHASED]->(product:Product)
@@ -2045,7 +2089,9 @@ RETURN p.name, productCount;
 
 ### Memory Trick
 
-**WITH = pipe**
+```text
+WITH = pipe
+```
 
 ```text
 MATCH → WITH → MATCH → RETURN
@@ -2055,14 +2101,16 @@ MATCH → WITH → MATCH → RETURN
 
 # 21. Aggregations
 
+## Count Purchases
+
 ```cypher
 MATCH (c:Customer)-[:PURCHASED]->(p:Product)
 RETURN c.name, count(p) AS purchases;
 ```
 
-Functions:
+## Common Aggregate Functions
 
-```text
+```cypher
 count()
 sum()
 avg()
@@ -2071,61 +2119,80 @@ max()
 collect()
 ```
 
-Example:
+## Example: collect()
 
 ```cypher
 MATCH (c:Customer)-[:PURCHASED]->(p:Product)
 RETURN c.name, collect(p.name) AS products;
 ```
 
+### Example Output
+
+```text
+Alice → ["Laptop", "Mouse", "Keyboard"]
+Bob   → ["Phone", "Tablet"]
+```
+
+### SQL Comparison
+
+| SQL | Cypher |
+|------|------|
+| COUNT(*) | count() |
+| SUM() | sum() |
+| *VG() | avg() |
+| MIN() | min() |
+|*MAX() | max() |
+| ARRAY_AGG() | co*lect() |
+
 ---
 
 # 22. UNWIND
 
-`UNWIND` turns a list into rows.
+`UNWI*D` turns a list into rows.
 
-Input:
-
+Input:*
 ```text
-["Neo4j", "Python", "AWS"]
+["Neo4j", "Python", "AWS"*
 ```
 
-Cypher:
+## Example
 
 ```cypher
-UNWIND ["Neo4j", "Python", "AWS"] AS skill
+UNWIND*["Neo4j", "Python", "AWS"] AS skil*
 RETURN skill;
 ```
 
-Output:
+### Output
 
-```text
+``*text
 Neo4j
 Python
 AWS
 ```
 
-Very useful for bulk insert:
+## Bulk*Insert Example
 
 ```cypher
-UNWIND $customers AS row
-MERGE (c:Customer {customerId: row.customerId})
+UNWIND $*ustomers AS row
+MERGE*(c:Customer {customerId: row.custo*erId})
 SET c.name = row.name;
 ```
+**##*Memory Trick
 
-### Memory Trick
+```text*UNWIND = explode list into rows
+``*
 
-**UNWIND = explode list into rows**
+### Snowflake Analogy
 
-Snowflake analogy:
-
-```text
-FLATTEN()
+```sql
+FL*TTEN()
 ```
 
 ---
 
 # 23. Paths
+
+## Variable-Length Path
 
 ```cypher
 MATCH path =
@@ -2133,34 +2200,62 @@ MATCH path =
 RETURN path;
 ```
 
-`*1..3` means one to three hops.
+### Meaning of `*1..3`
+
+```text
+1 hop
+OR
+2 hops
+OR
+3 hops
+```
+
+Example:
+
+```text
+Alice → Bob
+Alice → Bob → Charlie
+Alice → Bob → Charlie → David
+```
 
 ---
 
 # 24. Two Degrees of Separation
 
-Question:
+## Interview Question
 
-> Find people exactly two relationships away from Alice but not directly connected.
+Find people exactly two relationships away from Alice but not directly connected.
 
 ```cypher
-MATCH (alice:Person {name:"Alice"})-[:KNOWS]->(:Person)-[:KNOWS]->(candidate:Person)
+MATCH (alice:Person {name:"Alice"})
+      -[:KNOWS]->
+      (:Person)
+      -[:KNOWS]->
+      (candidate:Person)
 WHERE candidate <> alice
   AND NOT (alice)-[:KNOWS]-(candidate)
 RETURN DISTINCT candidate.name;
 ```
 
-### Interview Logic
+### Logic
 
-1. Alice → friend
-2. friend → candidate
-3. candidate is not Alice
-4. candidate is not directly connected to Alice
-5. DISTINCT removes duplicates
+```text
+Alice → Friend → Candidate
+```
+
+Rules:
+
+```text
+Candidate ≠ Alice
+Candidate is not directly connected to Alice
+DISTINCT removes duplicates
+```
 
 ---
 
 # 25. EXISTS Subquery
+
+## Example
 
 ```cypher
 MATCH (c:Customer)
@@ -2170,33 +2265,53 @@ WHERE EXISTS {
 RETURN c.name;
 ```
 
-This is useful when you care whether a pattern exists.
+### Meaning
+
+Return customers who purchased at least one laptop.
+
+### SQL Equivalent
+
+```sql
+WHERE EXISTS (...)
+```
+
+### Memory Trick
+
+```text
+EXISTS = Does this pattern exist?
+```
 
 ---
 
 # 26. CALL Subquery
 
+## Example
+
 ```cypher
 MATCH (c:Customer)
+
 CALL (c) {
     MATCH (c)-[:PURCHASED]->(p:Product)
     RETURN count(p) AS purchaseCount
 }
+
 RETURN c.name, purchaseCount;
 ```
 
-Use subqueries for:
+### Uses of Subqueries
 
-- isolation
-- complex aggregation
-- per-row logic
-- readable modular Cypher
+- Isolation of logic
+- Complex aggregation
+- Per-row calculations
+- Readable modular Cypher
 
 ---
 
 # 27. Constraints
 
-Unique constraint:
+Constraints enforce data quality rules.
+
+## Unique Constraint
 
 ```cypher
 CREATE CONSTRAINT customer_id_unique IF NOT EXISTS
@@ -2204,22 +2319,26 @@ FOR (c:Customer)
 REQUIRE c.customerId IS UNIQUE;
 ```
 
-Check constraints:
+### Check Constraints
 
 ```cypher
 SHOW CONSTRAINTS;
 ```
 
-Why constraints matter:
+### Why Constraints Matter
 
-- data quality
-- identity
+- Data quality
+- Unique identity
 - MERGE correctness
-- performance benefits in some cases
+- Better query performance
 
 ---
 
 # 28. Indexes
+
+Indexes help Neo4j find nodes faster.
+
+## Create Index
 
 ```cypher
 CREATE INDEX customer_name_index IF NOT EXISTS
@@ -2227,19 +2346,42 @@ FOR (c:Customer)
 ON (c.name);
 ```
 
-Check:
+## Check Existing Indexes
 
 ```cypher
 SHOW INDEXES;
 ```
 
-Indexes help avoid scanning every node.
+### Why Indexes Matter
+
+Without an index:
+
+```text
+Scan every Customer node
+```
+
+With an index:
+
+```text
+Jump directly to matching nodes
+```
+
+### SQL Equivalent
+
+```sql
+CREATE INDEX idx_customer_name
+ON customer(name);
+```
 
 ---
 
 # 29. Query Plan
 
-Use:
+Neo4j provides tools to analyze query performance.
+
+---
+
+## EXPLAIN
 
 ```cypher
 EXPLAIN
@@ -2247,9 +2389,21 @@ MATCH (c:Customer {customerId:"C101"})
 RETURN c;
 ```
 
-`EXPLAIN` shows plan without executing.
+### What it does?
 
-Use:
+- Shows execution plan.
+- Does not execute the query.
+- No results are returned.
+
+### Memory Trick
+
+```text
+EXPLAIN = plan only
+```
+
+---
+
+## PROFILE
 
 ```cypher
 PROFILE
@@ -2257,13 +2411,114 @@ MATCH (c:Customer {customerId:"C101"})
 RETURN c;
 ```
 
-`PROFILE` executes and shows runtime statistics.
+### What it does?
+
+- Executes the query.
+- Shows execution plan.
+- Displays runtime statistics.
+
+Examples:
+
+```text
+Rows processed
+DB hits
+Operators used
+Execution details
+```
 
 ### Memory Trick
 
-**EXPLAIN = plan only**
+```text
+PROFILE = plan + execution
+```
 
-**PROFILE = plan + execution**
+---
+
+# Quick Summary
+
+```cypher
+DELETE p
+```
+
+Delete a node without relationships.
+
+```cypher
+DETACH DELETE p
+```
+
+Delete a node and all its relationships.
+
+```cypher
+OPTIONAL MATCH
+```
+
+Equivalent to SQL LEFT OUTER JOIN.
+
+```cypher
+WITH
+```
+
+Pass results between query stages.
+
+```cypher
+count()
+sum()
+avg()
+min()
+max()
+collect()
+```
+
+Aggregation functions.
+
+```cypher
+UNWIND
+```
+
+Convert lists into rows.
+
+```cypher
+MATCH path = (...) RETURN path
+```
+
+Work with graph paths.
+
+```cypher
+WHERE EXISTS { ... }
+```
+
+Check whether a pattern exists.
+
+```cypher
+CALL { ... }
+```
+
+Execute a subquery.
+
+```cypher
+SHOW CONSTRAINTS
+```
+
+View constraints.
+
+```cypher
+SHOW INDEXES
+```
+
+View indexes.
+
+```cypher
+EXPLAIN
+```
+
+Execution plan only.
+
+```cypher
+PROFILE
+```
+
+Execution plan plus runtime statistics.
+````*
 
 ---
 
