@@ -1154,6 +1154,189 @@ MATCH (p:Person)
 RETURN p;
 ```
 
+# Neo4j MERGE vs MATCH vs CREATE Notes
+
+## Schema-Optional in Neo4j
+
+Neo4j does not have tables like a relational database.
+
+Instead, it uses:
+- Nodes
+- Relationships
+- Labels
+- Properties
+
+You can create nodes without defining a schema first.
+
+Example:
+
+```cypher
+CREATE (p:Person {
+    name: "Alice",
+    age: 30
+});
+```
+
+---
+
+## Creating Relationships with MATCH
+
+```cypher
+MATCH (p:Person {name:"Alice"})
+MATCH (c:Company {name:"OpenAI"})
+CREATE (p)-[:WORKS_FOR]->(c);
+```
+
+### Important
+
+This query does NOT create a Company node automatically.
+
+If `(:Company {name:"OpenAI"})` does not exist:
+- MATCH returns no rows
+- No relationship is created
+- No nodes are created
+
+---
+
+## Using MERGE
+
+```cypher
+MERGE (p:Person {name:"Alice"})
+MERGE (c:Company {name:"OpenAI"})
+MERGE (p)-[:WORKS_FOR]->(c);
+```
+
+MERGE means:
+- Find the pattern if it already exists.
+- Create it if it does not exist.
+
+### Scenario 1
+
+Existing graph:
+
+```text
+(:Person {name:"Alice"})
+```
+
+Result:
+- Reuses Alice
+- Creates OpenAI company
+- Creates WORKS_FOR relationship
+
+---
+
+### Scenario 2
+
+Existing graph:
+
+```text
+(:Person {name:"Alice"})
+(:Company {name:"OpenAI"})
+```
+
+Result:
+- Reuses Alice
+- Reuses OpenAI
+- Creates relationship only if missing
+
+No duplicate nodes are created.
+
+---
+
+## MATCH vs MERGE
+
+### MATCH
+
+```cypher
+MATCH (c:Company {name:"OpenAI"})
+```
+
+- Node must already exist.
+- Returns no rows if not found.
+
+### MERGE
+
+```cypher
+MERGE (c:Company {name:"OpenAI"})
+```
+
+- Finds existing node.
+- Creates node if missing.
+
+---
+
+## Why MERGE Can Still Create Duplicates
+
+Existing node:
+
+```cypher
+(:Person {name:"Alice", age:30})
+```
+
+Query:
+
+```cypher
+MERGE (p:Person {name:"Alice", age:25})
+```
+
+Because the full property set does not match, Neo4j creates a new node.
+
+Potential result:
+
+```text
+(:Person {name:"Alice", age:30})
+(:Person {name:"Alice", age:25})
+```
+
+---
+
+## Production Best Practice
+
+Create uniqueness constraints.
+
+```cypher
+CREATE CONSTRAINT person_name_unique
+IF NOT EXISTS
+FOR (p:Person)
+REQUIRE p.name IS UNIQUE;
+```
+
+Better:
+
+```cypher
+MERGE (p:Person {personId:"EMP001"})
+SET p.name = "Alice";
+```
+
+Use business keys such as:
+- personId
+- companyId
+- employeeId
+- customerId
+
+rather than names.
+
+---
+
+## Recommended Production Pattern
+
+```cypher
+MERGE (p:Person {personId:"EMP001"})
+SET p.name = "Alice"
+
+MERGE (c:Company {companyId:"COMP001"})
+SET c.name = "OpenAI"
+
+MERGE (p)-[:WORKS_FOR]->(c);
+```
+
+Benefits:
+- Prevents duplicate nodes
+- Reuses existing nodes
+- Creates missing nodes automatically
+- Creates relationship only once
+
+
 Filter:
 
 ```cypher
