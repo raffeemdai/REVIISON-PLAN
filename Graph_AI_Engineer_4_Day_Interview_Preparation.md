@@ -517,6 +517,8 @@ $         Parameter
 .         Property access
 
 *1..3     Multi-hop traversal
+
+
 ---
 
 # Memory Tricks
