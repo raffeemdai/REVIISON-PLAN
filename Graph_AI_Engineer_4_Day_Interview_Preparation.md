@@ -957,6 +957,175 @@ INFORMATION_SCHEMA
                   →           SHOW commands + metadata procedures
 
 
+
+# Neo4j CREATE Statement
+
+`CREATE` creates the **node**.
+
+Example:
+
+```cypher
+CREATE (p:Person {
+    name: "Alice",
+    age: 30
+});
+```
+
+Here:
+
+- `CREATE` → creates a new **node**
+- `Person` → is the **label**
+- `name` and `age` → are **properties**
+- `p` → is a **query variable**
+
+Result:
+
+```text
+(:Person {
+    name: "Alice",
+    age: 30
+})
+```
+
+Neo4j does **not** require you to create the label separately.
+
+When you create the node with:
+
+```cypher
+:Person
+```
+
+the `Person` label is automatically used.
+
+---
+
+# Is Neo4j / Cypher Case-Sensitive?
+
+Neo4j/Cypher is **partly case-sensitive**.
+
+## Cypher Keywords
+
+Cypher keywords are **not case-sensitive**.
+
+All of these work:
+
+```cypher
+MATCH
+match
+Match
+```
+
+Best practice is to write keywords in uppercase:
+
+```cypher
+MATCH
+WHERE
+RETURN
+CREATE
+MERGE
+```
+
+---
+
+## Labels
+
+Labels are **case-sensitive**.
+
+```cypher
+:Person
+```
+
+and
+
+```cypher
+:person
+```
+
+are different.
+
+---
+
+## Relationship Types
+
+Relationship types are **case-sensitive**.
+
+```cypher
+:WORKS_AT
+```
+
+and
+
+```cypher
+:works_at
+```
+
+are different.
+
+---
+
+## Property Names
+
+Property names are **case-sensitive**.
+
+```cypher
+p.name
+```
+
+and
+
+```cypher
+p.Name
+```
+
+are different.
+
+---
+
+## String Values
+
+String comparisons are also case-sensitive.
+
+```text
+"Alice"
+```
+
+and
+
+```text
+"alice"
+```
+
+are different values.
+
+Example:
+
+```cypher
+MATCH (p:Person)
+WHERE p.name = "Alice"
+RETURN p;
+```
+
+This may not match data stored as:
+
+```text
+Label: person
+Property: Name
+Value: alice
+```
+
+---
+
+# Memory Trick
+
+```text
+Cypher Keywords → NOT case-sensitive
+
+Labels          → Case-sensitive
+Relationship    → Case-sensitive
+Properties      → Case-sensitive
+String Values   → Case-sensitive
+```
+
 ---
 
 # 10. CREATE
