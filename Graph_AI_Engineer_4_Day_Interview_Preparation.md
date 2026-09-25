@@ -1688,6 +1688,203 @@ Add a label:
 ```cypher
 MATCH (p:Person {name:"Alice"})
 SET p:Employee;
+
+# Neo4j `SET`
+
+`SET` is used to **update properties** or **add labels** to existing nodes and relationships.
+
+---
+
+# 1. Update a Property
+
+```cypher
+MATCH (p:Person {name:"Alice"})
+SET p.age = 31
+RETURN p;
+```
+
+## What happens?
+
+1. `MATCH` finds the `Person` node whose `name` is `"Alice"`.
+2. `SET p.age = 31`
+   - If `age` already exists, it is updated.
+   - If `age` does not exist, it is created.
+3. `RETURN p` shows the updated node.
+
+### Example
+
+Before:
+
+```text
+(:Person {name:"Alice"})
+```
+
+After:
+
+```text
+(:Person {name:"Alice", age:31})
+```
+
+---
+
+# 2. Add a New Label
+
+```cypher
+MATCH (p:Person {name:"Alice"})
+SET p:Employee;
+```
+
+## What happens?
+
+This does **not** remove the existing `Person` label.
+
+Before:
+
+```text
+(:Person {name:"Alice", age:31})
+```
+
+After:
+
+```text
+(:Person:Employee {name:"Alice", age:31})
+```
+
+The node now has **two labels**:
+
+- `Person`
+- `Employee`
+
+### Verify Labels
+
+```cypher
+MATCH (n {name:"Alice"})
+RETURN labels(n);
+```
+
+Result:
+
+```text
+["Person", "Employee"]
+```
+
+---
+
+# Property vs Label Updates
+
+## Property Update
+
+```cypher
+SET p.age = 31
+```
+
+Adds or updates data inside the node.
+
+```text
+{name:"Alice", age:31}
+```
+
+## Label Update
+
+```cypher
+SET p:Employee
+```
+
+Changes the node classification.
+
+```text
+(:Person:Employee)
+```
+
+---
+
+# Set Multiple Properties
+
+```cypher
+MATCH (p:Person {name:"Alice"})
+SET p.age = 31,
+    p.city = "Chicago",
+    p.salary = 90000
+RETURN p;
+```
+
+Result:
+
+```text
+(:Person {
+    name:"Alice",
+    age:31,
+    city:"Chicago",
+    salary:90000
+})
+```
+
+---
+
+# Replace All Properties
+
+```cypher
+MATCH (p:Person {name:"Alice"})
+SET p = {
+    name: "Alice",
+    age: 31
+}
+RETURN p;
+```
+
+⚠️ **Warning:** This removes all existing properties and replaces them with only the properties specified in the map.
+
+Example:
+
+Before:
+
+```text
+{
+  name:"Alice",
+  age:31,
+  city:"Chicago",
+  salary:90000
+}
+```
+
+After:
+
+```text
+{
+  name:"Alice",
+  age:31
+}
+```
+
+---
+
+# Remove a Property
+
+```cypher
+MATCH (p:Person {name:"Alice"})
+REMOVE p.age
+RETURN p;
+```
+
+Before:
+
+```text
+(:Person {name:"Alice", age:31})
+```
+
+After:
+
+```text
+(:Person {name:"Alice"})
+```
+
+---
+
+# Remove a Label
+
+```cypher
+MATCH (p:Person {name:"
+
 ```
 
 ---
