@@ -934,6 +934,29 @@ RETURN result
 - WHERE
 - RETURN
 
+
+Snowflake                     Neo4j
+------------------------------------------------
+DATABASE          →           DATABASE
+
+SCHEMA            →           No direct equivalent
+
+TABLE             →           LABEL
+
+ROW               →           NODE
+
+COLUMN            →           PROPERTY
+
+PRIMARY KEY       →           UNIQUENESS / KEY CONSTRAINT
+
+FOREIGN KEY       →           RELATIONSHIP
+
+INDEX             →           INDEX
+
+INFORMATION_SCHEMA
+                  →           SHOW commands + metadata procedures
+
+
 ---
 
 # 10. CREATE
