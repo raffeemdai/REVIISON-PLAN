@@ -502,6 +502,21 @@ Relationship properties:
 | Property | Key-value data | `name: "Alice"` |
 | Constraint | Rule for data integrity | Unique customerId |
 
+()        Node
+
+:         Label / relationship type
+
+{}        Properties
+
+[]        Relationship
+
+->        Direction
+
+$         Parameter
+
+.         Property access
+
+*1..3     Multi-hop traversal
 ---
 
 # Memory Tricks
