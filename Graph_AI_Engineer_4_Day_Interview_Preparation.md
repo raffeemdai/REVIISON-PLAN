@@ -1366,6 +1366,219 @@ Alias:
 ```cypher
 MATCH (p:Person)
 RETURN p.name AS employee_name;
+
+# Neo4j: `MATCH (n) RETURN n;`
+
+This query retrieves **all nodes** in the database.
+
+```cypher
+MATCH (n)
+RETURN n;
+```
+
+## Breakdown
+
+### `MATCH`
+- Similar to SQL's `SELECT`.
+- Used to find patterns in the graph.
+
+### `(n)`
+- `n` is a variable representing a node.
+- No label is specified, so it matches **every node** in the database.
+
+### `RETURN n`
+- Returns the matched nodes.
+
+## Example Graph
+
+```text
+(:Person {name:'Alice'})
+
+(:Person {name:'Bob'})
+
+(:Company {name:'OpenAI'})
+```
+
+### Query
+
+```cypher
+MATCH (n)
+RETURN n;
+```
+
+### Result
+
+```text
+(:Person {name:'Alice'})
+(:Person {name:'Bob'})
+(:Company {name:'OpenAI'})
+```
+
+---
+
+## Equivalent SQL Thinking
+
+### SQL
+
+```sql
+SELECT * FROM Person
+UNION ALL
+SELECT * FROM Company;
+```
+
+### Neo4j
+
+```cypher
+MATCH (n)
+RETURN n;
+```
+
+Since Neo4j has no tables, `MATCH (n)` scans all nodes regardless of label.
+
+---
+
+## Variations
+
+### Return only Person nodes
+
+```cypher
+MATCH (p:Person)
+RETURN p;
+```
+
+### Return node labels
+
+```cypher
+MATCH (n)
+RETURN labels(n);
+```
+
+#### Example Result
+
+```text
+["Person"]
+["Company"]
+```
+
+### Count all nodes
+
+```cypher
+MATCH (n)
+RETURN count(n);
+```
+
+---
+
+# Neo4j: `CALL db.labels();`
+
+```cypher
+CALL db.labels();
+```
+
+This lists all **labels** currently used in the database.
+
+## Example
+
+Suppose you have:
+
+```cypher
+(:Person)
+(:Company)
+(:Skill)
+```
+
+Running:
+
+```cypher
+CALL db.labels();
+```
+
+returns:
+
+```text
+Person
+Company
+Skill
+```
+
+---
+
+## What is a Label?
+
+A label is a category attached to a node.
+
+Example:
+
+```cypher
+(:Person {name:'Alice'})
+```
+
+Here:
+
+```text
+Person
+```
+
+is the label.
+
+Think of labels as roughly similar to table names in SQL, although they are **not tables**.
+
+---
+
+## SQL Comparison
+
+### SQL
+
+```sql
+SHOW TABLES;
+```
+
+### Neo4j
+
+```cypher
+CALL db.labels();
+```
+
+#### Result
+
+```text
+Person
+Company
+Skill
+```
+
+---
+
+## Neo4j 5 Preferred Command
+
+In newer Neo4j versions, use:
+
+```cypher
+SHOW LABELS;
+```
+
+#### Result
+
+```text
+Person
+Company
+Skill
+```
+
+---
+
+# Quick Summary
+
+## Get All Nodes
+
+```cypher
+MATCH (n)
+RETURN n;
+```
+
+
+
+
 ```
 
 ---
