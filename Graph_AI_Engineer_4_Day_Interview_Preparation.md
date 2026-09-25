@@ -1883,7 +1883,86 @@ After:
 # Remove a Label
 
 ```cypher
-MATCH (p:Person {name:"
+MATCH (p:Person {name:"Alice"})
+REMOVE p:Employee
+RETURN p;
+```
+
+Before:
+
+```text
+(:Person:Employee {name:"Alice", age:31})
+```
+
+After:
+
+```text
+(:Person {name:"Alice", age:31})
+```
+
+---
+
+# Quick Summary
+
+```cypher
+// Update/Create property
+SET p.age = 31
+
+// Add label
+SET p:Employee
+
+// Remove property
+REMOVE p.age
+
+// Remove label
+REMOVE p:Employee
+
+// View labels
+MATCH (p:Person {name:"Alice"})
+RETURN labels(p);
+```
+
+---
+
+# Key Takeaway
+
+- **Labels** are like categories or types of nodes.
+- **Properties** are the actual data stored on nodes and relationships.
+- `SET` can be used to:
+  - Create properties
+  - Update properties
+  - Add labels
+  - Replace all properties
+
+Examples:
+
+```text
+(:Person)
+```
+
+Add a label:
+
+```cypher
+SET p:Employee
+```
+
+Result:
+
+```text
+(:Person:Employee)
+```
+
+Add a property:
+
+```cypher
+SET p.age = 31
+```
+
+Result:
+
+```text
+(:Person:Employee {name:"Alice", age:31})
+```
 
 ```
 
