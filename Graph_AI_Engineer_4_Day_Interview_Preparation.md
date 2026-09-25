@@ -48,6 +48,545 @@ Each day contains:
 
 ---
 
+# Neo4j Graph Data Model Basics
+
+## Nodes
+
+Nodes are the **circles in a graph**.
+
+They represent **objects or entities** in your data model.
+
+Examples of entities include:
+
+- People
+- Locations
+- Companies
+- Products
+- Accounts
+- Events
+
+In a social network, entities such as people, locations, and companies would be represented as nodes.
+
+Each entity is stored as a separate node in the graph.
+
+### Example
+
+```text
+(Person)
+(Company)
+(Location)
+```
+
+---
+
+## Labels
+
+Nodes are grouped or categorized using **labels**.
+
+Labels describe **what the node is**.
+
+Examples:
+
+```text
+Person
+Company
+Location
+Product
+Account
+```
+
+Nodes of the same type usually have the same label.
+
+Labels help you:
+
+- Distinguish between different types of nodes
+- Filter the graph
+- Organize your graph model
+- Write more specific Cypher queries
+
+### Multiple Labels
+
+A node can have multiple labels.
+
+For example, Michael can be both:
+
+```text
+Person
+Employee
+```
+
+Conceptually:
+
+```text
+(:Person:Employee)
+```
+
+### Using Effective Node Labels
+
+Nodes usually represent **things**, so labels should normally be:
+
+- Singular
+- Nouns
+
+Good examples:
+
+```text
+Product
+Event
+Account
+Customer
+Employee
+```
+
+Avoid plural labels such as:
+
+```text
+Products
+Events
+Accounts
+```
+
+### Memory Trick
+
+```text
+Node = Thing
+Label = Type of Thing
+```
+
+---
+
+# Relationships
+
+Relationships are the **lines connecting nodes** in a graph.
+
+They describe **how nodes are connected to each other**.
+
+A relationship in Neo4j connects two nodes:
+
+```text
+Start Node → Relationship → End Node
+```
+
+Example:
+
+```text
+(Michael)-[:WORKS_AT]->(Neo4j)
+```
+
+This means:
+
+```text
+Michael WORKS_AT Neo4j
+```
+
+It does **not** mean:
+
+```text
+Neo4j WORKS_AT Michael
+```
+
+## Every Relationship Has
+
+### 1. A Type
+
+The relationship type describes the connection.
+
+Examples:
+
+```text
+WORKS_AT
+FOUNDED_IN
+KNOWS
+OWNS
+LIVES_IN
+RATED
+```
+
+### 2. A Direction
+
+Relationships have direction.
+
+Example:
+
+```text
+(Person)-[:WORKS_AT]->(Company)
+```
+
+Direction matters because:
+
+```text
+Michael WORKS_AT Neo4j
+```
+
+is different from:
+
+```text
+Neo4j WORKS_AT Michael
+```
+
+## Multiple Relationships
+
+A node can have multiple relationships with other nodes.
+
+Example:
+
+```text
+(Person)-[:WORKS_AT]->(Company)
+(Person)-[:LIVES_IN]->(Location)
+(Person)-[:OWNS]->(Car)
+```
+
+## Bi-Directional Relationships
+
+If a relationship should exist in both directions, you may need two separate relationships.
+
+Example:
+
+```text
+(Michael)-[:LOVES]->(Sarah)
+(Sarah)-[:LOVES]->(Michael)
+```
+
+You should not assume that because:
+
+```text
+Michael LOVES Sarah
+```
+
+that:
+
+```text
+Sarah LOVES Michael
+```
+
+is also true.
+
+## Use Verbs for Relationship Types
+
+Relationship types should normally be **verbs or verb phrases**.
+
+Examples:
+
+### Personal Connections
+
+```text
+(Person)-[:KNOWS]->(Person)
+(Person)-[:MARRIED_TO]->(Person)
+```
+
+### Facts
+
+```text
+(Person)-[:LIVES_IN]->(Location)
+(Person)-[:OWNS]->(Car)
+(Person)-[:RATED]->(Movie)
+```
+
+### Hierarchies
+
+```text
+(Parent)-[:PARENT_OF]->(Child)
+(Software)-[:DEPENDS_ON]->(Library)
+```
+
+### General Connections
+
+```text
+(Entity)-[:CONNECTED_TO]->(Entity)
+```
+
+### Memory Trick
+
+```text
+Node = Noun
+Relationship = Verb
+```
+
+---
+
+# Properties
+
+Properties store additional data about **nodes and relationships**.
+
+A property is a **key-value pair**.
+
+Example:
+
+```text
+firstName = "Michael"
+lastName = "Smith"
+position = "Engineer"
+```
+
+## Node Properties
+
+Example:
+
+```cypher
+(:Person {
+    firstName: "Michael",
+    lastName: "Smith",
+    age: 35
+})
+```
+
+Here:
+
+```text
+firstName
+lastName
+age
+```
+
+are property keys.
+
+## Relationship Properties
+
+Relationships can also have properties.
+
+Example:
+
+```cypher
+(:Person)-[:WORKS_AT {
+    since: 2022,
+    position: "Engineer"
+}]->(:Company)
+```
+
+Here:
+
+```text
+since
+position
+```
+
+are properties of the relationship.
+
+## Property Types
+
+Properties can store different data types.
+
+Examples:
+
+```text
+String
+Integer
+Float
+Boolean
+Date
+DateTime
+List
+```
+
+Example:
+
+```cypher
+(:Product {
+    productId: "P101",
+    name: "Printer",
+    price: 199.99,
+    available: true
+})
+```
+
+## Flexible Schema
+
+Neo4j has a flexible schema.
+
+Nodes with the same label do not necessarily need to have exactly the same properties.
+
+Example:
+
+```text
+Person 1
+firstName
+lastName
+age
+```
+
+```text
+Person 2
+firstName
+lastName
+email
+```
+
+Both can still have the label:
+
+```text
+Person
+```
+
+## Unique Identifiers
+
+Properties can also be used as unique identifiers.
+
+Example:
+
+```text
+Customer.customerId
+Product.productId
+Order.orderId
+```
+
+A uniqueness constraint can be created to ensure the value is unique.
+
+Example:
+
+```cypher
+CREATE CONSTRAINT customer_id_unique IF NOT EXISTS
+FOR (c:Customer)
+REQUIRE c.customerId IS UNIQUE;
+```
+
+---
+
+# Complete Example
+
+```text
+(Customer)
+    |
+    | PLACED
+    ▼
+(Order)
+    |
+    | CONTAINS
+    ▼
+(Product)
+```
+
+With properties:
+
+```cypher
+(:Customer {
+    customerId: "C101",
+    name: "Alice"
+})
+```
+
+```cypher
+(:Order {
+    orderId: "O1001",
+    orderDate: date("2026-09-25")
+})
+```
+
+```cypher
+(:Product {
+    productId: "P500",
+    name: "Printer Paper",
+    price: 12.99
+})
+```
+
+Relationship properties:
+
+```cypher
+(:Order)-[:CONTAINS {
+    quantity: 3,
+    unitPrice: 12.99
+}]->(:Product)
+```
+
+---
+
+# Quick Summary
+
+| Concept | Meaning | Example |
+|---|---|---|
+| Node | Entity or object | Customer |
+| Label | Type/category of node | `:Customer` |
+| Relationship | Connection between nodes | `PLACED` |
+| Relationship Type | Meaning of the connection | `WORKS_AT` |
+| Direction | Start node to end node | `Person → Company` |
+| Property | Key-value data | `name: "Alice"` |
+| Constraint | Rule for data integrity | Unique customerId |
+
+---
+
+# Memory Tricks
+
+## Nodes
+
+```text
+Node = Thing
+```
+
+Examples:
+
+```text
+Customer
+Product
+Employee
+```
+
+## Labels
+
+```text
+Label = Type of Thing
+```
+
+Examples:
+
+```text
+Person
+Company
+Product
+```
+
+## Relationships
+
+```text
+Relationship = Verb
+```
+
+Examples:
+
+```text
+WORKS_AT
+PLACED
+CONTAINS
+SUPPLIED_BY
+```
+
+## Properties
+
+```text
+Property = Details
+```
+
+Examples:
+
+```text
+name
+price
+age
+customerId
+```
+
+---
+
+# Final Memory Formula
+
+```text
+N L R P
+```
+
+- **N** = Node
+- **L** = Label
+- **R** = Relationship
+- **P** = Property
+
+Think:
+
+```text
+Thing
+Type
+Connection
+Details
+```
+
+
 ## 1. Why Graph Databases?
 
 A relational database stores information mainly as rows and tables.
