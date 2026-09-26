@@ -4,6 +4,11 @@
 **Focus:** Neo4j, Cypher, Knowledge Graphs, Graph Algorithms, Python, GraphRAG/RAG, LangChain, Amazon Bedrock, AWS Serverless, Neptune, MCP, Multi-Agent Systems  
 **Candidate Positioning:** Neo4j Certified Professional with strong SQL / Snowflake background
 
+https://graphacademy.neo4j.com/categories/become-certified
+
+https://www.udemy.com/course/complete-neo4j-graphdb-cypher-bootcamp/?srsltid=AU7gw4U59NgJfqII_7xKTLC5ZIDumU8f0bxHxz6ac1VUKKNa5-BYJg37&couponCode=26BBPAA2MX
+
+
 ---
 
 # How to Use This Guide
