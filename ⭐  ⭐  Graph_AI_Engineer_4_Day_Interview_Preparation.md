@@ -46,6 +46,1002 @@ Each day contains:
 
 # DAY 1 — GRAPH FOUNDATIONS + KNOWLEDGE GRAPH + CYPHER
 
+# Day 1 Practice Queries — Every Cypher Scenario (With Explanations & Before/After Data)
+
+These queries all run against **one unified dataset**, in order, so you can copy them into Neo4j Browser / Aura and practice every Day 1 topic end to end: graph modeling basics, CRUD, filtering, aggregation, paths, subqueries, constraints, indexes, and query plans.
+
+**How to read this file:**
+- Every query has an **Explanation** of what it does and why.
+- Write operations (CREATE, MERGE, SET, REMOVE, DELETE, constraints, indexes) show **Before** and **After** snapshots of the affected data.
+- Read-only operations (MATCH, RETURN, WHERE, aggregations, paths, subqueries, EXPLAIN/PROFILE) show **Data** (what exists at that point) and **Result** (what the query returns), since nothing changes.
+- To keep the Before/After tables readable, most walkthroughs focus on the four original people — **Alice, Bob, Carol, Dave** — and the three original customers/products. Section 1 adds **Eve**, Section 6 adds two extra practice nodes, and Section 13 adds two extra customers (**Diana, Ethan**); each of those is called out explicitly where it matters, and they *do* still show up in real query results even in sections that don't mention them by name.
+
+---
+
+## 0. Setup — Build the Practice Graph
+
+**Explanation:** Creates the whole starting graph in one query: four people connected by `KNOWS` (a social chain: Alice → Bob → Carol → Dave) and `WORKS_FOR` (Alice and Carol work at OpenAI, Bob works at Neo4j), plus three customers who each purchased one or two of three products. The `WITH 1 AS ignore` is just a throwaway pipeline stage so two separate `CREATE` clauses can live in one query.
+
+**Before:** Empty database.
+
+**After:**
+
+```text
+People:
+  Alice {personId:"EMP001", name:"Alice", age:30, city:"Atlanta"}
+  Bob   {personId:"EMP002", name:"Bob",   age:35, city:"Chicago"}
+  Carol {personId:"EMP003", name:"Carol", age:28, city:"Atlanta"}
+  Dave  {personId:"EMP004", name:"Dave",  age:41, city:"Boston"}
+
+Companies:
+  OpenAI {companyId:"COMP001", name:"OpenAI"}
+  Neo4j  {companyId:"COMP002", name:"Neo4j"}
+
+Relationships:
+  Alice -[:WORKS_FOR]-> OpenAI
+  Bob   -[:WORKS_FOR]-> Neo4j
+  Carol -[:WORKS_FOR]-> OpenAI
+  Alice -[:KNOWS]-> Bob -[:KNOWS]-> Carol -[:KNOWS]-> Dave
+
+Customers:
+  C1 Alice, C2 Bob, C3 Carol
+
+Products:
+  P1 Laptop        (Electronics, $1200)
+  P2 Mouse          (Electronics, $25)
+  P3 Tennis Racket  (Sports, $90)
+
+Purchases:
+  C1 -[:PURCHASED {amount:1200}]-> P1
+  C1 -[:PURCHASED {amount:50}]->   P2
+  C2 -[:PURCHASED {amount:1100}]-> P1
+  C2 -[:PURCHASED {amount:180}]->  P3
+  C3 -[:PURCHASED {amount:45}]->   P2
+```
+
+```cypher
+// People + companies + social graph
+CREATE (alice:Person {personId:"EMP001", name:"Alice", age:30, city:"Atlanta"}),
+       (bob:Person   {personId:"EMP002", name:"Bob",   age:35, city:"Chicago"}),
+       (carol:Person {personId:"EMP003", name:"Carol", age:28, city:"Atlanta"}),
+       (dave:Person  {personId:"EMP004", name:"Dave",  age:41, city:"Boston"}),
+
+       (openai:Company {companyId:"COMP001", name:"OpenAI"}),
+       (neo4j:Company  {companyId:"COMP002", name:"Neo4j"}),
+
+       (alice)-[:WORKS_FOR]->(openai),
+       (bob)-[:WORKS_FOR]->(neo4j),
+       (carol)-[:WORKS_FOR]->(openai),
+
+       (alice)-[:KNOWS]->(bob),
+       (bob)-[:KNOWS]->(carol),
+       (carol)-[:KNOWS]->(dave)
+
+WITH 1 AS ignore
+
+// Customers + products (mini project graph)
+CREATE (c1:Customer {customerId:"C1", name:"Alice"}),
+       (c2:Customer {customerId:"C2", name:"Bob"}),
+       (c3:Customer {customerId:"C3", name:"Carol"}),
+
+       (p1:Product {productId:"P1", name:"Laptop", category:"Electronics", price:1200}),
+       (p2:Product {productId:"P2", name:"Mouse", category:"Electronics", price:25}),
+       (p3:Product {productId:"P3", name:"Tennis Racket", category:"Sports", price:90}),
+
+       (c1)-[:PURCHASED {amount:1200}]->(p1),
+       (c1)-[:PURCHASED {amount:50}]->(p2),
+       (c2)-[:PURCHASED {amount:1100}]->(p1),
+       (c2)-[:PURCHASED {amount:180}]->(p3),
+       (c3)-[:PURCHASED {amount:45}]->(p2);
+```
+
+---
+
+## 1. CREATE — nodes and relationships
+
+### Query 1 — create a single node
+
+**Explanation:** Adds a brand-new `Person` node with no relationships. `CREATE` always inserts a new node — it never checks whether one like it already exists (that's what `MERGE` is for).
+
+**Before:** 4 people (Alice, Bob, Carol, Dave). No one named Eve.
+
+```cypher
+// Create a single node
+CREATE (:Person {personId:"EMP005", name:"Eve", age:26, city:"Denver"});
+```
+
+**After:** 5 people. New node added, isolated (no relationships yet):
+
+```text
++ Eve {personId:"EMP005", name:"Eve", age:26, city:"Denver"}   (no relationships)
+```
+
+### Query 2 — create a relationship between two existing nodes
+
+**Explanation:** `MATCH`es Eve and the Neo4j company (both must already exist), then `CREATE`s a `WORKS_FOR` edge between them.
+
+**Before:** Eve exists but has zero relationships.
+
+```cypher
+// Create a relationship between two existing nodes
+MATCH (p:Person {name:"Eve"})
+MATCH (c:Company {name:"Neo4j"})
+CREATE (p)-[:WORKS_FOR]->(c);
+```
+
+**After:** Eve now has one relationship:
+
+```text
++ Eve -[:WORKS_FOR]-> Neo4j
+```
+
+**Scenario to notice:** if `Neo4j` didn't already exist, this query would silently return 0 rows and create nothing — CREATE-after-MATCH never auto-creates the matched side.
+
+---
+
+## 2. MATCH — basic retrieval *(read-only)*
+
+**Data used by this section:** 5 people exist at this point — Alice, Bob, Carol, Dave, Eve (Eve was added in Section 1). `WORKS_FOR`: Alice→OpenAI, Bob→Neo4j, Carol→OpenAI, Eve→Neo4j.
+
+### Query 1 — all nodes with a label
+
+**Explanation:** Finds every node carrying the `Person` label, ignoring all other labels in the database.
+
+```cypher
+// All nodes with a label
+MATCH (p:Person)
+RETURN p;
+```
+
+**Result:** 5 rows — Alice, Bob, Carol, Dave, Eve (full node objects, all properties included).
+
+### Query 2 — match by exact property
+
+**Explanation:** Filters directly inside the pattern using a property map — Neo4j only returns nodes where every listed property matches exactly.
+
+```cypher
+// Match by exact property
+MATCH (p:Person {name:"Alice"})
+RETURN p;
+```
+
+**Result:** 1 row — `{personId:"EMP001", name:"Alice", age:30, city:"Atlanta"}`.
+
+### Query 3 — match a relationship pattern
+
+**Explanation:** Traverses from every `Person` across an outgoing `WORKS_FOR` relationship to a `Company`, returning both ends of the pattern.
+
+```cypher
+// Match a relationship pattern
+MATCH (p:Person)-[:WORKS_FOR]->(c:Company)
+RETURN p.name, c.name;
+```
+
+**Result:** 4 rows:
+
+| p.name | c.name |
+|---|---|
+| Alice | OpenAI |
+| Bob | Neo4j |
+| Carol | OpenAI |
+| Eve | Neo4j |
+
+(Dave is missing — he has no `WORKS_FOR` relationship, so the pattern never matches for him.)
+
+---
+
+## 3. RETURN — projections and aliases *(read-only)*
+
+**Data used by this section:** same 5 people as Section 2, plus the 2 companies, 3 customers, and 3 products from Setup.
+
+### Query 1 — aliasing columns
+
+**Explanation:** Projects only two properties instead of the whole node, and renames the output columns with `AS`.
+
+```cypher
+MATCH (p:Person)
+RETURN p.name AS employeeName, p.age AS employeeAge;
+```
+
+**Result:**
+
+| employeeName | employeeAge |
+|---|---|
+| Alice | 30 |
+| Bob | 35 |
+| Carol | 28 |
+| Dave | 41 |
+| Eve | 26 |
+
+### Query 2 — return all nodes, no label filter
+
+**Explanation:** `(n)` with no label matches literally every node in the database, regardless of type.
+
+```cypher
+// Return all nodes (no label filter)
+MATCH (n)
+RETURN n;
+```
+
+**Result:** 13 rows — 5 `Person` + 2 `Company` + 3 `Customer` + 3 `Product` nodes.
+
+### Query 3 — DISTINCT values
+
+**Explanation:** `DISTINCT` collapses duplicate values in the output — here, two people share the city "Atlanta", so it only appears once.
+
+```cypher
+// Return distinct values
+MATCH (p:Person)
+RETURN DISTINCT p.city;
+```
+
+**Result:** `Atlanta`, `Chicago`, `Boston`, `Denver` (4 rows, even though 5 people exist).
+
+---
+
+## 4. ORDER BY, LIMIT, SKIP *(read-only)*
+
+**Data used by this section:** ages — Eve 26, Carol 28, Alice 30, Bob 35, Dave 41.
+
+### Query 1 — sort descending
+
+**Explanation:** Sorts all rows by `age`, largest first.
+
+```cypher
+MATCH (p:Person)
+RETURN p.name, p.age
+ORDER BY p.age DESC;
+```
+
+**Result:** Dave(41), Bob(35), Alice(30), Carol(28), Eve(26) — in that order.
+
+### Query 2 — top N
+
+**Explanation:** Adds `LIMIT` after the sort to cap the result to the first N rows — the two oldest people.
+
+```cypher
+// Top 2 oldest people
+MATCH (p:Person)
+RETURN p.name, p.age
+ORDER BY p.age DESC
+LIMIT 2;
+```
+
+**Result:** Dave(41), Bob(35).
+
+### Query 3 — pagination
+
+**Explanation:** `SKIP` discards the first N sorted rows before `LIMIT` takes effect — this is how you'd page through results (e.g. "page 2" of a result set).
+
+```cypher
+// Pagination: skip the first result, return the next 2
+MATCH (p:Person)
+RETURN p.name, p.age
+ORDER BY p.age DESC
+SKIP 1
+LIMIT 2;
+```
+
+**Result:** Bob(35), Alice(30) — Dave was skipped, then the next two are returned.
+
+---
+
+## 5. WHERE — filtering *(read-only)*
+
+**Data used by this section:** Alice(30, Atlanta), Bob(35, Chicago), Carol(28, Atlanta), Dave(41, Boston), Eve(26, Denver).
+
+### Query 1 — numeric + boolean AND
+
+**Explanation:** Both conditions must be true for a row to survive the filter.
+
+```cypher
+// Numeric + boolean AND
+MATCH (p:Person)
+WHERE p.age >= 30
+  AND p.city = "Atlanta"
+RETURN p.name, p.age, p.city;
+```
+
+**Result:** Only **Alice** (30, Atlanta). Carol is also in Atlanta but is 28, which fails `age >= 30`.
+
+### Query 2 — string filtering
+
+**Explanation:** `STARTS WITH` does a prefix match on a string property.
+
+```cypher
+// String filtering
+MATCH (p:Person)
+WHERE p.name STARTS WITH "A"
+RETURN p.name;
+```
+
+**Result:** `Alice` only.
+
+### Query 3 — IN list
+
+**Explanation:** `IN` checks membership against a list literal — equivalent to SQL's `IN (...)`.
+
+```cypher
+// IN list
+MATCH (p:Person)
+WHERE p.city IN ["Atlanta", "Boston"]
+RETURN p.name, p.city;
+```
+
+**Result:** Alice(Atlanta), Carol(Atlanta), Dave(Boston) — 3 rows.
+
+### Query 4 — NULL check
+
+**Explanation:** Every person currently has an `age` property, so this filter passes everyone — it becomes meaningful once a node without `age` exists (see Section 6, Query 1).
+
+```cypher
+// NULL check
+MATCH (p:Person)
+WHERE p.age IS NOT NULL
+RETURN p.name, p.age;
+```
+
+**Result:** All 5 people (Alice, Bob, Carol, Dave, Eve).
+
+---
+
+## 6. MERGE — idempotent create/find
+
+### Query 1 — plain MERGE (find-or-create)
+
+**Explanation:** Looks for a `Person` with `personId:"EMP006"`. None exists, so MERGE creates a bare node with only that one property.
+
+**Before:** No person with `personId:"EMP006"`.
+
+```cypher
+// Plain MERGE (find-or-create)
+MERGE (p:Person {personId:"EMP006"})
+RETURN p;
+```
+
+**After:**
+
+```text
++ Person {personId:"EMP006"}   (no name, age, or city — MERGE only sets what you gave it)
+```
+
+### Query 2 — MERGE with ON CREATE / ON MATCH
+
+**Explanation:** No `Person` has this email yet, so the pattern is created and the `ON CREATE SET` clause fires (setting `createdAt` and `name`). If you ran this exact query again, the node would already exist, so `ON MATCH SET` would fire instead (updating `lastSeen`) — `ON CREATE` would be skipped.
+
+**Before:** No person with `email:"frank@example.com"`.
+
+```cypher
+// MERGE with ON CREATE / ON MATCH
+MERGE (p:Person {email:"frank@example.com"})
+ON CREATE SET
+    p.createdAt = datetime(),
+    p.name = "Frank"
+ON MATCH SET
+    p.lastSeen = datetime()
+RETURN p;
+```
+
+**After:**
+
+```text
++ Person {email:"frank@example.com", createdAt:<current datetime>, name:"Frank"}
+```
+
+### Query 3 — production-safe MERGE pattern (idempotency)
+
+**Explanation:** Uses the stable business key `personId`/`companyId` instead of matching on `name`, which is the safer real-world pattern. Because Alice, OpenAI, and the `WORKS_FOR` relationship between them **already exist** from Setup, every `MERGE` here finds the existing pattern instead of creating anything new — running this query 100 times produces the exact same graph every time.
+
+**Before:** Alice `{personId:"EMP001", name:"Alice", ...}` → `WORKS_FOR` → OpenAI `{companyId:"COMP001", name:"OpenAI"}` (already exists, unchanged since Setup).
+
+```cypher
+// Production-safe MERGE pattern using business keys, avoiding duplicates
+MERGE (p:Person {personId:"EMP001"})
+SET p.name = "Alice"
+MERGE (c:Company {companyId:"COMP001"})
+SET c.name = "OpenAI"
+MERGE (p)-[:WORKS_FOR]->(c)
+RETURN p, c;
+```
+
+**After:** No change — same Alice node, same OpenAI node, same relationship. Nothing duplicated.
+
+**Scenario to notice:** run `MERGE (p:Person {name:"Alice", age:25})` (a *different* age than the existing Alice's `age:30`) and you'll get a **second, duplicate** Alice node — MERGE matches on the *entire* property map you give it, not just the name. This is the classic MERGE interview trap, and exactly why Query 3 above matches on `personId` instead.
+
+---
+
+## 7. SET — updating properties and labels
+
+### Query 1 — update a property
+
+**Explanation:** Overwrites an existing property value. Since `age` already exists on Alice, this is an update, not a new property.
+
+**Before:** `Alice {personId:"EMP001", name:"Alice", age:30, city:"Atlanta"}`
+
+```cypher
+// Update a property
+MATCH (p:Person {name:"Alice"})
+SET p.age = 31
+RETURN p;
+```
+
+**After:** `Alice {personId:"EMP001", name:"Alice", age:31, city:"Atlanta"}`
+
+### Query 2 — add a label
+
+**Explanation:** `SET p:Employee` adds a second label without touching the first — nodes can carry multiple labels at once.
+
+**Before:** `labels(Alice) = ["Person"]`
+
+```cypher
+// Add a label (does not remove existing labels)
+MATCH (p:Person {name:"Alice"})
+SET p:Employee
+RETURN labels(p);
+```
+
+**After:** `labels(Alice) = ["Person", "Employee"]`
+
+### Query 3 — set multiple properties at once
+
+**Explanation:** A single `SET` with a comma-separated list updates several properties in one pass, and adds `salary` since it didn't exist before.
+
+**Before:** `Bob {personId:"EMP002", name:"Bob", age:35, city:"Chicago"}`
+
+```cypher
+// Set multiple properties at once
+MATCH (p:Person {name:"Bob"})
+SET p.age = 36,
+    p.city = "Seattle",
+    p.salary = 95000
+RETURN p;
+```
+
+**After:** `Bob {personId:"EMP002", name:"Bob", age:36, city:"Seattle", salary:95000}`
+
+### Query 4 — replace ALL properties (destructive)
+
+**Explanation:** `SET p = {...}` doesn't merge — it **wipes every existing property** and replaces the whole map with only what you list. Relationships are untouched (Bob's `WORKS_FOR`→Neo4j and `KNOWS` edges survive), but every property not in the new map is gone — including his `personId` business key.
+
+**Before:** `Bob {personId:"EMP002", name:"Bob", age:36, city:"Seattle", salary:95000}`
+
+```cypher
+// Replace ALL properties (destructive — wipes anything not listed)
+MATCH (p:Person {name:"Bob"})
+SET p = {name: "Bob", age: 36}
+RETURN p;
+```
+
+**After:** `Bob {name:"Bob", age:36}` — **`personId`, `city`, and `salary` are all permanently gone.**
+
+⚠️ **Real-world warning:** this just deleted Bob's `personId` business key. In production, losing a business key like this can break every future `MERGE (b:Person {personId:...})` lookup for that node — a genuine interview gotcha, not just a toy example.
+
+---
+
+## 8. REMOVE — deleting properties and labels
+
+### Query 1 — remove a property
+
+**Explanation:** Deletes one property outright, leaving the rest of the node intact.
+
+**Before:** `Alice {personId:"EMP001", name:"Alice", age:31, city:"Atlanta"}`, `labels = ["Person","Employee"]`
+
+```cypher
+// Remove a property
+MATCH (p:Person {name:"Alice"})
+REMOVE p.age
+RETURN p;
+```
+
+**After:** `Alice {personId:"EMP001", name:"Alice", city:"Atlanta"}` — `age` is gone entirely (not `null`, actually absent).
+
+### Query 2 — remove a label
+
+**Explanation:** Strips one label while leaving the node and its remaining labels alone.
+
+**Before:** `labels(Alice) = ["Person", "Employee"]`
+
+```cypher
+// Remove a label
+MATCH (p:Person {name:"Alice"})
+REMOVE p:Employee
+RETURN labels(p);
+```
+
+**After:** `labels(Alice) = ["Person"]`
+
+---
+
+## 9. DELETE vs DETACH DELETE
+
+### Query 1 — plain DELETE (fails)
+
+**Explanation:** `DELETE` refuses to delete a node that still has relationships attached — Eve has a `WORKS_FOR`→Neo4j relationship from Section 1, so this throws an error instead of doing anything.
+
+**Before:** Eve exists, with one relationship: `Eve -[:WORKS_FOR]-> Neo4j`.
+
+```cypher
+// Fails if the node still has relationships
+MATCH (p:Person {name:"Eve"})
+DELETE p;
+```
+
+**After:** **Error** — `Cannot delete node, because it still has relationships.` No change to the graph.
+
+### Query 2 — DETACH DELETE (succeeds)
+
+**Explanation:** `DETACH DELETE` deletes the node **and** every relationship attached to it in one step, so it always succeeds regardless of how connected the node is.
+
+**Before:** Eve exists, with one relationship: `Eve -[:WORKS_FOR]-> Neo4j`.
+
+```cypher
+// Deletes the node AND all its relationships
+MATCH (p:Person {name:"Eve"})
+DETACH DELETE p;
+```
+
+**After:** Eve node and her `WORKS_FOR` relationship are both gone. Back to 5 people total (Alice, Bob, Carol, Dave, plus the two practice nodes from Section 6 — Eve is fully removed).
+
+---
+
+## 10. OPTIONAL MATCH — left-outer-join behavior *(read-only)*
+
+**Data used by this section:** `WORKS_FOR` relationships that remain: Alice→OpenAI, Bob→Neo4j, Carol→OpenAI. Dave has never had a `WORKS_FOR` relationship. (The two extra Section 6 nodes also have no `WORKS_FOR` and would return `null`, same as Dave — omitted below for clarity.)
+
+**Explanation:** Ordinary `MATCH` would silently drop any `Person` who has no matching `Company` — `OPTIONAL MATCH` keeps them in the result set and fills the missing side with `null` instead, the same way a SQL `LEFT OUTER JOIN` keeps unmatched left-side rows.
+
+```cypher
+MATCH (p:Person)
+OPTIONAL MATCH (p)-[:WORKS_FOR]->(c:Company)
+RETURN p.name, c.name;
+```
+
+**Result:**
+
+| p.name | c.name |
+|---|---|
+| Alice | OpenAI |
+| Bob | Neo4j |
+| Carol | OpenAI |
+| Dave | null |
+
+**Scenario to notice:** Dave has no `WORKS_FOR` relationship, so his `c.name` comes back `null` instead of being excluded — that's the difference from plain `MATCH`.
+
+---
+
+## 11. WITH — pipelining stages *(read-only)*
+
+**Data used by this section:** original purchases from Setup — Alice bought Laptop+Mouse (2 items), Bob bought Laptop+Tennis Racket (2 items), Carol bought Mouse (1 item).
+
+### Query 1 — aggregate then filter
+
+**Explanation:** `WITH` passes an intermediate result (`c`, plus a computed `productCount`) forward to the next stage, where it can be filtered with `WHERE` — something you can't do directly on an aggregate inside the same `MATCH`/`RETURN`.
+
+```cypher
+MATCH (c:Customer)-[:PURCHASED]->(p:Product)
+WITH c, count(p) AS productCount
+WHERE productCount > 1
+RETURN c.name, productCount;
+```
+
+**Result:** Alice(2), Bob(2). Carol is filtered out — she only bought 1 product.
+
+### Query 2 — multi-stage pipeline
+
+**Explanation:** Counts each person's direct `KNOWS` connections, then sorts by that count — a three-stage pipeline: match → aggregate (`WITH`) → sort/return.
+
+```cypher
+// Multi-stage pipeline: aggregate, then filter, then sort
+MATCH (p:Person)-[:KNOWS]->(friend:Person)
+WITH p, count(friend) AS friendCount
+ORDER BY friendCount DESC
+RETURN p.name, friendCount;
+```
+
+**Result:** Alice(1), Bob(1), Carol(1) — all tied at 1 outgoing `KNOWS` edge each (order among ties is arbitrary). Dave doesn't appear at all — he has zero outgoing `KNOWS` relationships, so the initial `MATCH` never produces a row for him.
+
+---
+
+## 12. Aggregations *(read-only)*
+
+**Data used by this section:** same purchase data as Section 11.
+
+### Query 1 — count
+
+```cypher
+MATCH (c:Customer)-[:PURCHASED]->(p:Product)
+RETURN c.name, count(p) AS totalPurchases;
+```
+
+**Result:** Alice(2), Bob(2), Carol(1).
+
+### Query 2 — sum, avg, min, max
+
+**Explanation:** All four aggregate functions can run side by side over the same grouping (`c.name`), each computed from the relationship property `amount`.
+
+```cypher
+MATCH (c:Customer)-[r:PURCHASED]->(:Product)
+RETURN c.name, sum(r.amount) AS totalSpend, avg(r.amount) AS avgSpend,
+       min(r.amount) AS minSpend, max(r.amount) AS maxSpend;
+```
+
+**Result:**
+
+| c.name | totalSpend | avgSpend | minSpend | maxSpend |
+|---|---|---|---|---|
+| Alice | 1250 | 625 | 50 | 1200 |
+| Bob | 1280 | 640 | 180 | 1100 |
+| Carol | 45 | 45 | 45 | 45 |
+
+### Query 3 — collect into a list
+
+**Explanation:** `collect()` gathers all matching values per group into a single list column instead of one row per value.
+
+```cypher
+// collect() into a list
+MATCH (c:Customer)-[:PURCHASED]->(p:Product)
+RETURN c.name, collect(p.name) AS productsBought;
+```
+
+**Result:** Alice → `["Laptop", "Mouse"]`, Bob → `["Laptop", "Tennis Racket"]`, Carol → `["Mouse"]`.
+
+---
+
+## 13. UNWIND — lists to rows and bulk inserts
+
+### Query 1 — explode a list *(read-only)*
+
+**Explanation:** `UNWIND` turns a literal list into one row per element — the reverse of `collect()`. No graph data is touched; the list is just a literal.
+
+```cypher
+// Explode a list into rows
+UNWIND ["Neo4j", "Python", "AWS"] AS skill
+RETURN skill;
+```
+
+**Result:** 3 rows — `Neo4j`, `Python`, `AWS`.
+
+### Query 2 — bulk upsert (mutation)
+
+**Explanation:** Combines `UNWIND` with `MERGE` to upsert many rows in one query — the standard production pattern for loading a batch of records (e.g. from a CSV or API payload) without duplicating existing ones.
+
+**Before:** 3 customers — C1 Alice, C2 Bob, C3 Carol.
+
+```cypher
+// Bulk upsert pattern (as used in production ingestion)
+UNWIND [
+  {customerId: "C4", name: "Diana"},
+  {customerId: "C5", name: "Ethan"}
+] AS row
+MERGE (c:Customer {customerId: row.customerId})
+SET c.name = row.name
+RETURN c;
+```
+
+**After:** 5 customers:
+
+```text
++ C4 Diana   (no purchases yet)
++ C5 Ethan   (no purchases yet)
+```
+
+**Scenario to notice:** Diana and Ethan now exist in the graph with zero `PURCHASED` relationships. Watch for them later — Section 17's `CALL` subquery will show them with `purchaseCount = 0`, while Section 16's `EXISTS` check will simply skip them (since they own no products at all).
+
+---
+
+## 14. Paths — variable-length traversal *(read-only)*
+
+**Data used by this section:** the `KNOWS` chain from Setup, untouched by any of the property edits above: `Alice → Bob → Carol → Dave`.
+
+### Query 1 — 1 to 3 hops
+
+**Explanation:** `*1..3` matches any path of 1, 2, *or* 3 hops along `KNOWS` — Neo4j returns every path length in that range, not just the longest one.
+
+```cypher
+// 1 to 3 hops of KNOWS
+MATCH path =
+    (a:Person {name:"Alice"})-[:KNOWS*1..3]->(b:Person)
+RETURN path;
+```
+
+**Result:** 3 paths —
+`Alice→Bob` (1 hop), `Alice→Bob→Carol` (2 hops), `Alice→Bob→Carol→Dave` (3 hops).
+
+### Query 2 — shortest path
+
+**Explanation:** `shortestPath()` finds the minimum-hop connection between two named nodes, searching in either direction since the pattern uses `-` instead of `->`.
+
+```cypher
+// Shortest path between two people
+MATCH p = shortestPath(
+    (a:Person {name:"Alice"})-[:KNOWS*]-(d:Person {name:"Dave"})
+)
+RETURN p;
+```
+
+**Result:** `Alice → Bob → Carol → Dave` (3 hops) — there's only one connecting path in this graph, so it's also the shortest one.
+
+---
+
+## 15. Two Degrees of Separation *(read-only)*
+
+**Data used by this section:** same `KNOWS` chain — `Alice → Bob → Carol → Dave`.
+
+**Explanation:** Walks exactly two `KNOWS` hops from Alice, then filters out Alice herself and anyone directly connected to her (to make sure the result is *exactly* two degrees away, not one).
+
+```cypher
+MATCH (alice:Person {name:"Alice"})
+      -[:KNOWS]->
+      (:Person)
+      -[:KNOWS]->
+      (candidate:Person)
+WHERE candidate <> alice
+  AND NOT (alice)-[:KNOWS]-(candidate)
+RETURN DISTINCT candidate.name;
+```
+
+**Result:** `Carol` only.
+
+- Path traced: `Alice → Bob → Carol` (Bob is the "friend", Carol is the "candidate").
+- Dave is 3 hops away, not 2, so he isn't a candidate here even though he's also not directly connected to Alice.
+
+---
+
+## 16. EXISTS Subquery *(read-only)*
+
+**Data used by this section:** all 5 customers as of Section 13 (Alice, Bob, Carol, Diana, Ethan), but only Alice/Bob/Carol have any purchases.
+
+**Explanation:** `EXISTS { ... }` is a boolean check — it returns true if the inner pattern matches at least once for that row, without pulling back any data from the subquery itself.
+
+```cypher
+MATCH (c:Customer)
+WHERE EXISTS {
+    MATCH (c)-[:PURCHASED]->(:Product {category:"Electronics"})
+}
+RETURN c.name;
+```
+
+**Result:** `Alice`, `Bob`, `Carol` — each purchased at least one `Electronics` product (Laptop and/or Mouse). Diana and Ethan are skipped: they have no purchases at all, so the inner pattern never matches for them.
+
+---
+
+## 17. CALL Subquery *(read-only)*
+
+**Data used by this section:** same 5 customers as Section 16.
+
+**Explanation:** The `CALL (c) { ... }` subquery runs once **per row** coming out of the outer `MATCH`, computing `purchaseCount` independently for each customer — including customers with zero purchases, since `count()` on an empty match still returns `0` rather than dropping the row.
+
+```cypher
+MATCH (c:Customer)
+CALL (c) {
+    MATCH (c)-[:PURCHASED]->(p:Product)
+    RETURN count(p) AS purchaseCount
+}
+RETURN c.name, purchaseCount;
+```
+
+**Result:**
+
+| c.name | purchaseCount |
+|---|---|
+| Alice | 2 |
+| Bob | 2 |
+| Carol | 1 |
+| Diana | 0 |
+| Ethan | 0 |
+
+Notice this is a wider result than Section 16's `EXISTS` version — Diana and Ethan *do* show up here (with `0`), because `CALL` returns one row per outer match no matter what the subquery finds, whereas `EXISTS` filters rows out entirely.
+
+---
+
+## 18. Constraints
+
+### Query 1 — create a uniqueness constraint
+
+**Explanation:** Registers a rule that no two `Customer` nodes can share the same `customerId`. Creating a uniqueness constraint also silently creates a backing index on that property (used later in Section 19).
+
+**Before:** `SHOW CONSTRAINTS` returns 0 rows (fresh database, no constraints defined yet).
+
+```cypher
+// Create a uniqueness constraint
+CREATE CONSTRAINT customer_id_unique IF NOT EXISTS
+FOR (c:Customer)
+REQUIRE c.customerId IS UNIQUE;
+```
+
+**After:** `SHOW CONSTRAINTS` returns 1 row:
+
+| name | type | entityType | labelsOrTypes | properties |
+|---|---|---|---|---|
+| customer_id_unique | UNIQUENESS | NODE | [Customer] | [customerId] |
+
+### Query 2 — view constraints
+
+```cypher
+// View all constraints
+SHOW CONSTRAINTS;
+```
+
+**Result:** the single row shown above.
+
+**Scenario to notice:** try creating two `Customer` nodes with the same `customerId` now — it should fail with a `ConstraintValidationFailed` error.
+
+---
+
+## 19. Indexes
+
+### Query 1 — create an index
+
+**Explanation:** Adds a range index on `Customer.name` so lookups like `MATCH (c:Customer {name:"Alice"})` don't require scanning every customer node.
+
+**Before:** `SHOW INDEXES` already returns **1 row** at this point — the backing index Neo4j auto-created for the `customer_id_unique` constraint in Section 18 (constraints and indexes are linked; creating one often creates the other).
+
+```cypher
+// Create an index
+CREATE INDEX customer_name_index IF NOT EXISTS
+FOR (c:Customer)
+ON (c.name);
+```
+
+**After:** `SHOW INDEXES` returns **2 rows** — the constraint-backed index plus the new one:
+
+| name | labelsOrTypes | properties | type |
+|---|---|---|---|
+| customer_id_unique | [Customer] | [customerId] | RANGE (constraint-backed) |
+| customer_name_index | [Customer] | [name] | RANGE |
+
+### Query 2 — view indexes
+
+```cypher
+// View all indexes
+SHOW INDEXES;
+```
+
+**Result:** the two rows shown above.
+
+**Scenario to notice:** without an index, `MATCH (c:Customer {name:"Alice"})` has to scan every `Customer` node; with the index, Neo4j jumps straight to the matching node.
+
+---
+
+## 20. Query Plan — EXPLAIN vs PROFILE *(read-only)*
+
+**Data used by this section:** the customer `C1 Alice`, now reachable via the `customer_id_unique` index from Section 18.
+
+### Query 1 — EXPLAIN
+
+**Explanation:** Shows the planned execution strategy **without running the query** — no rows come back, only the plan.
+
+```cypher
+// Plan only, does not execute
+EXPLAIN
+MATCH (c:Customer {customerId:"C1"})
+RETURN c;
+```
+
+**Result:** An execution plan (e.g. `NodeUniqueIndexSeek` on `customer_id_unique`) — **0 data rows**, since `EXPLAIN` never actually executes the query.
+
+### Query 2 — PROFILE
+
+**Explanation:** Runs the query for real **and** attaches runtime statistics (rows produced, DB hits, time per operator) to the same kind of plan.
+
+```cypher
+// Executes AND shows the plan + runtime stats
+PROFILE
+MATCH (c:Customer {customerId:"C1"})
+RETURN c;
+```
+
+**Result:** 1 data row — `Customer {customerId:"C1", name:"Alice"}` — plus the annotated plan showing exactly how many DB hits the index seek took.
+
+---
+
+## 21. Database Objects — Admin, Schema, and Procedural *(read-only)*
+
+**Explanation:** These `SHOW` commands inspect the objects Neo4j maintains *around* your graph data — they don't touch nodes or relationships at all.
+
+### Query 1 — schema objects
+
+```cypher
+// Schema objects
+SHOW CONSTRAINTS;
+SHOW INDEXES;
+```
+
+**Result (at this point in the walkthrough):** 1 constraint (`customer_id_unique`) and 2 indexes (`customer_id_unique`'s backing index + `customer_name_index`) — exactly the state left behind by Sections 18–19.
+
+### Query 2 — admin / server objects
+
+```cypher
+// Admin / server objects
+SHOW DATABASES;
+SHOW USERS;
+SHOW ROLES;
+```
+
+**Result (typical fresh instance):**
+- `SHOW DATABASES` → `neo4j` (your default database) and `system` (Neo4j's internal metadata database) — always present.
+- `SHOW USERS` / `SHOW ROLES` → require Neo4j **Enterprise** edition or Aura; Community edition has no multi-user role-based security, so these commands aren't available there.
+
+### Query 3 — procedural objects
+
+```cypher
+// Procedural objects
+SHOW PROCEDURES;
+SHOW FUNCTIONS;
+```
+
+**Result:** a long built-in list (hundreds of rows) — e.g. `dbms.components`, `db.schema.visualization` among procedures, and `count()`, `labels()`, `collect()` among functions — plus any APOC procedures/functions if the APOC plugin is installed.
+
+**Scenario to notice:** run `SHOW INDEXES` before and after Section 19 to watch `customer_name_index` appear — same for `SHOW CONSTRAINTS` before/after Section 18.
+
+---
+
+## Mini Project Recap — Customer / Product Graph *(read-only)*
+
+**Data used by this section:** the full purchase graph as of Section 13 — Alice (Laptop, Mouse), Bob (Laptop, Tennis Racket), Carol (Mouse), plus Diana and Ethan with zero purchases each.
+
+### Query 1 — products purchased by Alice
+
+```cypher
+// 1. Products purchased by Alice
+MATCH (:Customer {name:"Alice"})-[:PURCHASED]->(p:Product)
+RETURN p.name;
+```
+
+**Result:** `Laptop`, `Mouse`.
+
+### Query 2 — customers who purchased the Laptop
+
+```cypher
+// 2. Customers who purchased the Laptop
+MATCH (c:Customer)-[:PURCHASED]->(:Product {name:"Laptop"})
+RETURN c.name;
+```
+
+**Result:** `Alice`, `Bob`.
+
+### Query 3 — customers who purchased the same product as Alice
+
+**Explanation:** Walks from Alice to a product she bought, then back out to any *other* customer who also bought that same product.
+
+```cypher
+// 3. Customers who purchased the same product as Alice
+MATCH (alice:Customer {name:"Alice"})-[:PURCHASED]->(p:Product)<-[:PURCHASED]-(other:Customer)
+WHERE other <> alice
+RETURN DISTINCT other.name, p.name;
+```
+
+**Result:**
+
+| other.name | p.name |
+|---|---|
+| Bob | Laptop |
+| Carol | Mouse |
+
+### Query 4 — most purchased product
+
+```cypher
+// 4. Most purchased product
+MATCH (:Customer)-[:PURCHASED]->(p:Product)
+RETURN p.name, count(*) AS purchases
+ORDER BY purchases DESC
+LIMIT 1;
+```
+
+**Result:** **Either** `Laptop` **or** `Mouse` — both are tied at 2 purchases each (Laptop: Alice+Bob; Mouse: Alice+Carol). Tennis Racket has only 1.
+
+**Scenario to notice:** this is a genuine tie. `ORDER BY ... LIMIT 1` with no tiebreaker doesn't guarantee *which* of the tied rows comes back — a great interview point about why you should add a secondary `ORDER BY` key (or return all tied rows) whenever ties are possible.
+
+---
+
+## Suggested Practice Order
+
+1. Run Section 0 (setup) once.
+2. Work through Sections 1–9 in order (CRUD basics) — each one changes the graph, so run them in sequence.
+3. Sections 10–17 are read-heavy and safe to run in any order, any number of times.
+4. Sections 18–20 (constraints/indexes/query plan) are best run last since they add schema objects.
+5. Re-run Section 0 from a clean database if you want to reset and repeat.
+
 ---
 
 # Neo4j Graph Data Model Basics
