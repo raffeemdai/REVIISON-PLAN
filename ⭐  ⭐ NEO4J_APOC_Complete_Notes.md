@@ -2,7 +2,7 @@
 
 APOC = **A**wesome **P**rocedures **O**n **C**ypher. It's the most widely used Neo4j plugin: a library of hundreds of procedures and functions that fill in the gaps native Cypher doesn't cover — JSON/XML handling, bulk import/export, dynamic/parameterized Cypher, graph refactoring, batching, triggers, and more.
 
-All practice queries below reuse the **same dataset** as `Day1_Cypher_Practice_Queries.md` (Alice/Bob/Carol/Dave people, OpenAI/Neo4j companies, and the Customer→PURCHASED→Product mini graph), so you can run them in the same sandbox.
+All practice queries below reuse the **same dataset** as `Day1_Cypher_Practice_Queries.md` (Alice/Bob/Carol/Dave people, OpenAI/Neo4j companies, and the Customer→PURCHASED→Product mini graph), so you can run them in the same sandbox. A dedicated section near the end, **"APOC + Python"**, covers calling every one of these procedures from real application code using the official Neo4j Python driver — with production-style (real-time) examples and Python-specific practice questions.
 
 ---
 
@@ -910,6 +910,304 @@ It introduces an external dependency and potential security/availability risk �
 ## Q15. Give an example of a bad use of APOC — something you'd push back on in a code review.
 
 Using `apoc.create.node()` with a dynamic/user-supplied label string with no allow-list or validation — that lets arbitrary label names flow straight from user input into the graph schema, which is both a data-quality risk and, in a web-facing system, an injection-style risk. The fix: validate/allow-list the possible label values before passing them to APOC.
+
+---
+
+# APOC + Python — Calling APOC from Application Code
+
+## Theory
+
+In real production systems, nobody runs raw Cypher by hand in Neo4j Browser — application backends, ETL jobs, and data pipelines call Neo4j through an official driver. In Python, that's the `neo4j` package. APOC procedures/functions are called **exactly like any other Cypher** from Python — you're just sending a Cypher string with `apoc.xxx(...)` in it, with parameters bound safely using `$paramName` placeholders instead of string-formatting values into the query (which would risk Cypher injection, the same way unparameterized SQL risks SQL injection).
+
+## Setup & Syntax
+
+```python
+from neo4j import GraphDatabase
+
+driver = GraphDatabase.driver(
+    "neo4j+s://<your-host>",
+    auth=("neo4j", "<password>")
+)
+
+# The simplified driver API (Neo4j Python driver 5.x+)
+records, summary, keys = driver.execute_query(
+    "RETURN apoc.version() AS version",
+    database_="neo4j"
+)
+
+print(records[0]["version"])
+driver.close()
+```
+
+**Key syntax rules:**
+- Always pass values as **query parameters** (`$skills`, `$payload`), never by f-string/`.format()`-ing them into the Cypher text.
+- `execute_query()` returns a 3-tuple: `(records, summary, keys)`.
+- Use `database_="neo4j"` (note the trailing underscore) to target a specific database in a multi-database setup.
+- For older driver versions or manual transaction control, use `with driver.session(database="neo4j") as session: session.run(...)` instead.
+
+### Memory Trick
+
+```text
+APOC from Python = same Cypher, just sent through driver.execute_query()
+Parameters ($name), never string-formatting — that's the injection-safe rule
+```
+
+---
+
+## Real-Time / Production Examples
+
+### RT1. Bulk customer upsert from an API payload (`apoc.periodic.iterate` + Python)
+
+**Scenario:** Your backend receives a batch of new customers from an upstream system (e.g. a nightly CRM export) as a Python list of dicts, and needs to upsert thousands of them safely.
+
+```python
+new_customers = [
+    {"customerId": "C101", "name": "Grace"},
+    {"customerId": "C102", "name": "Henry"},
+    # ... thousands more
+]
+
+driver.execute_query(
+    """
+    UNWIND $rows AS row
+    CALL apoc.periodic.iterate(
+      "UNWIND $rows AS row RETURN row",
+      "MERGE (c:Customer {customerId: row.customerId})
+       SET c.name = row.name",
+      {batchSize: 500, params: {rows: $rows}}
+    )
+    YIELD batches, total, errorMessages
+    RETURN batches, total, errorMessages
+    """,
+    rows=new_customers,
+    database_="neo4j"
+)
+```
+
+**Why this matters in production:** running a plain `UNWIND` + `MERGE` over 500,000 rows in one transaction risks running out of memory or holding locks too long. Wrapping it in `apoc.periodic.iterate` from the Python layer keeps each batch small and independently committed — the standard pattern for nightly ETL jobs.
+
+### RT2. Deduplicating tags from a resume-parsing pipeline (`apoc.coll`)
+
+**Scenario:** An NLP pipeline extracts skill mentions from a resume, but produces duplicates and inconsistent casing before your Python code cleans it up.
+
+```python
+extracted_skills = ["Neo4j", "python", "AWS", "Neo4j", "Python", "aws"]
+
+records, _, keys = driver.execute_query(
+    """
+    RETURN apoc.coll.toSet(
+        [s IN $skills | apoc.text.capitalize(toLower(s))]
+    ) AS cleanSkills
+    """,
+    skills=extracted_skills,
+    database_="neo4j"
+)
+
+print(records[0]["cleanSkills"])
+# -> ['Neo4j', 'Python', 'Aws']
+```
+
+### RT3. Serializing a query result to JSON for a REST API response (`apoc.convert.toJson`)
+
+**Scenario:** A Flask/FastAPI endpoint needs to return a customer's purchase history as a JSON string, built inside the query instead of reshaping rows in Python.
+
+```python
+records, _, _ = driver.execute_query(
+    """
+    MATCH (c:Customer {customerId: $customerId})-[:PURCHASED]->(p:Product)
+    WITH c.name AS name, collect(p.name) AS products
+    RETURN apoc.convert.toJson({name: name, products: products}) AS json
+    """,
+    customerId="C1",
+    database_="neo4j"
+)
+
+api_response_body = records[0]["json"]
+```
+
+### RT4. Parsing an inbound webhook payload and merging it into the graph (`apoc.convert.fromJsonMap`)
+
+**Scenario:** A third-party webhook (e.g. a payment provider) posts a raw JSON string to your backend; you pass it straight through to Cypher instead of pre-parsing it in Python.
+
+```python
+webhook_body = '{"orderId":"O5001","customerId":"C1","productId":"P1","amount":1200}'
+
+driver.execute_query(
+    """
+    WITH apoc.convert.fromJsonMap($body) AS event
+    MATCH (c:Customer {customerId: event.customerId})
+    MATCH (p:Product {productId: event.productId})
+    MERGE (c)-[r:PURCHASED {orderId: event.orderId}]->(p)
+    SET r.amount = event.amount
+    """,
+    body=webhook_body,
+    database_="neo4j"
+)
+```
+
+### RT5. Dynamic labeling decided by business logic in Python (`apoc.merge.node`)
+
+**Scenario:** A Python service classifies customers into tiers (`Standard`, `Premium`, `VIP`) using business logic that lives in the application, not in Cypher — the label to apply isn't known until runtime.
+
+```python
+def upsert_customer_with_tier(driver, customer_id, name, total_spend):
+    tier = "VIP" if total_spend > 1000 else "Premium" if total_spend > 200 else "Standard"
+
+    driver.execute_query(
+        """
+        CALL apoc.merge.node(
+            ["Customer", $tier],
+            {customerId: $customerId},
+            {name: $name}
+        ) YIELD node
+        RETURN node
+        """,
+        tier=tier,
+        customerId=customer_id,
+        name=name,
+        database_="neo4j"
+    )
+
+upsert_customer_with_tier(driver, "C1", "Alice", 1250)
+```
+
+### RT6. Scheduled subgraph export for a nightly backup job (`apoc.export.csv.query`)
+
+**Scenario:** A cron-triggered Python script exports the day's purchase activity to CSV for a downstream analytics system.
+
+```python
+driver.execute_query(
+    """
+    CALL apoc.export.csv.query(
+        "MATCH (c:Customer)-[r:PURCHASED]->(p:Product)
+         RETURN c.customerId AS customerId, p.name AS product, r.amount AS amount",
+        "/backups/daily_purchases.csv",
+        {}
+    )
+    """,
+    database_="neo4j"
+)
+```
+
+### RT7. Health-check / monitoring script using `apoc.meta.stats()`
+
+**Scenario:** An ops dashboard polls basic graph size metrics every few minutes to detect unexpected growth or drop-offs (e.g. a failed ingestion job).
+
+```python
+def get_graph_health(driver):
+    records, _, _ = driver.execute_query(
+        "CALL apoc.meta.stats() YIELD labelCount, relTypeCount, nodeCount, relCount "
+        "RETURN labelCount, relTypeCount, nodeCount, relCount",
+        database_="neo4j"
+    )
+    return records[0].data()
+
+print(get_graph_health(driver))
+# -> {'labelCount': 4, 'relTypeCount': 3, 'nodeCount': 13, 'relCount': 8}
+```
+
+### Memory Trick
+
+```text
+Real-time APOC+Python = ETL upsert, JSON in/out, dynamic tiers, scheduled export, health checks
+Same idea every time: Python builds the parameters, APOC does the graph-native heavy lifting
+```
+
+---
+
+## Practice Examples — APOC + Python
+
+### PPy1. Clean and deduplicate a list of interests
+
+**Question:** Given a Python list `["reading", "Reading", "hiking", "HIKING", "cooking"]`, return the unique, capitalized interests using APOC — don't dedupe in Python.
+
+**Solution:**
+```python
+interests = ["reading", "Reading", "hiking", "HIKING", "cooking"]
+
+records, _, _ = driver.execute_query(
+    """
+    RETURN apoc.coll.toSet(
+        [i IN $interests | apoc.text.capitalize(toLower(i))]
+    ) AS uniqueInterests
+    """,
+    interests=interests,
+    database_="neo4j"
+)
+print(records[0]["uniqueInterests"])
+# -> ['Reading', 'Hiking', 'Cooking']
+```
+
+### PPy2. Return a customer's full purchase history as JSON, from Python
+
+**Question:** Write a Python function `get_customer_json(driver, customer_id)` that returns a JSON string of `{name, products: [...], totalSpend}` for a given customer.
+
+**Solution:**
+```python
+def get_customer_json(driver, customer_id):
+    records, _, _ = driver.execute_query(
+        """
+        MATCH (c:Customer {customerId: $customerId})-[r:PURCHASED]->(p:Product)
+        WITH c.name AS name, collect(p.name) AS products, sum(r.amount) AS totalSpend
+        RETURN apoc.convert.toJson({
+            name: name, products: products, totalSpend: totalSpend
+        }) AS json
+        """,
+        customerId=customer_id,
+        database_="neo4j"
+    )
+    return records[0]["json"]
+
+print(get_customer_json(driver, "C1"))
+```
+
+### PPy3. Bulk-tag every customer above a spend threshold, in batches
+
+**Question:** From Python, add a `highValue: true` property to every customer whose total spend exceeds `$1000`, using `apoc.periodic.iterate` so it's safe at scale.
+
+**Solution:**
+```python
+driver.execute_query(
+    """
+    CALL apoc.periodic.iterate(
+      "MATCH (c:Customer)-[r:PURCHASED]->(:Product)
+       WITH c, sum(r.amount) AS totalSpend
+       WHERE totalSpend > $threshold
+       RETURN c",
+      "SET c.highValue = true",
+      {batchSize: 200, params: {threshold: $threshold}}
+    )
+    YIELD batches, total
+    RETURN batches, total
+    """,
+    threshold=1000,
+    database_="neo4j"
+)
+```
+
+### PPy4. Parse and ingest a batch of JSON events from an external queue
+
+**Question:** You're pulling messages off a queue (e.g. Kafka/SQS) as raw JSON strings in Python. Write a function that parses and merges each one into the graph as a `PURCHASED` relationship, using APOC to do the JSON parsing inside Cypher rather than Python's own `json` module.
+
+**Solution:**
+```python
+def ingest_purchase_event(driver, raw_json: str):
+    driver.execute_query(
+        """
+        WITH apoc.convert.fromJsonMap($raw) AS event
+        MATCH (c:Customer {customerId: event.customerId})
+        MATCH (p:Product {productId: event.productId})
+        MERGE (c)-[r:PURCHASED]->(p)
+        SET r.amount = event.amount
+        """,
+        raw=raw_json,
+        database_="neo4j"
+    )
+
+ingest_purchase_event(driver, '{"customerId":"C2","productId":"P2","amount":25}')
+```
+
+**Interview point:** why parse JSON with APOC instead of Python's `json.loads()`? Either works — but doing it with `apoc.convert.fromJsonMap` inside the Cypher keeps the parsing and the graph write in the **same query/transaction**, and works well when the JSON is arriving as a property value or from a nested `apoc.load.json` call rather than fully materialized in Python first.
 
 ---
 
