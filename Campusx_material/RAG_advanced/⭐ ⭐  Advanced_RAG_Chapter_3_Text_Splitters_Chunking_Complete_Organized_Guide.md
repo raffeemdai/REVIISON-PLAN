@@ -35,6 +35,8 @@ refer : https://medium.com/@dewasheesh.rana/the-definitive-guide-to-agentic-rag-
 
 > **Note:** In LangChain's default `RecursiveCharacterTextSplitter`, the separator order is paragraph (`"\n\n"`) → line (`"\n"`) → space (`" "`) → character (`""`). It does not explicitly detect sentence punctuation, so "sentence" in Level 2 is a loose description.
 ---
+<img width="588" height="458" alt="image" src="https://github.com/user-attachments/assets/01190b10-5a00-4cc2-8295-8929517d44a1" />
+
 
 ## 📑 Table of Contents
 
