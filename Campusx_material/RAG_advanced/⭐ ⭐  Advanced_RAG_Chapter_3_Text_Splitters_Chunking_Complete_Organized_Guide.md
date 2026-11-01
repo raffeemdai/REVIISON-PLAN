@@ -8,6 +8,32 @@
 refer : https://medium.com/@dewasheesh.rana/the-definitive-guide-to-agentic-rag-text-splitting-chunking-a75766ee307c
 
 
+
+# RAG Chunking Levels
+
+| Level | Name | Key Idea | Use Case | Pros | Cons |
+|:---:|---|---|---|---|---|
+| 1️⃣ | **Character Splitting** | Fixed-length cuts | Demos, debugging | ✅ Simple | ❌ Breaks meaning |
+| 2️⃣ | **Recursive Character Split** | Paragraph → sentence → space hierarchy | General RAG systems | ✅ Structure-aware | ❌ No semantics |
+| 3️⃣ | **Document-Specific Split** | Format-based logic (code, PDF, HTML) | Structured corpora | ✅ Contextual | ❌ Format-dependent |
+| 4️⃣ | **Semantic Splitting** | Based on meaning similarity (embeddings) | Research or enterprise RAG | ✅ Meaningful | ❌ Slower |
+| 5️⃣ | **Agentic Splitting** | LLM reasons about chunk boundaries | Next-gen agentic RAG | ✅ Human-like | ❌ Computationally heavy |
+
+---
+
+## Combined Pros / Cons View
+
+| Level | Name | Key Idea | Use Case | Pros / Cons |
+|:---:|---|---|---|---|
+| 1️⃣ | Character Splitting | Fixed-length cuts | Demos, debugging | **+** Simple, **–** breaks meaning |
+| 2️⃣ | Recursive Character Split | Paragraph → sentence → space hierarchy | General RAG systems | **+** Structure-aware, **–** no semantics |
+| 3️⃣ | Document-Specific Split | Format-based logic (code, PDF, HTML) | Structured corpora | **+** Contextual, **–** format-dependent |
+| 4️⃣ | Semantic Splitting | Based on meaning similarity (embeddings) | Research or enterprise RAG | **+** Meaningful, **–** slower |
+| 5️⃣ | Agentic Splitting | LLM reasons about chunk boundaries | Next-gen agentic RAG | **+** Human-like, **–** computationally heavy |
+
+---
+
+> **Note:** In LangChain's default `RecursiveCharacterTextSplitter`, the separator order is paragraph (`"\n\n"`) → line (`"\n"`) → space (`" "`) → character (`""`). It does not explicitly detect sentence punctuation, so "sentence" in Level 2 is a loose description.
 ---
 
 ## 📑 Table of Contents
