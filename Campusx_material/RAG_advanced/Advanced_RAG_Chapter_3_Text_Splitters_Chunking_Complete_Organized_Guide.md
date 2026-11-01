@@ -5,6 +5,9 @@
 
 **Legend:** 🔵 Core concept · 🟠 Important · 🟣 Memory trick · 🔴 Caution · 🟢 Practice
 
+refer : https://medium.com/@dewasheesh.rana/the-definitive-guide-to-agentic-rag-text-splitting-chunking-a75766ee307c
+
+
 ---
 
 ## 📑 Table of Contents
