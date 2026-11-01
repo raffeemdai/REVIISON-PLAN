@@ -1,5 +1,6 @@
 # 📘 Advanced RAG — Chapter 3: Text Splitters
 ## Organized, beginner-friendly study notes with Python code
+refer : https://medium.com/@dewasheesh.rana/the-definitive-guide-to-agentic-rag-text-splitting-chunking-a75766ee307c
 
 > **Visual guide:** 🔵 Core concept · 🟠 Important point · 🟣 Memory trick · 🔴 Caution · 🟢 Practice
 
