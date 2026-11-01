@@ -37,7 +37,13 @@ refer : https://medium.com/@dewasheesh.rana/the-definitive-guide-to-agentic-rag-
 ---
 <img width="588" height="458" alt="image" src="https://github.com/user-attachments/assets/01190b10-5a00-4cc2-8295-8929517d44a1" />
 
-
+| Level | Name | One-line meaning |
+|:---:|---|---|
+| 1️⃣ | **Character** | Cuts every fixed number of characters, without looking at the content. |
+| 2️⃣ | **Recursive** | Cuts at big breaks first (paragraphs), then smaller ones (sentences, words) only if needed. |
+| 3️⃣ | **Document** | Cuts using the file's own structure, such as headings, functions or JSON objects. |
+| 4️⃣ | **Semantic** | Cuts where the meaning or topic changes, so each chunk holds one idea. |
+| 5️⃣ | **Agentic** | An LLM reads the text and decides where the best cut points are. |
 ## 📑 Table of Contents
 
 **PART A — Foundations**
