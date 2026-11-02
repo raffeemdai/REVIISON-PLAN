@@ -47,6 +47,9 @@ dailydoseds : https://www.dailydoseofds.com/p/5-chunking-strategies-for-rag/
 | 3️⃣ | **Document** | Cuts using the file's own structure, such as headings, functions or JSON objects. |
 | 4️⃣ | **Semantic** | Cuts where the meaning or topic changes, so each chunk holds one idea. |
 | 5️⃣ | **Agentic** | An LLM reads the text and decides where the best cut points are. |
+
+<img width="507" height="645" alt="image" src="https://github.com/user-attachments/assets/1ecd7007-2bd6-41b9-b137-cc2aac27cefc" />
+
 ## 📑 Table of Contents
 
 **PART A — Foundations**
