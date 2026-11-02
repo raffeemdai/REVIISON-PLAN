@@ -7,6 +7,9 @@
 
 refer : https://medium.com/@dewasheesh.rana/the-definitive-guide-to-agentic-rag-text-splitting-chunking-a75766ee307c
 
+dailydoseds : https://www.dailydoseofds.com/p/5-chunking-strategies-for-rag/
+
+
 
 
 # RAG Chunking Levels
