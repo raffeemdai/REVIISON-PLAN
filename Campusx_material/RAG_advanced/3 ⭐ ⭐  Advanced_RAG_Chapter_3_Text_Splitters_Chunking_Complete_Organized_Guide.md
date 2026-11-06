@@ -1,4 +1,4 @@
-# RAG Chapter 3 — Text Splitters (Complete, Organized Guide)
+# RAG Chapter 3 — Chunking / Text Splitters  (Complete, Organized Guide)
 
 > All content and all Python code from your notes, reorganized into a clear learning order.
 > Every strategy follows the **same template**: Idea → Parameters → Code → Observations → Pros/Cons → Memory trick.
