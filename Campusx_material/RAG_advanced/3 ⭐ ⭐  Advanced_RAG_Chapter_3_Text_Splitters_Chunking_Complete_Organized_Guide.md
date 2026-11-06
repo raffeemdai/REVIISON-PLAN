@@ -10,7 +10,7 @@ refer : https://medium.com/@dewasheesh.rana/the-definitive-guide-to-agentic-rag-
 dailydoseds : https://www.dailydoseofds.com/p/5-chunking-strategies-for-rag/
 
 
-
+#### chunking over lap : There is no official standard, but the common rule of thumb is 10-20% of the chunk size, and about 10-15% is the usual starting point.
 
 # RAG Chunking Levels
 
