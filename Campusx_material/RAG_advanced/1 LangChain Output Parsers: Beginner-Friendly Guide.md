@@ -1,3 +1,182 @@
+# LangChain Output Parsers: Short Notes
+
+## 1. What & Why
+- **Output parser** = converts raw LLM text into a Python object (str, list, dict, Pydantic, Enum).
+- Two jobs: **`get_format_instructions()`** (tells the LLM the format) + **`parse()`** (converts the reply).
+- Why: LLM text is unreliable. Parsers give a predictable shape, validation, and clear errors.
+
+```python
+chain = prompt | llm | parser      # core pattern
+```
+
+## 2. Setup
+```python
+from langchain_openai import ChatOpenAI
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)   # temp=0 for structured output
+```
+
+## 3. Important Parsers
+
+| Parser | Returns | Use for |
+|---|---|---|
+| `StrOutputParser` | `str` | Plain text, final answers |
+| `CommaSeparatedListOutputParser` | `list[str]` | Simple lists |
+| `JsonOutputParser` | `dict` | Flexible JSON, streaming |
+| `PydanticOutputParser` | Pydantic object | Validated structured data |
+| `EnumOutputParser` | Enum member | Classification, routing |
+
+### String
+```python
+chain = prompt | llm | StrOutputParser()
+```
+
+### Pydantic (most important)
+```python
+from pydantic import BaseModel, Field
+from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
+
+class Movie(BaseModel):
+    title: str = Field(description="Movie title")
+    year: int = Field(description="Release year")
+
+parser = PydanticOutputParser(pydantic_object=Movie)
+
+prompt = PromptTemplate(
+    template="Suggest a movie.\n{format_instructions}",
+    partial_variables={"format_instructions": parser.get_format_instructions()},
+)
+
+movie = (prompt | llm | parser).invoke({})
+print(movie.title, movie.year)
+```
+
+### JSON
+```python
+from langchain_core.output_parsers import JsonOutputParser
+parser = JsonOutputParser(pydantic_object=Movie)   # returns dict
+```
+
+## 4. Modern Way: `with_structured_output`
+```python
+structured_llm = llm.with_structured_output(Movie)
+result = structured_llm.invoke("Suggest a sci-fi movie")   # Movie(...)
+```
+- Uses native tool calling / JSON schema, so it is **more reliable**.
+- Needs a model that supports it.
+- **Rule:** use it when supported; use classic parsers otherwise.
+
+## 5. Error Handling
+
+| Tool | Purpose |
+|---|---|
+| `OutputParserException` | Error raised on parse failure |
+| `OutputFixingParser.from_llm(parser, llm)` | LLM repairs bad output (no original prompt) |
+| `RetryOutputParser.from_llm(parser, llm)` | Retries **with original prompt** (fixes missing info) |
+| `chain.with_retry(stop_after_attempt=3)` | Retry the whole chain |
+| `chain.with_fallbacks([backup])` | Switch to a backup chain |
+
+## 6. Custom Parser
+```python
+from langchain_core.output_parsers import BaseOutputParser
+
+class LineListParser(BaseOutputParser[list[str]]):
+    def parse(self, text: str) -> list[str]:
+        return [l.strip() for l in text.split("\n") if l.strip()]
+```
+
+## 7. Streaming
+- `StrOutputParser`: streams tokens.
+- `JsonOutputParser`: streams partial JSON.
+- `PydanticOutputParser`: needs full output, so no partial objects.
+
+## 8. Advanced RAG Uses
+
+| RAG step | Parser / schema |
+|---|---|
+| Answer + citations + confidence | Pydantic |
+| Multi-query generation | List / custom line parser |
+| Document relevance grader | `Literal["yes","no"]` |
+| Query router | `Literal[...]` / Enum |
+| Self-query (metadata filters) | Pydantic with `Optional` fields |
+
+### Cited answer
+```python
+class Citation(BaseModel):
+    source: str
+    page: int
+
+class RAGAnswer(BaseModel):
+    answer: str
+    confidence: float
+    citations: list[Citation]
+
+chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | llm.with_structured_output(RAGAnswer)
+)
+```
+
+### Grader
+```python
+class Grade(BaseModel):
+    binary_score: Literal["yes", "no"]
+
+grader = grader_prompt | llm.with_structured_output(Grade)
+```
+
+### Router
+```python
+class Route(BaseModel):
+    datasource: Literal["vectorstore", "web_search", "sql_db"]
+```
+
+**Flow:** Router, then query analyzer, then retriever, then grader, then answer generator, then retry/fix on failure.
+
+## 9. Common Mistakes
+1. Forgetting `{format_instructions}` in the prompt
+2. High temperature, which breaks JSON
+3. Expecting `JsonOutputParser` to return an object (it returns a **dict**)
+4. No `OutputParserException` handling
+5. Vague `Field(description=...)`, which acts as part of the prompt
+6. Deeply nested schemas, which fail more often
+
+## 10. Top Interview Questions
+
+**Q1. What is an output parser?**
+Converts raw LLM output into structured Python data and provides format instructions for the prompt.
+
+**Q2. `JsonOutputParser` vs `PydanticOutputParser`?**
+JSON returns a dict and can stream partial output. Pydantic returns a validated object and needs the full output.
+
+**Q3. `OutputFixingParser` vs `RetryOutputParser`?**
+Fixing sees only the bad output and the error. Retry also sees the original prompt, so it can regenerate missing content.
+
+**Q4. `with_structured_output` vs output parsers?**
+It uses the model's native structured output (more reliable, needs model support). Parsers rely on prompt instructions and text parsing.
+
+**Q5. What is `partial_variables`?**
+Pre-fills prompt variables like `format_instructions`, so you do not pass them on every call.
+
+**Q6. Where are parsers used in RAG?**
+Routing, query rewriting, relevance grading, metadata extraction, and cited answers.
+
+**Q7. How do you reduce parsing failures?**
+`temperature=0`, native structured output, simple schemas with clear descriptions, few-shot examples, retries, fallbacks.
+
+**Q8. Does parsing guarantee correct citations?**
+No. It guarantees shape, not truth. Verify in code that cited IDs exist in the retrieved chunks.
+
+## 11. Quick Revision
+- Parser = **LLM text to Python object**
+- Pattern: `prompt | llm | parser`
+- Text: `StrOutputParser` | Structured: `PydanticOutputParser` or `with_structured_output` | Choices: `Enum` / `Literal`
+- `JsonOutputParser` is a **dict**; `PydanticOutputParser` is an **object**
+- Guard with: **retry, fixing parser, fallbacks**
+- Parsing ensures **shape, not truth**
+- Version note: `OutputFixingParser`, `RetryOutputParser`, `StructuredOutputParser` moved to `langchain-classic` in LangChain 1.x
+
 # LangChain Output Parsers: Beginner-Friendly Guide
 ## Theory, Python Code, Syntax, Advanced RAG Examples, Interview Questions, and Revision Notes
 
