@@ -2,6 +2,8 @@
 ## Theory, Python Code, Syntax, Advanced RAG Examples, Interview Questions, and Revision Notes
 
 ---
+<img width="931" height="615" alt="image" src="https://github.com/user-attachments/assets/a064b830-1906-4c6e-b9bb-f03fdb26262e" />
+
 
 ## Table of Contents
 
