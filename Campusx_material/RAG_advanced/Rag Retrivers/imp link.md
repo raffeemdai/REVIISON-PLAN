@@ -9,3 +9,6 @@ https://www.youtube.com/watch?v=Yg3klzw9tyY&list=PL83Pj2DplX3DwdESMYT3FDmd-Ni0oe
 
 https://www.youtube.com/watch?v=VDlK1FjuJ5s
 https://www.youtube.com/watch?v=Wwuz1l-PCgQ&list=PLQxDHpeGU14DBq-yZYrr4B2rz0mJ--Ljs
+
+### below is good one
+https://mayankchugh-learning.github.io/pages/ai-learning/retriever-guide.html?utm_source=chatgpt.com       
