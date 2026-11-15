@@ -16,7 +16,7 @@ https://mayankchugh-learning.github.io/pages/ai-learning/retriever-guide.html?ut
 https://www.rahulblogs.com/blog/retrievers-in-rag-explained-types-working-and-examples-with-langchain?utm_source=chatgpt.com
 
 
-####belkow is good
+#### belkow is good
 https://github.com/KowshiqKatta/Generative-AI/tree/main/RAG     
 
 
