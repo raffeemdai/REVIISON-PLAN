@@ -2,6 +2,8 @@
 
 <img width="1105" height="618" alt="image" src="https://github.com/user-attachments/assets/4ac2b625-f174-49fb-8c65-8c3078fdbc30" />
 
+https://www.youtube.com/watch?v=CC2fQhBQrTM
+
 
 # RAG RETRIEVAL
 
