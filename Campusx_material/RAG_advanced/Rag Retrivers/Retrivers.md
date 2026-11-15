@@ -3,5 +3,6 @@
 
 #### belkow is good
 https://github.com/KowshiqKatta/Generative-AI/tree/main/RAG     
+https://mayankchugh-learning.github.io/pages/ai-learning/retriever-guide.html
 
 
