@@ -5,7 +5,1213 @@
 https://github.com/KowshiqKatta/Generative-AI/tree/main/RAG     
 https://mayankchugh-learning.github.io/pages/ai-learning/retriever-guide.html
 
+# 🟡📌 RAG Retrievers & Advanced Retrieval — Taxonomy-Based Study Notes
 
+## 🟡📌 Source and scope
+
+These revised notes are based on the five uploaded Python notebooks:
+
+1. `02_similarity_score_threshold.ipynb`
+2. `03_mmr.ipynb`
+3. `04_bm25.ipynb`
+4. `05_hybrid_search.ipynb`
+5. `06_custom_ensemble_retriever.ipynb`
+
+The guide is reorganized by **retriever taxonomy** rather than by notebook order. The code examples and demonstrated behaviours are grounded in those notebooks. Additional taxonomy concepts that are not implemented in the uploaded notebooks are clearly marked as **supplementary concepts**.
+
+## 🟡📌 🎨 Reading guide
+
+- 🔵📌 **Blue** — core retrieval mechanisms
+- 🟢📌 **Green** — result selection and ranking
+- 🟣📌 **Purple** — retriever combination and fusion
+- 🟠📌 **Orange** — query-oriented advanced retrieval
+- 🔴📌 **Red** — hierarchical and context-aware retrieval
+- 🟡📌 **Yellow** — comparisons, practical guidance, and revision
+
+---
+
+> **Scope warning:** These five notebooks demonstrate similarity-score threshold retrieval, MMR, BM25, hybrid dense+sparse retrieval, built-in ensemble retrieval, and a custom RRF ensemble. They do not implement Multi-Query, Query Rewriting, Self-Query, Parent Document, or Contextual Compression. Those topics are included later only to help you understand where they fit in a broader RAG taxonomy.
+
+---
+
+# 🔵📌 1. Big picture: what does a retriever do?
+
+Imagine a company has 100,000 documents. A user asks:
+
+> “How do vaccines protect people from diseases?”
+
+The LLM should not read all 100,000 documents. A **retriever** searches the knowledge base and returns a smaller set of potentially useful documents. The RAG pipeline passes those documents to the LLM as context.
+
+```text
+User question
+     |
+     v
+Retriever searches the knowledge base
+     |
+     v
+Relevant documents
+     |
+     v
+LLM receives question + retrieved context
+     |
+     v
+Answer
+```
+
+A retriever's job is to find useful evidence. It does not write the final answer.
+
+## 🔵📌 1.1 A practical conceptual taxonomy
+
+There is no single universally mandated taxonomy used by every framework or textbook. The following is a useful way to organize the concepts by **what each technique does**.
+
+```text
+RAG RETRIEVAL
+|
++-- A. Retrieval mechanisms: HOW documents are found
+|   +-- Dense / semantic retrieval
+|   +-- Sparse / lexical retrieval (BM25)
+|   +-- Hybrid retrieval (dense + sparse)
+|
++-- B. Candidate selection and ranking: WHICH results are kept
+|   +-- Similarity search / top-k
+|   +-- Similarity-score threshold
+|   +-- MMR (relevance + diversity)
+|
++-- C. Retriever combination and fusion: HOW result lists are combined
+|   +-- Ensemble retriever
+|   +-- Reciprocal Rank Fusion (RRF)
+|   +-- Custom ensemble retriever
+|
++-- D. Query-oriented advanced retrieval: HOW THE QUERY is transformed
+|   +-- Multi-Query
+|   +-- Query rewriting / expansion
+|   +-- Self-Query
+|
++-- E. Hierarchical and context-aware retrieval
+    +-- Parent Document retrieval
+    +-- Child-to-parent retrieval
+    +-- Contextual compression
+```
+
+**Important distinction:** A–C are the areas directly demonstrated by the five uploaded notebooks. D–E are supplementary concepts, not implementations found in those files. Contextual compression is often better described as a post-retrieval processing step than as a separate first-stage search algorithm.
+
+## 🔵📌 1.2 Do not mix up these three questions
+
+| Question | Relevant family | Examples |
+|---|---|---|
+| How do we find candidate documents? | Retrieval mechanism | Dense, BM25, Hybrid |
+| Which candidates should we keep or prefer? | Selection / ranking | Top-k, Threshold, MMR |
+| How do we combine results from multiple searches? | Fusion | Ensemble, RRF |
+
+This simple separation prevents most taxonomy confusion.
+
+---
+
+# 🔵📌 2. Category A — Retrieval mechanisms: how documents are found
+
+## 🔵📌 2.1 Dense / semantic retrieval
+
+**Meaning:** Convert the query and documents into dense embedding vectors, then retrieve documents whose vectors are close to the query vector.
+
+### 🟡📌 Story example
+
+A document says:
+
+> “The immune system produces antibodies that neutralise pathogens.”
+
+The user asks:
+
+> “How do vaccines help the body fight illness?”
+
+The exact wording is different, but the meaning is related. Dense retrieval can find the document because the embeddings represent semantic relationships, not just exact word overlap.
+
+### 🟡📌 Basic flow
+
+```text
+Documents -----------------> Embedding model
+                                  |
+                                  v
+                           Document vectors
+                                  |
+                                  v
+                             Vector store
+
+User query ----------------> Embedding model
+                                  |
+                                  v
+                              Query vector
+                                  |
+                                  v
+                     Vector similarity search
+                                  |
+                                  v
+                         Top matching documents
+```
+
+### 🟡📌 Code pattern used in the notebooks
+
+```python
+from langchain_openai import OpenAIEmbeddings
+from langchain_chroma import Chroma
+
+embeddings = OpenAIEmbeddings(
+    model="text-embedding-3-small"
+)
+
+vectorstore = Chroma.from_documents(
+    documents=docs,
+    embedding=embeddings,
+    collection_name="hybrid_search"
+)
+
+dense_retriever = vectorstore.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 4}
+)
+
+results = dense_retriever.invoke(
+    "How do vaccines work to protect against diseases?"
+)
+```
+
+The threshold notebook also constructs Chroma explicitly with a cosine HNSW space:
+
+```python
+vectorstore = Chroma(
+    embedding_function=embeddings,
+    collection_name="demo",
+    collection_configuration={
+        "hnsw": {
+            "space": "cosine"  # cosine, L2, or ip
+        }
+    }
+)
+```
+
+### 🟡📌 What does `k=4` mean?
+
+Return up to four nearest documents. It does not guarantee all four are useful.
+
+### 🟢📌 Similarity versus distance: an important notebook detail
+
+The threshold notebook uses:
+
+```python
+similarity_scores = vectorstore.similarity_search_with_score(
+    query,
+    k=3
+)
+```
+
+In the Chroma configuration shown in that notebook, the returned `score` is a **distance**. For cosine distance, lower distance means closer vectors. The notebook displays `1 - distance` as a cosine-similarity-style value:
+
+```python
+for doc, distance in similarity_scores:
+    cosine_similarity = 1 - distance
+    print(cosine_similarity)
+```
+
+Do not assume every vector database or API uses the same score direction or scale. Always check whether an API returns a distance or a relevance score.
+
+### 🟡📌 Strengths and limitations
+
+| Strengths | Limitations |
+|---|---|
+| Finds paraphrases and semantically related content | May miss exact rare terms, codes, or identifiers |
+| Works when query and document use different wording | Depends on embedding model and chunk quality |
+| Useful for natural-language questions | Requires embedding generation and vector indexing |
+
+**Use dense retrieval** when users ask questions in natural language and relevant documents may express the same idea using different words.
+
+---
+
+## 🔵📌 2.2 Sparse / lexical retrieval — BM25
+
+**Meaning:** Retrieve documents using query-term matching and term statistics. BM25 is a widely used sparse lexical retrieval algorithm.
+
+### 🟡📌 Story example
+
+User searches for:
+
+> `ERR_CONN_RESET`
+
+They need the document containing that exact error identifier. A semantically related document that discusses “network connection problems” may not be enough.
+
+BM25 is useful because it focuses on the words and terms in the query.
+
+### 🟡📌 How BM25 works conceptually
+
+BM25 is related to TF-IDF, with additional refinements:
+
+- **Term Frequency (TF):** How often does a query term occur in a document?
+- **Inverse Document Frequency (IDF):** How informative is the term across the whole collection? Rare terms are often more informative.
+- **Document-length normalization:** Adjusts for document length so long documents do not win simply because they contain more words.
+
+BM25 does not need an embedding model or a vector database.
+
+### 🟡📌 Notebook implementation
+
+```python
+from langchain_core.documents import Document
+from langchain_community.retrievers import BM25Retriever
+
+retriever = BM25Retriever.from_documents(
+    docs,
+    k=2
+)
+
+query = "antibiotic bacterial infection treatment"
+results = retriever.invoke(query)
+
+for doc in results:
+    print(doc.page_content)
+```
+
+`docs` is the collection of LangChain `Document` objects, and `k=2` asks for the top two results.
+
+### 🟡📌 BM25 strengths and limitations
+
+| Strengths | Limitations |
+|---|---|
+| No embedding model required | Does not inherently understand meaning |
+| Strong for exact terms, names, codes, and identifiers | Can miss synonyms and paraphrases |
+| Simple lexical retrieval approach | Tokenization and preprocessing affect results |
+
+The BM25 notebook demonstrates why lexical overlap matters. A query such as:
+
+> “a structure that feels light and with windows”
+
+may fail to retrieve a document about Gothic cathedrals and flying buttresses if the important query terms do not overlap with the document wording—even when the document is conceptually relevant.
+
+### 🟡📌 BM25Plus in the hybrid notebook
+
+The hybrid and custom-ensemble notebooks use:
+
+```python
+bm25_retriever = BM25Retriever.from_documents(
+    docs,
+    k=2,
+    bm25_variant="plus"
+)
+```
+
+The notebook selects BM25Plus and comments that it can improve recall for short documents by ensuring matched terms contribute positively. The standalone BM25 notebook uses the default call without explicitly selecting this variant.
+
+### 🟡📌 When should you use BM25?
+
+- Error codes and logs
+- Product IDs, SKUs, and identifiers
+- Exact names and technical terms
+- Legal clauses and section numbers
+- Queries where exact lexical matches are important
+
+---
+
+## 🔵📌 2.3 Hybrid retrieval — dense + sparse
+
+**Meaning:** Combine dense semantic retrieval and sparse lexical retrieval so that the strengths of one can compensate for the weaknesses of the other.
+
+### 🟡📌 Story example from the uploaded notebook
+
+The user asks:
+
+> “How do vaccines work to protect against diseases?”
+
+The sample collection contains:
+- Documents with the exact word “vaccine”
+- Documents about antibodies, immune response, and B-lymphocytes that are semantically related but do not contain the word “vaccine”
+
+BM25 can find exact “vaccine” matches. Dense retrieval can find semantically related immune-system documents even when the exact word is absent.
+
+### 🟡📌 Architecture
+
+```text
+                     User query
+                         |
+               +---------+---------+
+               |                   |
+               v                   v
+          Dense search         BM25 search
+          (Chroma)             (Sparse)
+               |                   |
+               v                   v
+        Ranked result list   Ranked result list
+               |                   |
+               +---------+---------+
+                         |
+                         v
+                   Result fusion
+                         |
+                         v
+                Combined ranked results
+```
+
+### 🟡📌 Notebook implementation: dense retriever
+
+```python
+embeddings = OpenAIEmbeddings(
+    model="text-embedding-3-small"
+)
+
+vectorstore = Chroma.from_documents(
+    documents=docs,
+    embedding=embeddings,
+    collection_name="hybrid_search"
+)
+
+chroma_retriever = vectorstore.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 4}
+)
+```
+
+### 🟡📌 Notebook implementation: sparse retriever
+
+```python
+bm25_retriever = BM25Retriever.from_documents(
+    docs,
+    k=2,
+    bm25_variant="plus"
+)
+```
+
+### 🟡📌 Notebook implementation: combine using EnsembleRetriever
+
+```python
+from langchain_classic.retrievers import EnsembleRetriever
+
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[
+        chroma_retriever,
+        bm25_retriever
+    ],
+    weights=[0.8, 0.2]
+)
+
+query = "How do vaccines work to protect against diseases?"
+results = ensemble_retriever.invoke(query)
+```
+
+`weights=[0.8, 0.2]` assigns relative influence to the dense and BM25 retrievers respectively. These are example weights, not universal best values. Tune them using evaluation queries.
+
+### 🔵📌 Hybrid retrieval versus EnsembleRetriever versus RRF
+
+- **Hybrid retrieval** describes the strategy: combine different retrieval mechanisms, commonly dense + sparse.
+- **EnsembleRetriever** is a framework component that combines outputs from multiple retrievers.
+- **RRF** is a rank-fusion algorithm that can be used to merge their ranked lists.
+
+The uploaded notebook implements hybrid retrieval using Chroma dense search, BM25, and `EnsembleRetriever`.
+
+### 🟡📌 When should you use hybrid retrieval?
+
+Use it when:
+- Exact terms and semantic meaning both matter.
+- Users ask natural-language questions but also include IDs, names, or technical terms.
+- Dense-only search misses exact matches.
+- BM25-only search misses paraphrases.
+
+Hybrid retrieval adds complexity and may increase latency because multiple retrieval methods run for one query. Evaluate whether the recall improvement is worth the cost.
+
+---
+
+# 🟢📌 3. Category B — Candidate selection and ranking
+
+These techniques do not all represent new ways to build an index. They determine how candidate results are selected, filtered, or ordered.
+
+## 🟢📌 3.1 Similarity search / top-k selection
+
+Similarity search retrieves the nearest vectors to the query. In LangChain, the notebook uses:
+
+```python
+sim_retriever = vectorstore.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 3}
+)
+
+results = sim_retriever.invoke(query)
+```
+
+Think of it as asking:
+
+> “Give me the three closest documents.”
+
+The limitation is that top-k search tries to fill the requested number of slots even when some results are weak matches.
+
+## 🟢📌 3.2 Similarity-score threshold
+
+### 🟡📌 Problem it solves
+
+Suppose top-k returns five documents, but only two are genuinely relevant. A threshold lets the retriever reject documents that do not meet a minimum relevance requirement.
+
+**Similarity search asks:** Which documents are closest?
+
+**Threshold retrieval asks:** Which documents are relevant enough to keep?
+
+### 🟡📌 Notebook example
+
+The notebook creates 12 sample documents across machine learning, economics, cooking, and sports, then searches for:
+
+> “How does ML model training work?”
+
+It inspects the top results and uses a threshold retriever:
+
+```python
+threshold = 0.43
+
+retriever = vectorstore.as_retriever(
+    search_type="similarity_score_threshold",
+    search_kwargs={
+        "score_threshold": threshold
+    }
+)
+
+results = retriever.invoke(
+    "How does ML model training work?"
+)
+```
+
+The number of returned documents can vary. It may return fewer than `k`, or no documents if nothing passes.
+
+### 🟡📌 Important: what does `0.43` mean?
+
+It is the threshold value used by the retriever interface in this example. It is **not a universal value** for all embedding models, vector stores, distance metrics, or datasets.
+
+The notebook's raw Chroma score and the retriever's relevance-score threshold should not be compared blindly. The API may convert distance into relevance score.
+
+### 🟡📌 How to choose a threshold
+
+1. Run representative queries.
+2. Inspect retrieved documents and scores.
+3. Decide what counts as a useful match.
+4. Tune the threshold on a validation set.
+5. Check false positives (irrelevant results included) and false negatives (useful results excluded).
+
+A threshold that is too high may remove useful evidence. A threshold that is too low may allow irrelevant context through.
+
+### 🟡📌 When to use it
+
+- You prefer fewer high-confidence documents over a fixed number.
+- Irrelevant context can confuse the LLM.
+- Your application should be able to return no documents when nothing is sufficiently relevant.
+
+---
+
+## 🟢📌 3.3 MMR — Maximum Marginal Relevance
+
+### 🟡📌 Problem it solves: duplicate context
+
+The MMR notebook intentionally creates three near-identical deep-learning documents about gradient descent. Ordinary similarity search returns those similar documents together.
+
+But a useful context set might contain:
+- One gradient-descent explanation
+- One dropout explanation
+- One batch-normalisation explanation
+- One learning-rate-scheduler explanation
+
+MMR balances:
+1. **Relevance:** Is this document related to the query?
+2. **Diversity:** Is this document different from the documents already selected?
+
+### 🟡📌 Story explanation
+
+Imagine asking three people to explain deep-learning training. All three repeat the same gradient-descent explanation. You would rather have one explanation of gradient descent, one of dropout, and one of batch normalisation.
+
+MMR tries to avoid wasting context space on near-duplicates while retaining relevance.
+
+### 🟢📌 Similarity search versus MMR
+
+| Similarity search | MMR |
+|---|---|
+| Focuses on query-document similarity | Balances query relevance and diversity |
+| Can return near-duplicates | Tries to reduce redundancy |
+| Good when top matches are already distinct | Useful when many documents repeat similar information |
+
+### 🟡📌 Notebook implementation
+
+Ordinary similarity retrieval:
+
+```python
+sim_retriever = vectorstore.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 3}
+)
+
+results = sim_retriever.invoke(query)
+```
+
+MMR retrieval:
+
+```python
+retriever = vectorstore.as_retriever(
+    search_type="mmr",
+    search_kwargs={
+        "k": 3,
+        "fetch_k": 10,
+        "lambda_mult": 0.5
+    }
+)
+
+results = retriever.invoke(query)
+```
+
+### 🟡📌 Understand the parameters
+
+| Parameter | Meaning |
+|---|---|
+| `k` | Number of final documents to return |
+| `fetch_k` | Number of candidate documents fetched before MMR selects the final results |
+| `lambda_mult` | Controls relevance-versus-diversity balance |
+
+```text
+Query
+  |
+  v
+Fetch fetch_k candidate documents
+  |
+  v
+MMR selects a relevant, diverse subset
+  |
+  v
+Return k documents
+```
+
+### 🟡📌 Understanding `lambda_mult`
+
+The notebook tests:
+
+```python
+lambda_values = [1.0, 0.7, 0.5, 0.0]
+
+for lm in lambda_values:
+    retriever = vectorstore.as_retriever(
+        search_type="mmr",
+        search_kwargs={
+            "k": 3,
+            "fetch_k": 10,
+            "lambda_mult": lm
+        }
+    )
+
+    results = retriever.invoke(query)
+```
+
+| `lambda_mult` | Behaviour |
+|---:|---|
+| `1.0` | Pure relevance; equivalent to similarity-based selection |
+| `0.7` | Strong relevance preference, some diversity |
+| `0.5` | Balances relevance and diversity |
+| `0.0` | Pure diversity objective; relevance is not directly rewarded |
+
+**Memory trick:** Lambda high = relevance high. Lambda low = diversity has more influence.
+
+Do not automatically choose `0.0`: the results may become diverse but not useful if relevance is ignored.
+
+### 🟡📌 When should you use MMR?
+
+- Your knowledge base contains repeated or overlapping information.
+- Similarity search returns near-duplicate chunks.
+- You want broader topic coverage within a limited context window.
+- The LLM needs different aspects of a subject rather than repeated versions of one point.
+
+---
+
+# 🟣📌 4. Category C — Retriever combination and fusion
+
+This category is about combining multiple ranked lists. Hybrid retrieval is one common reason to combine retrievers, but ensembles can combine other retriever types too.
+
+## 🟣📌 4.1 Ensemble retriever
+
+An **ensemble retriever** combines outputs from multiple retrievers into one result list.
+
+In the hybrid notebook:
+
+```python
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[
+        chroma_retriever,
+        bm25_retriever
+    ],
+    weights=[0.8, 0.2]
+)
+```
+
+The dense retriever and BM25 retriever each produce their own results. The ensemble combines them using the configured weights and the library's fusion behaviour.
+
+### 🟡📌 What do the weights mean?
+
+```python
+weights=[0.8, 0.2]
+```
+
+The first retriever receives weight `0.8`; the second receives `0.2`. The weights influence the relative contribution of each retriever. They should be tuned on representative data rather than copied blindly.
+
+## 🟣📌 4.2 RRF — Reciprocal Rank Fusion
+
+### 🟡📌 Why do we need rank fusion?
+
+Imagine two retrievers return:
+
+```text
+Dense:
+1. Document A
+2. Document B
+3. Document C
+
+BM25:
+1. Document B
+2. Document D
+3. Document A
+```
+
+A document may appear in both lists at different ranks. RRF combines the lists by adding a contribution based on each document's rank. Documents ranked highly by multiple retrievers can rise in the fused ranking.
+
+A common RRF formula is:
+
+\[
+RRF(d) = \sum_{r \in R} \frac{1}{k + rank_r(d)}
+\]
+
+Weighted form:
+
+\[
+RRF(d) = \sum_{r \in R} \frac{w_r}{k + rank_r(d)}
+\]
+
+Where:
+- `d` = document
+- `r` = a retriever
+- `rank_r(d)` = document's rank in that retriever's list
+- `w_r` = retriever weight
+- `k` = smoothing constant
+
+A retriever that does not return a document contributes zero for that document.
+
+### 🟡📌 Why use RRF instead of adding raw scores?
+
+Dense similarity scores and BM25 scores may have different scales and meanings. Directly adding them can be misleading. RRF uses rank positions, so it does not require raw scores to be directly comparable.
+
+## 🟣📌 4.3 Custom Ensemble Retriever — implement RRF yourself
+
+The fifth notebook rebuilds ensemble retrieval manually. This is useful for understanding what happens behind the framework abstraction.
+
+### 🟡📌 Notebook code
+
+```python
+from typing import List
+from langchain_core.documents import Document
+from langchain_core.retrievers import BaseRetriever
+from langchain_core.callbacks.manager import CallbackManagerForRetrieverRun
+
+class MyEnsembleRetriever(BaseRetriever):
+    retrievers: List[BaseRetriever]
+    weights: List[float]
+    rrf_k: int = 60
+
+    def _get_relevant_documents(
+        self,
+        query: str,
+        run_manager: CallbackManagerForRetrieverRun
+    ) -> List[Document]:
+
+        # 1. Collect ranked results from every retriever
+        all_results: List[List[Document]] = [
+            retriever.invoke(query)
+            for retriever in self.retrievers
+        ]
+
+        # 2. Accumulate RRF scores; use page_content as the key
+        doc_scores: dict[str, tuple[float, Document]] = {}
+
+        for retriever_idx, results in enumerate(all_results):
+            weight = self.weights[retriever_idx]
+
+            for rank, doc in enumerate(results):
+                rrf_score = weight * (
+                    1.0 / (rank + self.rrf_k)
+                )
+
+                key = doc.page_content
+
+                if key in doc_scores:
+                    prev_score, prev_doc = doc_scores[key]
+                    doc_scores[key] = (
+                        prev_score + rrf_score,
+                        prev_doc
+                    )
+                else:
+                    doc_scores[key] = (rrf_score, doc)
+
+        # 3. Sort by accumulated score, highest first
+        sorted_docs = sorted(
+            doc_scores.values(),
+            key=lambda x: x[0],
+            reverse=True
+        )
+
+        return [doc for _, doc in sorted_docs]
+```
+
+### 🟡📌 Code explained step by step
+
+**Step 1 — Accept multiple retrievers**
+
+```python
+retrievers: List[BaseRetriever]
+```
+
+Example:
+
+```python
+[chroma_retriever, bm25_retriever]
+```
+
+**Step 2 — Configure weights**
+
+```python
+weights: List[float]
+```
+
+The notebook uses `[0.8, 0.2]`, giving dense retrieval more influence in that example.
+
+**Step 3 — Run every retriever**
+
+```python
+all_results = [
+    retriever.invoke(query)
+    for retriever in self.retrievers
+]
+```
+
+Each retriever produces its own ranked document list.
+
+**Step 4 — Calculate each rank contribution**
+
+```python
+rrf_score = weight * (
+    1.0 / (rank + self.rrf_k)
+)
+```
+
+A better rank produces a larger contribution. The weight scales the contribution.
+
+**Implementation detail:** Python's `enumerate()` starts at rank `0` here. Some RRF descriptions use ranks starting at `1`. The notebook's formula is internally consistent with its zero-based loop, but exact numerical scores differ slightly from a one-based implementation.
+
+**Step 5 — Deduplicate and accumulate**
+
+```python
+key = doc.page_content
+```
+
+The notebook uses the document text as its deduplication key. If the same text appears in multiple result lists, the RRF contributions are added.
+
+**Step 6 — Sort**
+
+```python
+sorted_docs = sorted(
+    doc_scores.values(),
+    key=lambda x: x[0],
+    reverse=True
+)
+```
+
+The highest accumulated RRF scores appear first.
+
+### 🟡📌 Instantiate and call the custom retriever
+
+```python
+my_ensemble = MyEnsembleRetriever(
+    retrievers=[
+        chroma_retriever,
+        bm25_retriever
+    ],
+    weights=[0.8, 0.2],
+    rrf_k=60
+)
+
+results = my_ensemble.invoke(
+    "How do vaccines work to protect against diseases?"
+)
+```
+
+### 🟡📌 Production cautions
+
+The uploaded implementation is a teaching example. For production:
+
+1. Validate that the number of weights equals the number of retrievers.
+2. Consider stable document IDs instead of using only `page_content` for deduplication.
+3. Decide whether ranks start at zero or one and document the convention.
+4. Add a configurable final result limit if required; the notebook returns every unique document in the merged lists.
+5. Decide how to handle a retriever that fails or responds slowly.
+6. Check LangChain versions because imports and APIs can change.
+
+### 🟡📌 Built-in versus custom ensemble
+
+| Built-in `EnsembleRetriever` | Custom ensemble |
+|---|---|
+| Less code to maintain | You control the fusion logic |
+| Convenient for common cases | Useful for special requirements |
+| Library owns the implementation | You own correctness and edge cases |
+| Good default starting point | Useful for custom deduplication, scoring, logging, or filtering |
+
+**Practical advice:** Start with the built-in ensemble. Implement your own only when you have a clear requirement that the built-in version does not satisfy.
+
+---
+
+# 🟠📌 5. Category D — Query-oriented advanced retrieval (supplementary)
+
+> **Not implemented in the five uploaded notebooks.** These concepts are included to complete the conceptual map, not as claims about the code you uploaded.
+
+These techniques change or expand the user's query before or during retrieval.
+
+## 🟠📌 5.1 Multi-Query Retriever
+
+**Problem:** A user may phrase a question in one way, while relevant documents use different terminology.
+
+**Idea:** Ask an LLM to generate several alternative versions of the original query. Run retrieval for each query, then combine or deduplicate the results.
+
+```text
+Original question
+       |
+       v
+LLM generates query variations
+   /       |        \
+  v        v         v
+Query 1  Query 2   Query 3
+  |        |         |
+  v        v         v
+Retriever Retriever Retriever
+   \       |        /
+    \      |       /
+     Merge / deduplicate
+             |
+             v
+       Retrieved context
+```
+
+Example original query:
+
+> “How can I reduce LLM hallucinations?”
+
+Possible query variations:
+- “Methods for improving factual accuracy in large language models”
+- “Techniques to ground LLM answers in trusted sources”
+- “How retrieval-augmented generation reduces hallucination”
+
+**Use when:** Query wording is ambiguous or relevant documents may use different vocabulary.
+
+## 🟠📌 5.2 Query rewriting / query expansion
+
+**Idea:** Rewrite the user's original query into a clearer, more searchable query, or expand it with useful terms.
+
+Example:
+
+Original:
+> “RAG not finding docs for latest policy”
+
+Rewritten:
+> “Retrieve the most recently updated policy documents and identify the current policy version.”
+
+**Use when:** User questions are vague, conversational, misspelled, or incomplete.
+
+**Difference from Multi-Query:** Query rewriting often produces one improved query; Multi-Query deliberately generates multiple alternative queries. Implementations can overlap.
+
+## 🟠📌 5.3 Self-Query Retriever
+
+**Idea:** Use an LLM to interpret a natural-language question and separate:
+1. The semantic search query
+2. Structured metadata filters
+
+Example user question:
+
+> “Find engineering documents about Kubernetes published after 2024.”
+
+The retriever may derive:
+- Semantic query: “Kubernetes”
+- Metadata filter: `department = engineering`
+- Metadata filter: `publication_year > 2024`
+
+**Use when:** Your documents contain useful metadata such as department, author, date, product, region, or document type.
+
+**Important:** Metadata filtering requires the relevant metadata to be present and correctly indexed. The LLM does not magically create reliable metadata that your data store does not have.
+
+---
+
+# 🔴📌 6. Category E — Hierarchical and context-aware retrieval (supplementary)
+
+> **Not implemented in the five uploaded notebooks.** These concepts are included for taxonomy understanding only.
+
+## 🔴📌 6.1 Parent Document Retriever
+
+**Problem:** Small chunks can be precise for matching, but may not contain enough surrounding context for the LLM to answer well.
+
+**Idea:** Split documents into:
+- Small child chunks for searching
+- Larger parent chunks or documents for context
+
+Search using child chunks. When a child matches, return its parent document or larger parent section.
+
+```text
+Full document
+     |
+     +-------------------------------+
+     |                               |
+     v                               v
+Large parent sections          Small child chunks
+                                      |
+                                      v
+                                Search child chunks
+                                      |
+                                      v
+                              Matching child found
+                                      |
+                                      v
+                              Return parent section
+```
+
+**Use when:** Precise matching is important, but the LLM needs surrounding paragraphs or a larger section to understand the evidence.
+
+## 🔴📌 6.2 Child-to-parent retrieval
+
+This describes the retrieval pattern used by parent-document approaches:
+- Search smaller child chunks.
+- Use the child's stored parent reference.
+- Return the larger parent content.
+
+It is a relationship between indexing granularity and retrieval granularity, not necessarily a separate algorithm.
+
+## 🔴📌 6.3 Contextual Compression
+
+**Problem:** Retrieved documents may contain useful information mixed with irrelevant paragraphs.
+
+**Idea:** After retrieval, compress the retrieved content by extracting only the parts relevant to the query. Depending on the implementation, this may use an LLM or another filtering method.
+
+```text
+User query
+    |
+    v
+Retriever returns documents
+    |
+    v
+Compression / filtering step
+    |
+    v
+Only query-relevant passages
+    |
+    v
+LLM answer generation
+```
+
+**Use when:** Retrieved documents are long, noisy, or contain only a small amount of relevant information.
+
+**Taxonomy note:** Contextual compression is usually best understood as a post-retrieval processing layer around a retriever, rather than a standalone dense or sparse retrieval mechanism.
+
+---
+
+# 🟡📌 7. The complete comparison table
+
+| Technique | Taxonomy role | Needs embeddings? | Main purpose |
+|---|---|---:|---|
+| Dense similarity | Retrieval mechanism | Yes | Find semantically close documents |
+| BM25 | Retrieval mechanism | No | Find lexical / keyword matches |
+| Hybrid search | Retrieval combination strategy | Dense side: yes; sparse side: no | Combine semantic and lexical signals |
+| Similarity top-k | Candidate selection | For vector similarity, yes | Return a fixed number of nearest results |
+| Similarity threshold | Candidate filtering | For vector similarity, yes | Reject weak matches |
+| MMR | Candidate selection / re-ranking | Usually yes | Balance relevance and diversity |
+| Ensemble retriever | Result combination | Depends on component retrievers | Combine multiple retriever outputs |
+| RRF | Rank-fusion algorithm | No, not by itself | Fuse ranked lists using rank positions |
+| Multi-Query | Query transformation | Not inherently | Search multiple query formulations |
+| Query rewriting | Query transformation | Not inherently | Improve the search query |
+| Self-Query | Query + metadata filter generation | Not inherently | Derive semantic query and structured filters |
+| Parent Document | Hierarchical retrieval | Commonly used with vector search | Search small chunks, return larger context |
+| Contextual Compression | Post-retrieval processing | Not inherently | Remove irrelevant parts of retrieved context |
+
+---
+
+# 🟡📌 8. How to choose in a real RAG application
+
+| Requirement | Good starting point | Reason |
+|---|---|---|
+| Search by meaning or paraphrase | Dense similarity | Semantic matching |
+| Search exact IDs, codes, names | BM25 | Lexical matching |
+| Need both semantic and exact matching | Hybrid retrieval | Complementary retrieval signals |
+| Top-k contains weak matches | Similarity threshold | Reject low-relevance results |
+| Top-k contains near-duplicates | MMR | Improve diversity |
+| Need to combine several retrievers | Ensemble + RRF | Merge ranked result lists |
+| Query is vague or uses different terminology | Query rewriting / Multi-Query | Improve query coverage |
+| User asks for metadata constraints | Self-Query | Convert natural language to filters |
+| Small chunks lack surrounding context | Parent Document | Return a larger parent section |
+| Retrieved documents are long and noisy | Contextual Compression | Keep relevant passages |
+
+## 🟡📌 A sensible experimentation sequence
+
+For many enterprise knowledge-base projects:
+
+1. Build a dense similarity baseline.
+2. Evaluate whether exact terms and identifiers are being missed.
+3. Add BM25 and compare against dense-only retrieval.
+4. Try hybrid retrieval and tune weights.
+5. Inspect whether the returned context contains duplicates; if so, test MMR.
+6. If weak matches are reaching the LLM, evaluate a score threshold.
+7. If queries are vague or metadata filters matter, evaluate query-oriented techniques.
+8. If chunks lack enough context or retrieved documents are too long, evaluate parent retrieval or contextual compression.
+
+This is a practical sequence for experimentation, not a universal recipe. Measure retrieval quality and end-to-end answer quality on representative queries.
+
+---
+
+# 🟡📌 9. Quick memory tricks
+
+- **Dense = meaning.** It searches by semantic closeness.
+- **Sparse / BM25 = words.** It searches by lexical overlap and term statistics.
+- **Hybrid = both.** Dense + sparse retrieval.
+- **Top-k = fixed count.** Return the nearest `k` candidates.
+- **Threshold = minimum acceptable relevance.** It can return fewer than `k`.
+- **MMR = relevant + diverse.** Avoid repeated context.
+- **Ensemble = multiple retrievers together.**
+- **RRF = combine ranks.** It avoids directly adding incompatible raw scores.
+- **Multi-Query = many versions of the question.**
+- **Self-Query = question + metadata filters.**
+- **Parent Document = search small, return big.**
+- **Contextual Compression = retrieve, then trim.**
+
+---
+
+# 🟡📌 10. Interview questions and answers
+
+### 🟡📌 Q1. What is the difference between dense and sparse retrieval?
+
+**Answer:** Dense retrieval represents text as embedding vectors and retrieves based on semantic similarity. Sparse retrieval, such as BM25, relies on lexical term matching and term statistics. Dense retrieval is useful for paraphrases; sparse retrieval is useful for exact terms.
+
+### 🟡📌 Q2. What is similarity search?
+
+**Answer:** It embeds a query and compares it with stored document vectors, returning the nearest documents according to a configured distance or similarity metric.
+
+### 🟡📌 Q3. Why can top-k search return irrelevant documents?
+
+**Answer:** Top-k tries to return the requested number of results, even if some are weak matches. A threshold can filter out results below a relevance cutoff.
+
+### 🟡📌 Q4. What is a similarity-score threshold retriever?
+
+**Answer:** It returns documents only when their relevance score passes a configured threshold. The number returned can vary and may be zero.
+
+### 🟡📌 Q5. Is `score_threshold=0.43` suitable for every project?
+
+**Answer:** No. The correct threshold depends on the embedding model, vector store, score conversion, dataset, and query distribution. It must be calibrated.
+
+### 🟡📌 Q6. What is the difference between distance and similarity?
+
+**Answer:** Distance measures how far apart vectors are; smaller is usually closer. Similarity measures how alike vectors are; larger is usually more similar. Check the API's score semantics.
+
+### 🟡📌 Q7. What is MMR?
+
+**Answer:** Maximum Marginal Relevance selects documents by balancing relevance to the query with diversity relative to documents already selected.
+
+### 🟡📌 Q8. Why use MMR instead of ordinary similarity search?
+
+**Answer:** Similarity search can return near-duplicate documents. MMR tries to provide a more diverse set of relevant documents, improving context coverage.
+
+### 🟡📌 Q9. What does `fetch_k` mean in MMR?
+
+**Answer:** It is the number of candidate documents fetched before MMR selects the final `k` documents.
+
+### 🟡📌 Q10. What does `lambda_mult` control?
+
+**Answer:** It controls the relevance-diversity trade-off. A value near 1 emphasizes relevance; a value near 0 emphasizes diversity.
+
+### 🟡📌 Q11. What is BM25?
+
+**Answer:** BM25 is a sparse lexical retrieval algorithm that ranks documents using query-term statistics, including term frequency, inverse document frequency, and document-length normalization.
+
+### 🟡📌 Q12. Does BM25 need embeddings?
+
+**Answer:** No. BM25 works with text and term statistics; it does not need an embedding model or vector database.
+
+### 🟡📌 Q13. Why can BM25 fail on paraphrases?
+
+**Answer:** The query may use different words from the relevant document. BM25 relies on lexical overlap and does not inherently understand semantic equivalence.
+
+### 🟡📌 Q14. What is hybrid search?
+
+**Answer:** Hybrid search combines different retrieval approaches, commonly dense semantic retrieval and sparse lexical retrieval, to improve retrieval coverage.
+
+### 🟡📌 Q15. Why combine BM25 and dense retrieval?
+
+**Answer:** BM25 can find exact words and identifiers, while dense retrieval can find semantically related content. Their strengths are complementary.
+
+### 🟡📌 Q16. What is an ensemble retriever?
+
+**Answer:** It combines the outputs of multiple retrievers into one result list. The uploaded notebook combines dense Chroma retrieval and BM25.
+
+### 🟡📌 Q17. What is Reciprocal Rank Fusion?
+
+**Answer:** RRF combines ranked lists by giving each document a contribution based on its rank in each list. Contributions are added to create a fused ranking.
+
+### 🟡📌 Q18. Why use RRF instead of adding raw scores?
+
+**Answer:** Different retrievers can produce scores on different scales. RRF uses ranks, avoiding the need to directly compare incompatible raw score values.
+
+### 🟡📌 Q19. What is the purpose of weights in an ensemble retriever?
+
+**Answer:** Weights control the relative influence of each retriever in the fusion process. They should be tuned using retrieval evaluation.
+
+### 🟡📌 Q20. What is the difference between hybrid search and RRF?
+
+**Answer:** Hybrid search is the overall strategy of combining retrieval methods. RRF is one algorithm for merging their ranked results.
+
+### 🟡📌 Q21. What is the difference between built-in and custom ensemble retrieval?
+
+**Answer:** A built-in ensemble provides a ready-made implementation. A custom ensemble gives more control but requires you to handle validation, deduplication, ranking, failures, and maintenance.
+
+### 🟡📌 Q22. What is Multi-Query retrieval?
+
+**Answer:** It generates multiple alternative query formulations, retrieves results for each, and combines the results to improve query coverage.
+
+### 🟡📌 Q23. What is the difference between Multi-Query and query rewriting?
+
+**Answer:** Query rewriting commonly produces one improved query. Multi-Query generates multiple alternatives. They can overlap in some implementations.
+
+### 🟡📌 Q24. What is Self-Query retrieval?
+
+**Answer:** It uses a language model to derive a semantic search query and structured metadata filters from a natural-language request.
+
+### 🟡📌 Q25. What is Parent Document retrieval?
+
+**Answer:** It searches small child chunks for precise matching and returns the larger parent document or section to provide sufficient context.
+
+### 🟡📌 Q26. What is Contextual Compression?
+
+**Answer:** It filters or compresses retrieved documents after retrieval so the LLM receives only the parts relevant to the query.
+
+### 🟡📌 Q27. Is Contextual Compression a dense or sparse retrieval algorithm?
+
+**Answer:** No. It is better understood as a post-retrieval processing layer that operates on retrieved content.
+
+---
+
+# 🟡📌 11. Final revision checklist
+
+Use this checklist to test whether you understand the taxonomy:
+
+- [ ] I can explain dense retrieval and why it uses embeddings.
+- [ ] I can explain BM25 without mentioning embeddings.
+- [ ] I can explain why dense and sparse retrieval complement each other.
+- [ ] I can distinguish hybrid retrieval from an ensemble implementation.
+- [ ] I understand top-k versus score threshold.
+- [ ] I can explain MMR, `k`, `fetch_k`, and `lambda_mult`.
+- [ ] I can explain why RRF uses rank positions instead of directly adding raw scores.
+- [ ] I can walk through the custom ensemble code.
+- [ ] I know that Multi-Query, Self-Query, Parent Document, and Contextual Compression were not implemented in the five uploaded notebooks.
+- [ ] I can identify whether a technique changes the retrieval mechanism, filters candidates, fuses results, transforms the query, or processes retrieved context.
+
+---
+
+## 🟡📌 One-line summary
+
+**Dense/BM25 find candidates; Hybrid combines retrieval signals; Top-k/Threshold/MMR select results; Ensemble/RRF fuse ranked lists; Query-based methods improve the search query; Parent retrieval and Contextual Compression improve the context passed to the LLM.**
+
+
+
+########################33
 
 # CampusX Advanced RAG — Retrievers & Advanced Retrievers
 ## A story-based, ordered study guide
