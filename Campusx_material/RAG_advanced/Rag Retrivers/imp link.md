@@ -12,3 +12,6 @@ https://www.youtube.com/watch?v=Wwuz1l-PCgQ&list=PLQxDHpeGU14DBq-yZYrr4B2rz0mJ--
 
 ### below is good one
 https://mayankchugh-learning.github.io/pages/ai-learning/retriever-guide.html?utm_source=chatgpt.com       
+
+https://www.rahulblogs.com/blog/retrievers-in-rag-explained-types-working-and-examples-with-langchain?utm_source=chatgpt.com
+
