@@ -1,5 +1,6 @@
 <img width="981" height="702" alt="image" src="https://github.com/user-attachments/assets/029e06bc-ee9a-40bf-932e-b0e78773f10a" />
 
+<img width="1105" height="618" alt="image" src="https://github.com/user-attachments/assets/4ac2b625-f174-49fb-8c65-8c3078fdbc30" />
 
 
 # RAG RETRIEVAL
