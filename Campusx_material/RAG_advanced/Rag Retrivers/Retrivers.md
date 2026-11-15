@@ -1,6 +1,54 @@
 <img width="981" height="702" alt="image" src="https://github.com/user-attachments/assets/029e06bc-ee9a-40bf-932e-b0e78773f10a" />
 
 
+
+# RAG RETRIEVAL
+
+```text
+RAG RETRIEVAL
+|
++-- BEFORE SEARCH (Improve the query)
+|     |
+|     +-- Multi-Query
+|     +-- Query Rewriting
+|     +-- Self-Query
+|
++-- DURING SEARCH
+|     |
+|     +-- A. RETRIEVAL MECHANISMS
+|     |      |
+|     |      +-- Dense Retrieval (Semantic)
+|     |      +-- Sparse Retrieval (Keyword-Based / BM25)
+|     |      +-- Hybrid Retrieval (Dense + Sparse)
+|     |
+|     +-- B. RESULT SELECTION
+|     |      |
+|     |      +-- Top-k Similarity Search
+|     |      +-- Score Threshold
+|     |      +-- MMR (Maximal Marginal Relevance)
+|     |
+|     +-- C. RESULT FUSION
+|            |
+|            +-- Ensemble Retriever
+|                   |
+|                   +-- Reciprocal Rank Fusion (RRF)
+|                   +-- Custom / Hand-Built Fusion
+|
++-- INDEX STRUCTURE
+|     |
+|     +-- Parent Document Retrieval
+|            |
+|            +-- Search using Child Chunks
+|            +-- Return Parent Documents
+|
++-- AFTER SEARCH (Clean and Improve Results)
+      |
+      +-- Contextual Compression
+      +-- Reranking
+```
+
+
+
 #### belkow is good
 https://github.com/KowshiqKatta/Generative-AI/tree/main/RAG     
 https://mayankchugh-learning.github.io/pages/ai-learning/retriever-guide.html
