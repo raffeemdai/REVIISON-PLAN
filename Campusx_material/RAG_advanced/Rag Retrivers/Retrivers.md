@@ -420,6 +420,39 @@ https://www.youtube.com/watch?v=CC2fQhBQrTM
 
 <img width="1312" height="816" alt="image" src="https://github.com/user-attachments/assets/83cb79cb-7c33-4875-ae2c-c4e53a162216" />
 
+<img width="995" height="500" alt="image" src="https://github.com/user-attachments/assets/502722d5-6825-48fb-86cf-aff44af777c7" />
+
+<img width="1112" height="620" alt="image" src="https://github.com/user-attachments/assets/53ea3eae-2718-42db-a474-379d181f9096" />
+<img width="1130" height="562" alt="image" src="https://github.com/user-attachments/assets/39c891ea-f9aa-48c3-ae34-535bbac22a32" />
+<img width="1079" height="601" alt="image" src="https://github.com/user-attachments/assets/7a68b9f9-9c3f-4ad4-9204-46540fd5db19" />
+<img width="1123" height="614" alt="image" src="https://github.com/user-attachments/assets/93d0f3d9-77d2-49c9-9fec-f90f57794af3" />
+<img width="1111" height="619" alt="image" src="https://github.com/user-attachments/assets/0a02c709-43d7-4963-b251-bd46a1bdf03e" />
+
+<img width="1111" height="594" alt="image" src="https://github.com/user-attachments/assets/481913a7-d44e-4596-b9a2-51bc860236ed" />
+
+<img width="1074" height="610" alt="image" src="https://github.com/user-attachments/assets/7fb8e5b6-5265-4866-96a1-0152dcd3c7a2" />
+<img width="1090" height="600" alt="image" src="https://github.com/user-attachments/assets/eaca9197-73c1-4a36-8280-76cc96772c51" />
+
+
+<img width="1116" height="584" alt="image" src="https://github.com/user-attachments/assets/f2b90c4f-d795-4310-b60f-3f033234dfa4" />
+
+<img width="1074" height="569" alt="image" src="https://github.com/user-attachments/assets/d21c7a37-1633-4c6d-8f98-119e588c8526" />
+<img width="1063" height="594" alt="image" src="https://github.com/user-attachments/assets/f4644be3-71f0-4482-93ca-cd42eab45a84" />
+<img width="1108" height="562" alt="image" src="https://github.com/user-attachments/assets/6f52db3a-e3a3-43cb-ad6c-f378d8ff98f8" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 🌟 TF-IDF in Simple Terms
 TF-IDF stands for:
