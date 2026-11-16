@@ -418,12 +418,286 @@ https://www.youtube.com/watch?v=CC2fQhBQrTM
 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/61bb5ed9-54c1-4df7-9b43-4b601c33c36f" />
 
+<img width="1312" height="816" alt="image" src="https://github.com/user-attachments/assets/83cb79cb-7c33-4875-ae2c-c4e53a162216" />
+
+
 🌟 TF-IDF in Simple Terms
 TF-IDF stands for:
 
 Term Frequency (TF): How often a word appears in a particular document.
+
 Inverse Document Frequency (IDF): How rare the word is across all documents.
+
 Together, TF and IDF give higher scores to words that are frequent within a document but rare across others.
+
+# 📚 TF-IDF Explained in Simple English
+
+## 🔵 1. What is TF-IDF?
+
+**TF-IDF** stands for **Term Frequency – Inverse Document Frequency**.
+
+It is a technique used in **NLP (Natural Language Processing)** to find important words in a document.
+
+💡 **Simple meaning:**
+
+TF-IDF helps a computer identify which words are important in a document and which words are common.
+
+### Example
+
+Imagine you have 100 documents.
+
+- 🔴 "The", "Is", "And" – Common words.
+- 🟡 "Machine Learning", "Python" – More specific words.
+- 🟢 "Photosynthesis" – May be rare and important in a particular document.
+
+---
+
+## 🔵 2. Main Components of TF-IDF
+
+TF-IDF has two main components:
+
+### 🟦 A. Term Frequency (TF)
+
+**Meaning:** How many times does a word appear in one document?
+
+**Formula:**
+
+`TF = Number of times a word appears / Total number of words`
+
+**Example:**
+
+Document:
+
+"The cat is playing. The cat is sleeping."
+
+- Total words = 8
+- Word "cat" appears = 2 times
+
+`TF(cat) = 2 / 8 = 0.25`
+
+🟢 **Remember:** TF measures word frequency in one document.
+
+### 🟩 B. Inverse Document Frequency (IDF)
+
+**Meaning:** How rare or common is a word across all documents?
+
+**Formula:**
+
+`IDF = log10(Total number of documents / Number of documents containing the word)`
+
+**Example:**
+
+Suppose we have 3 documents:
+
+| Document | Content |
+|---|---|
+| D1 | Cat sat on mat |
+| D2 | Dog chased cat |
+| D3 | Dog and cat sat together |
+
+**Word: Cat**
+
+- Total documents = 3
+- Documents containing cat = 3
+
+`IDF(cat) = log10(3/3) = 0`
+
+**Word: Chased**
+
+- Total documents = 3
+- Documents containing chased = 1
+
+`IDF(chased) = log10(3/1) = 0.477`
+
+🟢 **Remember:** Rare words get higher IDF scores. Common words get lower IDF scores.
+
+---
+
+## 🟣 3. TF-IDF Formula
+
+Now multiply TF and IDF.
+
+**Formula:**
+
+`TF-IDF = TF × IDF`
+
+### Example: Calculate the TF-IDF of "Chased"
+
+- TF = 1/5 = 0.2
+- IDF = 0.477
+
+Calculation:
+
+`TF-IDF = 0.2 × 0.477`
+
+**Final Answer = 0.0954**
+
+🟢 A higher score generally means a word is more useful for identifying a particular document.
+
+---
+
+## 🟠 4. How TF-IDF Works
+
+Follow these simple steps:
+
+1. 📄 Collect text documents.
+2. ✂️ Split the text into individual words (Tokenization).
+3. 🔵 Calculate Term Frequency (TF).
+4. 🟢 Calculate Inverse Document Frequency (IDF).
+5. 🟣 Multiply TF × IDF.
+6. ⭐ Get the final importance score.
+
+---
+
+## 🔍 5. Is TF-IDF Keyword Search or Semantic Search?
+
+**TF-IDF is a Keyword-Based Search technique (Lexical Search), NOT Semantic Search.**
+
+It looks for matching words rather than understanding the meaning of a sentence.
+
+### 🟦 A. Keyword Search – TF-IDF
+
+**Meaning:** Finds documents based on matching keywords.
+
+Example:
+
+User searches:
+
+`Best machine learning courses`
+
+TF-IDF looks for important matching words such as:
+
+- Machine
+- Learning
+- Courses
+
+If another document contains "AI training classes", TF-IDF may not identify it as relevant because the words are different.
+
+### 🟩 B. Semantic Search
+
+**Meaning:** Finds documents based on the meaning and context of the search.
+
+Example:
+
+User searches:
+
+`Best machine learning courses`
+
+Semantic Search may also find:
+
+- AI training programs
+- Artificial intelligence classes
+- Courses to learn predictive models
+
+Even when the exact keywords are different!
+
+### 🟣 C. Keyword Search vs Semantic Search
+
+| Feature | Keyword Search (TF-IDF) | Semantic Search |
+|---|---|---|
+| Search type | Word-based | Meaning-based |
+| Understands meaning | ❌ No | ✅ Yes, to some extent |
+| Exact word matching | Important | Not required |
+| Context understanding | ❌ No | ✅ Yes |
+| Synonyms | Limited | Better |
+| Technology | TF-IDF, BM25 | Embeddings, Transformers |
+
+### 🖼️ D. Simple Visual Example
+
+**User Search: "Car"**
+
+🔵 Keyword Search (TF-IDF):
+
+- 🚗 Car → Exact keyword match
+- 🚙 Automobile → May not match
+
+🟢 Semantic Search:
+
+- 🚗 Car → Related meaning
+- 🚙 Automobile → Related meaning
+- 🚘 Vehicle → Related meaning
+
+**Main Difference:**
+
+- 🔵 Keyword Search = Finds matching words.
+- 🟢 Semantic Search = Finds matching meaning.
+
+### ⭐ Important Note
+
+TF-IDF itself is a lexical search technique. It can also be combined with semantic search in a hybrid search system.
+
+---
+
+## 🟠 6. Where Do We Use TF-IDF?
+
+- 🔍 **Search Engines:** Find relevant documents.
+- 📩 **Spam Detection:** Identify suspicious words in emails.
+- 📚 **Document Similarity:** Compare two documents.
+- 🔑 **Keyword Extraction:** Find important words in articles.
+- 🤖 **Text Classification:** Convert text into numerical features for machine learning.
+
+---
+
+## 🔴 7. Advantages and Disadvantages
+
+| 🟢 Advantages | 🔴 Disadvantages |
+|---|---|
+| Easy to understand | Doesn't understand word meaning |
+| Fast to calculate | Ignores word order |
+| Finds important keywords | Doesn't understand context |
+| Useful for search engines | Cannot understand synonyms |
+
+**Example:** TF-IDF treats "Car" and "Automobile" as different words, even though they have similar meanings.
+
+---
+
+## 🟢 8. Important Points to Remember
+
+- 🔵 **TF:** How frequently does a word appear in one document?
+- 🟢 **IDF:** How rare is a word across all documents?
+- 🟣 **TF-IDF:** How important is a word in a particular document?
+- 🟡 High TF-IDF = More distinctive word.
+- 🔴 Low TF-IDF = Less distinctive word.
+
+### 🎯 Easy Way to Remember
+
+**TF = Frequency**
+
+**IDF = Rarity**
+
+**TF-IDF = Importance**
+
+**TF-IDF = Keyword Search, not Semantic Search.**
+
+---
+
+## 🏆 9. Final Summary
+
+TF-IDF is an NLP technique that helps computers find important words in documents.
+
+It combines:
+- Term Frequency (TF)
+- Inverse Document Frequency (IDF)
+
+**Final Formula:**
+
+`TF-IDF = TF × IDF`
+
+### Two Important Search Techniques
+
+| Keyword Search | Semantic Search |
+|---|---|
+| Looks for words | Looks for meaning |
+| TF-IDF, BM25 | Embeddings, Transformers |
+| Exact matching is important | Similar meanings can match |
+
+💡 **Remember these sentences:**
+
+1. TF checks frequency.
+2. IDF checks rarity.
+3. TF-IDF finds word importance.
+4. TF-IDF is keyword-based search.
+5. Semantic Search understands meaning and context.
 
 # RAG RETRIEVAL
 
