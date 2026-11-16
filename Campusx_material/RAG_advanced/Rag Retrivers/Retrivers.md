@@ -414,6 +414,16 @@ Pass selected documents to LLM
 
 https://www.youtube.com/watch?v=CC2fQhBQrTM
 
+## TF-IDF   keyword search
+
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/61bb5ed9-54c1-4df7-9b43-4b601c33c36f" />
+
+🌟 TF-IDF in Simple Terms
+TF-IDF stands for:
+
+Term Frequency (TF): How often a word appears in a particular document.
+Inverse Document Frequency (IDF): How rare the word is across all documents.
+Together, TF and IDF give higher scores to words that are frequent within a document but rare across others.
 
 # RAG RETRIEVAL
 
