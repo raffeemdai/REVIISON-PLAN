@@ -18,6 +18,9 @@ Retrieving only the most relevant documents may overlook the diversity of inform
 
 <img width="831" height="301" alt="image" src="https://github.com/user-attachments/assets/de2e9a5e-0261-4be6-b22c-e2fe5b0aed1b" />
 
+<img width="1025" height="448" alt="image" src="https://github.com/user-attachments/assets/c8e1b472-15b4-43fd-859b-d3c9933c9d02" />
+
+
 https://www.youtube.com/watch?v=CC2fQhBQrTM
 
 
