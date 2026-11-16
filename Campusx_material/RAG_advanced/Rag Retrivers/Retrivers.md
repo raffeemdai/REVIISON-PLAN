@@ -21,6 +21,13 @@ Retrieving only the most relevant documents may overlook the diversity of inform
 <img width="1025" height="448" alt="image" src="https://github.com/user-attachments/assets/c8e1b472-15b4-43fd-859b-d3c9933c9d02" />
 
 
+refer : https://www.righttechengineering.com/resources/agentic-ai/retrievers?utm_source=chatgpt.com
+
+<img width="738" height="582" alt="image" src="https://github.com/user-attachments/assets/b71e40f2-8f5a-46be-978b-c78b30fbef42" />
+
+<img width="597" height="460" alt="image" src="https://github.com/user-attachments/assets/39875030-9fe7-459d-96aa-ac959579792f" />
+
+
 https://www.youtube.com/watch?v=CC2fQhBQrTM
 
 
