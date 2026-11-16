@@ -81,6 +81,24 @@ These 4 documents are passed to the LLM as context.
 <img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/21fc2eea-7b60-44e9-8195-dd491d000083" />
 
 
+
+## 🔵📌 Understand the Formula in Simple English
+
+> 🟠 **IMPORTANT FORMULA — MMR**
+>
+> ```text
+> MMR = λ × Relevance − (1 − λ) × Redundancy
+> ```
+
+| Formula Part | Simple Meaning |
+|---|---|
+| `Relevance` | How closely does this chunk match the query? |
+| `Redundancy` | How similar is this chunk to an already-selected chunk? |
+| `λ (lambda)` | How much importance should we give to relevance? |
+| `1 − λ` | How much importance should we give to avoiding repetition? |
+| `MMR Score` | Final score used to select the next chunk |
+
+
 # MMR Formula Explained — Simple Guide
 
 ## 1. Actual MMR Formula
