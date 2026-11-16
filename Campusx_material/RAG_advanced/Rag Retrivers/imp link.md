@@ -23,5 +23,7 @@ tf-idf:
 
 https://notes.kodekloud.com/docs/Fundamentals-of-RAG/Keyword-Search-Retrieval/TF-IDF-Algorithm/page 
 
+https://blog.stackademic.com/day-two-of-learning-nlp-understanding-tf-idf-882ac870a5f9
+
 
 
