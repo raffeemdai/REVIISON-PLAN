@@ -2,6 +2,22 @@
 
 <img width="1105" height="618" alt="image" src="https://github.com/user-attachments/assets/4ac2b625-f174-49fb-8c65-8c3078fdbc30" />
 
+https://blogs.timerring.com/posts/langchain-and-rag-best-practices/?utm_source=chatgpt.com#gsc.tab=0
+
+###  Maximum Marginal Relevance (MMR) #
+Retrieving only the most relevant documents may overlook the diversity of information. For example, if only the most similar response is selected, the results may be very similar or even contain duplicate content. The core idea of MMR is to balance relevance and diversity, that is, to select the information most relevant to the query while ensuring that the information is diverse in content. By reducing the repetition of information between different pieces, MMR can provide a more comprehensive and diverse set of results.
+
+<img width="617" height="648" alt="image" src="https://github.com/user-attachments/assets/ab8ba230-3dca-4128-a049-a2ffdc7d136c" />
+
+#### The process of MMR is as follows:
+
+
+<img width="467" height="289" alt="image" src="https://github.com/user-attachments/assets/9054cebb-ed12-4504-b258-df59a3e162e8" />
+
+<img width="812" height="318" alt="image" src="https://github.com/user-attachments/assets/3948092c-8528-4026-a2cb-2a45a7847e68" />
+
+<img width="831" height="301" alt="image" src="https://github.com/user-attachments/assets/de2e9a5e-0261-4be6-b22c-e2fe5b0aed1b" />
+
 https://www.youtube.com/watch?v=CC2fQhBQrTM
 
 
