@@ -74,6 +74,119 @@ These 4 documents are passed to the LLM as context.
 - **`0.5`** → Balances relevance and diversity.
 - **`0.0`** → Prioritizes diversity over query relevance.
 
+### MMR_score(d) = λ · Sim(d, query) − (1 − λ) · max(Sim(d, dⱼ) for dⱼ in already_selected)
+
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/ca8bccaa-540c-4e3d-ab04-e6340f462c33" />
+
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/21fc2eea-7b60-44e9-8195-dd491d000083" />
+
+
+# MMR Formula Explained — Simple Guide
+
+## 1. Actual MMR Formula
+
+```text
+MMR_score(d) = lambda * Sim(d, query)
+               - (1 - lambda) * max(Sim(d, d_j))
+                 for d_j in already_selected
+```
+
+**In simple words:**
+
+MMR Score = Relevance Reward - Redundancy Penalty
+
+## 2. Understand Each Part
+
+| Formula Component | Meaning |
+|---|---|
+| d | Current candidate document being evaluated |
+| query | User's question |
+| already_selected | Documents MMR has already selected |
+| Sim(d, query) | How relevant the candidate is to the query |
+| Sim(d, d_j) | Similarity between the candidate and an already-selected document |
+| max(...) | Finds the highest similarity among already-selected documents |
+| lambda (λ) | Controls the balance between relevance and diversity |
+
+## 3. First Term — Relevance Reward
+
+```text
+lambda * Sim(d, query)
+```
+
+- Measures how relevant the candidate document is to the user's query.
+- A higher value increases the MMR score.
+
+## 4. Second Term — Redundancy Penalty
+
+```text
+(1 - lambda) * max(Sim(d, d_j))
+                for d_j in already_selected
+```
+
+- Measures how similar the candidate is to documents already selected.
+- A higher value increases the penalty and decreases the MMR score.
+
+**Why is there a minus sign?**
+
+Because we want to penalize repetitive documents.
+
+## 5. The Most Important Part: max()
+
+Suppose MMR has already selected two documents:
+
+- Document 1: Self-attention
+- Document 2: Transformer architecture
+
+Now MMR evaluates a new candidate:
+
+- Candidate Document 3: Attention mechanism
+
+Similarity calculations:
+
+| Comparison | Similarity |
+|---|---:|
+| Candidate 3 vs. Document 1 | 0.90 |
+| Candidate 3 vs. Document 2 | 0.60 |
+
+The formula takes the maximum similarity:
+
+```text
+max(0.90, 0.60) = 0.90
+```
+
+**Why does MMR use max()?**
+
+Because the candidate is highly repetitive with at least one document already selected. MMR uses the strongest overlap as its redundancy penalty.
+
+## 6. Remember the Logic
+
+- First term = Rewards relevance.
+- Second term = Penalizes repetition.
+- Final MMR score = Helps decide which candidate should be selected next.
+
+The candidate with the highest MMR score is selected next.
+
+## 7. MMR Works Iteratively
+
+1. Start with an empty already_selected set.
+2. Evaluate the candidate documents.
+3. Select the candidate with the highest MMR score.
+4. Add that document to already_selected.
+5. Recalculate the scores of the remaining candidates against the updated selected set.
+6. Repeat until the required number of documents (k) has been selected.
+
+**Important:** The already_selected set changes after every selection. This is what makes MMR an iterative selection algorithm.
+
+## 8. Quick Memory Trick
+
+- Sim(d, query) = How relevant is this document to my question?
+- max(Sim(d, d_j)) = How repetitive is it compared with what I already selected?
+- lambda = How much should I prioritize relevance over diversity?
+
+> MMR = Relevant Information - Repeated Information
+
+
+
 ### 📌 Remember the MMR Workflow
 
 ```text
