@@ -19,5 +19,9 @@ https://www.rahulblogs.com/blog/retrievers-in-rag-explained-types-working-and-ex
 #### belkow is good
 https://github.com/KowshiqKatta/Generative-AI/tree/main/RAG     
 
+tf-idf:
+
+https://notes.kodekloud.com/docs/Fundamentals-of-RAG/Keyword-Search-Retrieval/TF-IDF-Algorithm/page 
+
 
 
