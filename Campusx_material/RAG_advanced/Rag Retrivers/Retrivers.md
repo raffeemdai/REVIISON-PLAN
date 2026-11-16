@@ -28,6 +28,82 @@ refer : https://www.righttechengineering.com/resources/agentic-ai/retrievers?utm
 <img width="597" height="460" alt="image" src="https://github.com/user-attachments/assets/39875030-9fe7-459d-96aa-ac959579792f" />
 
 
+## 🔵📌 Understand the Three MMR Parameters
+
+Consider this example:
+
+**Query:** Explain different types of vector databases.
+
+Your vector database initially finds 20 potentially relevant chunks. Some may explain dense vector databases, while others discuss sparse vectors, indexing, or database comparisons.
+
+### Step 1: `fetch_k = 20` — Candidate Documents
+
+Fetch the 20 most similar candidate chunks from the vector database.
+
+- These are the initial candidate documents.
+- MMR will evaluate these candidates to select the final results.
+
+### Step 2: MMR Selection — Balance Relevance and Diversity
+
+MMR evaluates two things:
+
+1. **Relevance:** How relevant is the document to the user's query?
+2. **Diversity:** How different is the document from the documents already selected?
+
+The goal is to avoid returning multiple documents containing almost the same information.
+
+### Step 3: `k = 4` — Final Documents
+
+Return only 4 selected documents to the next stage of the RAG pipeline.
+
+These 4 documents are passed to the LLM as context.
+
+### 🔍 MMR Parameters at a Glance
+
+| Parameter | Simple Meaning | Default Shown in Diagram |
+|---|---|---:|
+| `fetch_k` | Number of candidate documents fetched initially | 20 |
+| `k` | Number of final documents returned | 4 |
+| `lambda_mult` | Controls the balance between relevance and diversity | 0.5 |
+
+### 🧠 Understand `lambda_mult`
+
+`lambda_mult` controls how much importance MMR gives to relevance versus diversity.
+
+- **`1.0`** → Prioritizes relevance; behaves like ordinary similarity-based selection.
+- **`0.5`** → Balances relevance and diversity.
+- **`0.0`** → Prioritizes diversity over query relevance.
+
+### 📌 Remember the MMR Workflow
+
+```text
+User Query
+    |
+    v
+Vector Database Search
+    |
+    v
+fetch_k = 20
+(Fetch 20 candidate documents)
+    |
+    v
+MMR Selection
+(Balance relevance + diversity)
+    |
+    v
+k = 4
+(Select 4 final documents)
+    |
+    v
+Pass selected documents to LLM
+```
+
+**Memory Trick:**
+
+- `fetch_k` = How many candidates to fetch?
+- `lambda_mult` = How much relevance versus diversity?
+- `k` = How many final documents to return?
+
 https://www.youtube.com/watch?v=CC2fQhBQrTM
 
 
