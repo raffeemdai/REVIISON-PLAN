@@ -80,7 +80,184 @@ These 4 documents are passed to the LLM as context.
 
 <img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/21fc2eea-7b60-44e9-8195-dd491d000083" />
 
+# MMR (Maximal Marginal Relevance) - Simple Notes
 
+## Colour legend (highlighter pins)
+
+| Pin | Meaning |
+|---|---|
+| 🟡 | Key formula / main idea |
+| 🟢 | Relevance (good, we want it HIGH) |
+| 🔴 | Redundancy / repetition (bad, we want it LOW) |
+| 🔵 | Definitions and parameters |
+| 🟣 | Analogy |
+| 🟠 | Warnings / common mistakes |
+
+---
+
+## 1. What is MMR?
+
+🟡 **MMR picks documents that answer the question but do not repeat each other.**
+
+Each time it picks a document, it asks one question:
+
+> Which remaining document is useful for the query, but not a copy of what I already picked?
+
+---
+
+## 2. The simplest formula
+
+🟡 **MMR score = Relevance - Redundancy**
+
+- 🟢 **Relevance** = how well the document matches the question. We want it **high**.
+- 🔴 **Redundancy** = how much it repeats documents already picked. We want it **low**.
+
+Redundancy is subtracted, so a document that repeats something gets a lower score.
+
+---
+
+## 3. The formula with the dial lambda
+
+🟡 Short form:
+
+```text
+MMR score = lambda * Relevance - (1 - lambda) * Redundancy
+```
+
+🟡 Full form (the same thing, written with symbols):
+
+```text
+MMR_score(d) = lambda * Sim(d, query) - (1 - lambda) * max( Sim(d, d_j) for d_j in already_selected )
+```
+
+| Part | Pin | Meaning |
+|---|---|---|
+| `Sim(d, query)` | 🟢 | Relevance: how close document d is to the query |
+| `max( Sim(d, d_j) ... )` | 🔴 | Redundancy: compare d with each document already picked and take the highest similarity. Copying even one picked document is penalised. |
+| `lambda` | 🔵 | Dial from 0 to 1 that decides what matters more |
+
+### 🔵 What does lambda do?
+
+| lambda | Behaviour |
+|---:|---|
+| 1 | Only relevance. Same as normal similarity search. |
+| 0.5 | Relevance and novelty count equally. |
+| 0 | Only avoid repeats. May pick off-topic documents. |
+
+---
+
+## 4. Analogy
+
+🟣 **Ordering a thali.** Paneer is the tastiest item, but you do not order five paneer dishes. After taking one, another paneer dish is redundant, so dal, sabzi and rice move up. Every dish is good (relevant) and adds something new (not repeated).
+
+---
+
+## 5. Worked example (lambda = 0.5)
+
+**Question:** How do I train a neural network?
+**Already picked:** "Gradient descent reduces loss."
+
+| Candidate | 🟢 Relevance | 🔴 Redundancy | Score = 0.5 x R - 0.5 x Red |
+|---|---:|---:|---:|
+| "Gradient descent lowers the loss" | 0.9 | 0.9 (almost the same) | 0.45 - 0.45 = **0.00** |
+| "Dropout prevents overfitting" | 0.7 | 0.2 (new idea) | 0.35 - 0.10 = **0.25** |
+
+🟡 **Dropout wins.** It is a little less relevant, but it adds new information.
+
+With normal similarity search (lambda = 1) the first document would win (0.9 vs 0.7), and you would get two copies of the same idea.
+
+### Second example with 3 candidates (lambda = 0.5)
+
+| Doc | 🟢 Relevance to query | 🔴 Similarity to doc A (already picked) |
+|---|---:|---:|
+| A: gradient descent explained | 0.90 | - (picked first) |
+| B: gradient descent, reworded | 0.88 | 0.95 |
+| C: dropout and overfitting | 0.75 | 0.30 |
+
+- B: 0.5 x 0.88 - 0.5 x 0.95 = **-0.035**
+- C: 0.5 x 0.75 - 0.5 x 0.30 = **0.225** (C wins)
+
+---
+
+## 6. The algorithm in 4 steps
+
+```text
+1. Fetch fetch_k candidates using plain similarity.
+2. Pick the most relevant document first (nothing to compare with yet).
+3. For every remaining document calculate: Relevance - Redundancy.
+4. Pick the best score. Repeat step 3 until k documents are chosen.
+```
+
+---
+
+## 7. Code
+
+```python
+retriever = vectorstore.as_retriever(
+    search_type="mmr",
+    search_kwargs={
+        "k": 3,             # final number of documents
+        "fetch_k": 10,      # candidate pool size
+        "lambda_mult": 0.5, # lambda: relevance vs diversity
+    },
+)
+
+for d in retriever.invoke("deep learning model training"):
+    print("-", d.page_content)
+```
+
+### 🔵 Parameters
+
+| Parameter | Meaning |
+|---|---|
+| `k` | Final number of documents returned |
+| `fetch_k` | Candidate pool MMR chooses from (must be at least k) |
+| `lambda_mult` | The dial: 1.0 = relevance only, 0.5 = balanced, 0.0 = diversity only |
+
+### Try different lambda values
+
+```python
+for lam in [1.0, 0.5, 0.0]:
+    r = vectorstore.as_retriever(
+        search_type="mmr",
+        search_kwargs={"k": 3, "fetch_k": 10, "lambda_mult": lam},
+    )
+    print(f"\nlambda = {lam}")
+    for d in r.invoke("deep learning model training"):
+        print("  -", d.page_content[:70])
+```
+
+---
+
+## 8. When to use and when to avoid
+
+| Use MMR when | 🟠 Avoid MMR when |
+|---|---|
+| Top results repeat the same idea | You need one exact fact (for example an invoice number) |
+| Broad questions, such as "Tell me about COVID-19" (vaccines, symptoms, variants) | You need only the single best chunk |
+| Summaries or research-style queries | The corpus has little redundancy |
+
+---
+
+## 9. Common mistakes
+
+- 🟠 **"MMR picks unrelated documents."** No. It still rewards relevance through lambda; it only avoids repeats.
+- 🟠 **"A bigger fetch_k is always better."** A bigger pool gives more choice but costs more computation. Too small a pool leaves nothing different to choose from.
+- 🟠 **Using MMR for exact-fact lookups.** Diversity can push out the one best chunk.
+- 🟠 **MMR is not deduplication.** Deduplication removes identical text; MMR removes semantically similar items even if the wording differs.
+
+---
+
+## 10. One-line summary
+
+🟡 **MMR = pick documents that are relevant to the question and different from each other.**
+
+| Memory trick | |
+|---|---|
+| Formula | 🟢 Relevance - 🔴 Redundancy |
+| Dial | 🔵 lambda = 1 gives relevance only, lambda = 0 gives diversity only |
+| Analogy | 🟣 Thali: variety, not five paneer dishes |
+| Code | 🔵 `search_type="mmr"`, `k`, `fetch_k`, `lambda_mult` |
 
 ## 🔵📌 Understand the Formula in Simple English
 
