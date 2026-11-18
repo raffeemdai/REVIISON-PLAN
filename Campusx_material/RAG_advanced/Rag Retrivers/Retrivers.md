@@ -733,6 +733,1101 @@ It combines:
 4. TF-IDF is keyword-based search.
 5. Semantic Search understands meaning and context.
 
+
+<img width="1500" height="1500" alt="image" src="https://github.com/user-attachments/assets/2498ca39-6e82-4abe-90df-5272cbf8373a" />
+
+<img width="664" height="603" alt="image" src="https://github.com/user-attachments/assets/1e44f95a-76e0-4184-830f-b7a84d312987" />
+
+<img width="673" height="536" alt="image" src="https://github.com/user-attachments/assets/a2435cd3-ccd9-4f94-a0a3-8fe7928baa9b" />
+<img width="717" height="633" alt="image" src="https://github.com/user-attachments/assets/3368c557-f763-4c03-bc4c-28fcde1c8a27" />
+<img width="665" height="377" alt="image" src="https://github.com/user-attachments/assets/a46239c3-0a50-4eb1-814f-232cfc1e4301" />
+
+
+
+# BM25 Retriever & TF-IDF in RAG
+## Beginner-friendly notes based on CampusX Advanced RAG
+
+> **Learning goal:** Understand how TF-IDF identifies useful words, how BM25 improves that idea, and why BM25 is often combined with vector search in a real RAG application.
+>
+> **Source coverage**
+> - *CampusX Advanced RAG Complete*: Section 6.19, printed pages 137–140.
+> - *CampusX Advanced RAG OneNote notes*: pages 101–105 (handwritten BM25 and TF-IDF notes).
+
+---
+
+# 1. First, understand the problem: how do we find the right chunk?
+
+Imagine that your RAG application has 1,000 chunks from PDFs, Word files and web pages.
+
+A user asks:
+
+> **“How can I reset my account password?”**
+
+Your retriever must search those 1,000 chunks and bring back the chunks that are most useful for answering the question.
+
+There are two broad ways to search:
+
+1. **Keyword search:** Look for important words that appear in the query and chunks.
+2. **Semantic search:** Look for chunks whose meaning is similar to the query, even if they use different words.
+
+BM25 belongs to the first category. It is a **keyword-based (lexical or sparse) retriever**.
+
+## A simple picture
+
+```text
+                 USER QUESTION
+          "How can I reset my password?"
+                       |
+             +---------+---------+
+             |                   |
+       KEYWORD SEARCH       SEMANTIC SEARCH
+             |                   |
+       Match words         Match meaning
+       password, reset     account recovery,
+                           change credentials
+             |                   |
+          BM25             Embedding model
+             |                   |
+       Ranked chunks        Ranked chunks
+```
+
+**Remember:** BM25 does not understand what a password is. It scores text based on word matches and statistical importance.
+
+---
+
+# 2. Sparse search vs. dense vector search
+
+Both keyword-based methods and embedding-based methods can represent text numerically. But they create very different representations.
+
+| Feature | TF-IDF / BM25 | Embedding-based search |
+|---|---|---|
+| Main idea | Keyword importance | Semantic meaning |
+| How it works | Statistical word counting and weighting | A trained neural model converts text into vectors |
+| Representation | Sparse vector (mostly zeros) | Dense vector (many values are non-zero) |
+| Matches | Literal words / tokens | Similar meaning |
+| Needs an embedding model? | No | Yes |
+| Example | `car repair` matches text containing `car` and `repair` | `car repair` may match `automobile maintenance` |
+
+### What do sparse and dense mean?
+
+Suppose our vocabulary is:
+
+`[refund, password, policy, account, vaccine]`
+
+A sparse representation might look like:
+
+```text
+Chunk A: [2, 0, 1, 0, 0]
+Chunk B: [0, 1, 0, 2, 0]
+Chunk C: [0, 0, 0, 0, 3]
+```
+
+Most positions are zero because each chunk contains only a small part of the full vocabulary.
+
+A dense embedding might look like:
+
+```text
+Chunk A: [0.21, -0.48, 0.73, 0.16, ...]
+```
+
+Many positions contain numerical values. The dimensions are learned by a model and represent semantic patterns.
+
+> **Memory trick:** Sparse = words that occur. Dense = learned meaning represented across many dimensions.
+
+---
+
+# 3. TF-IDF: the foundation
+
+TF-IDF stands for:
+
+- **TF — Term Frequency**
+- **IDF — Inverse Document Frequency**
+
+The central idea is easy:
+
+> A useful search term should appear in the particular chunk, but it should not be so common across the whole collection that it tells us nothing.
+
+TF-IDF combines these two signals.
+
+## 3.1 TF — Term Frequency
+
+TF asks:
+
+> **How often does this word appear inside this particular document or chunk?**
+
+Example:
+
+```text
+Chunk A:
+"AI agents can plan tasks. AI agents can call tools.
+AI agents can complete workflows."
+
+Chunk B:
+"Python is used for data analysis."
+```
+
+The word `agents` appears several times in Chunk A and zero times in Chunk B.
+
+A simple raw term-frequency count:
+
+| Word | Chunk A | Chunk B |
+|---|---:|---:|
+| agents | 3 | 0 |
+| Python | 0 | 1 |
+| tasks | 1 | 0 |
+
+If the query is about AI agents, Chunk A has a stronger keyword signal.
+
+**Important:** TF is calculated within one document/chunk. It is not the number of times the word appears across the entire collection.
+
+## 3.2 IDF — Inverse Document Frequency
+
+IDF asks:
+
+> **How rare or distinctive is this word across the entire collection of documents?**
+
+Imagine that your RAG knowledge base contains 100 chunks.
+
+- `the` appears in 98 chunks.
+- `AI agents` appears in 8 chunks.
+- `chargeback` appears in only 2 chunks.
+
+Which word helps identify a specific topic?
+
+Usually, `chargeback` is more informative than `the`.
+
+```text
+100 CHUNKS IN THE KNOWLEDGE BASE
+
+"the"          ████████████████████  98 chunks
+"AI agents"    █████                 8 chunks
+"chargeback"   █                     2 chunks
+
+Very common word  -> less distinctive
+Rare word         -> more distinctive
+```
+
+IDF gives more weight to words that appear in fewer documents and less weight to words that appear almost everywhere.
+
+### Why is it called INVERSE document frequency?
+
+Because the relationship is reversed:
+
+```text
+Document frequency increases
+          |
+          v
+     IDF decreases
+
+Document frequency decreases
+          |
+          v
+     IDF increases
+```
+
+A word appearing in almost every document is not very helpful for distinguishing one document from another.
+
+A word appearing in only a few documents can be a strong clue.
+
+### A common IDF formula (for understanding)
+
+One commonly used version is:
+
+\[
+IDF(t) = \log\left(\frac{N}{df(t)}\right)
+\]
+
+Where:
+
+- `N` = total number of documents/chunks.
+- `df(t)` = number of documents containing term `t`.
+
+Different libraries use slightly different IDF formulas and smoothing conventions. The important concept is the inverse relationship, not memorizing one exact implementation.
+
+## 3.3 TF + IDF = TF-IDF
+
+TF-IDF combines the two:
+
+\[
+TFIDF(t,d) = TF(t,d) \times IDF(t)
+\]
+
+In plain English:
+
+- TF asks: Is this word present frequently in this chunk?
+- IDF asks: Is this word distinctive across all chunks?
+- TF-IDF asks: Is this word both relevant to this chunk and useful for distinguishing it?
+
+### Example: why both are needed
+
+Suppose the user searches for `chargeback`.
+
+| Chunk | `chargeback` frequency | How common is the word across the corpus? | Interpretation |
+|---|---:|---|---|
+| A | 4 | Rare | Strong signal |
+| B | 0 | Rare | No match in this chunk |
+| C | 10 | Very common | Repetition alone is not enough to make it distinctive |
+
+The strongest TF-IDF signal comes when the word occurs in the chunk and is rare across the corpus.
+
+> **CampusX analogy — the rare orange ball:** Imagine 100 balls, but only 3 are orange. Orange is distinctive because it is rare. If one bag contains several orange balls, that bag is a strong candidate when you are looking for orange balls. The rare color is the IDF idea; the number of orange balls in that bag is the TF idea.
+
+---
+
+# 4. Why plain TF-IDF has weaknesses
+
+TF-IDF is useful, but the basic approach has practical limitations. CampusX highlights two important problems that BM25 addresses.
+
+## Problem 1: term-frequency can grow without a useful limit
+
+Suppose a chunk says:
+
+```text
+Refund policy is explained here.
+```
+
+Another chunk says:
+
+```text
+Refund refund refund refund refund refund refund...
+```
+
+If the query is `refund`, raw term frequency can give the second chunk a very high score simply because it repeats the word many times.
+
+But repeating a word 100 times does not necessarily add 100 times more useful information.
+
+```text
+Number of keyword occurrences  ->  Basic TF impact
+
+1 occurrence   ->  small impact
+2 occurrences  ->  higher impact
+5 occurrences  ->  higher impact
+10 occurrences ->  still higher
+100 occurrences->  can become excessively high
+```
+
+**The problem:** Basic TF does not naturally provide the saturation behavior needed to stop keyword stuffing from dominating.
+
+## Problem 2: document length bias
+
+Imagine two documents:
+
+- Document A: 3 pages, containing the word `agent` 5 times.
+- Document B: 500 pages, containing the word `agent` 25 times.
+
+Document B has more occurrences, but it is also much longer.
+
+Simply comparing raw counts can be misleading. A word appearing 5 times in a short document may be more concentrated than 25 appearances across a huge document.
+
+**The problem:** Long documents have more opportunities to contain query words.
+
+---
+
+# 5. BM25: TF-IDF with two important improvements
+
+BM25 is a ranking function based on the same general keyword-importance idea as TF-IDF. It improves the treatment of term frequency and document length.
+
+BM25 is commonly expanded as **Best Matching 25**.
+
+Think of it this way:
+
+```text
+                  TF-IDF
+                    |
+          Two practical weaknesses
+                    |
+          +---------+---------+
+          |                   |
+   Repeated words        Long documents
+   can dominate          can have an
+   the score              unfair advantage
+          |                   |
+          v                   v
+  1. TF saturation     2. Length normalization
+          |                   |
+          +---------+---------+
+                    |
+                    v
+                  BM25
+```
+
+## Fix 1: Term-frequency saturation
+
+BM25 does not allow the benefit of repeating a keyword to grow endlessly in a straight line.
+
+The score rises when the term appears more often, but the benefit gradually becomes smaller.
+
+Example:
+
+```text
+Chunk A: "refund" appears 1 time
+Chunk B: "refund" appears 3 times
+Chunk C: "refund" appears 10 times
+Chunk D: "refund" appears 100 times
+
+BM25 impact:
+
+More occurrences initially help
+          |
+          v
+       /-------
+      /
+     /
+____/____________________________
+      Term frequency
+
+The curve gradually flattens.
+```
+
+This is called **term-frequency saturation**.
+
+It does not mean that BM25 ignores repeated words. It means that the 100th occurrence should not have the same extra impact as the first occurrence.
+
+### The `k1` parameter
+
+`k1` controls how quickly the term-frequency contribution saturates.
+
+- It influences how much extra benefit repeated occurrences provide.
+- It is commonly left at a library's default value unless tuning is needed.
+- Do not confuse it with the document-length parameter `b`.
+
+**Memory trick:** `k1` = controls the keyword repetition effect.
+
+## Fix 2: Document-length normalization
+
+BM25 compares a document's length with the average length of documents in the collection.
+
+Example:
+
+```text
+Average chunk length = 100 words
+
+Chunk A =  50 words
+Chunk B = 100 words
+Chunk C = 500 words
+```
+
+A keyword match in a very long chunk should not automatically win just because the chunk has more words and more opportunities for matches.
+
+BM25 adjusts the score using document length relative to average document length.
+
+### The `b` parameter
+
+`b` controls how strongly document length normalization is applied.
+
+- `b = 0`: no document-length normalization.
+- `b = 1`: full length normalization according to the BM25 length adjustment.
+- Values between 0 and 1 provide partial normalization.
+
+**Memory trick:** `b` = controls the document-length adjustment.
+
+---
+
+# 6. BM25 formula explained in simple English
+
+You may see a long mathematical formula for BM25 in books and documentation. Don't start by memorizing it. First understand what the formula is trying to do.
+
+## Visual summary: how BM25 calculates a score
+
+The diagram below shows the three questions BM25 asks when it scores a chunk.
+
+![BM25 score calculation explained in simple English](BM25_score_calculation_simple_flow.png)
+
+## 6.1 The formula in everyday English
+
+For every important word in the user's query, BM25 asks three questions:
+
+1. **Is this word important?** — Is it rare or common across all chunks? (IDF)
+2. **How well does this chunk match the word?** — How many times does the word appear here? (TF, with a limit on the benefit of repetition)
+3. **Is this chunk unusually long?** — Should its score be adjusted because it is much longer than an average chunk? (length normalization)
+
+Then BM25 combines the answers for all the query words to produce one score for the chunk.
+
+A plain-English version of the formula is:
+
+```text
+BM25 score for a chunk
+    =
+importance of each query word
+    ×
+how strongly the chunk matches that word
+    (with repetition limited and chunk length taken into account)
+
+Add the contributions from all query words.
+```
+
+That is the whole idea. BM25 repeats this calculation for each candidate chunk and ranks the chunks by their final scores.
+
+## 6.2 Follow one query through the formula
+
+Suppose the user asks:
+
+> "How do AI agents work?"
+
+For a simple explanation, focus on the query terms `AI`, `agents`, and `work`.
+
+Imagine the retriever is comparing two chunks:
+
+```text
+CHUNK A (short)
+"AI agents plan tasks and use tools."
+
+CHUNK B (long)
+"AI agents are useful. [Many other unrelated paragraphs follow...]"
+```
+
+BM25 evaluates each chunk word by word:
+
+| What BM25 checks | What it means in this example |
+|---|---|
+| Word importance (IDF) | Is `agents` rare across the whole knowledge base, or does it appear in almost every chunk? |
+| Word frequency (TF) | How many times does `agents` appear in this particular chunk? |
+| Repetition limit | If `agents` appears 20 times, should it receive 20 times the benefit of one occurrence? No. The extra benefit gradually becomes smaller. |
+| Chunk length | Is this chunk much longer than the average chunk? If so, BM25 adjusts for that. |
+| Final score | Combine the contribution of the query words into one relevance score for this chunk. |
+
+The example is illustrative: the actual winner depends on all query terms, their corpus statistics, tokenization and the chunk lengths.
+
+## 6.3 The two controls inside the formula: `k1` and `b`
+
+These two settings control how BM25 behaves.
+
+### `k1` — controls the benefit of repeating a word
+
+Think of `k1` as the **repetition control**.
+
+- A word appearing once can help a chunk match the query.
+- Seeing it a few more times can help further.
+- But the benefit gradually levels off.
+- The 20th occurrence does not add as much benefit as the first few occurrences.
+
+```text
+More occurrences
+       |
+       v
+More score at first
+       |
+       v
+Each extra occurrence adds less
+       |
+       v
+The benefit gradually flattens
+```
+
+`k1` controls how quickly this flattening happens. It does not control how many chunks are returned.
+
+### `b` — controls how much chunk length matters
+
+Think of `b` as the **length-adjustment control**.
+
+BM25 compares the current chunk's length with the average length of chunks in the collection.
+
+- `b = 0` means no document-length normalization.
+- `b = 1` means full length normalization in the BM25 length adjustment.
+- A value between 0 and 1 means partial length normalization.
+
+```text
+Current chunk length
+        compared with
+Average chunk length
+              |
+              v
+      BM25 adjusts the score
+```
+
+`b` does not mean "number of words". It controls the strength of the length adjustment.
+
+## 6.4 The mathematical formula, translated
+
+A commonly used BM25 formula is:
+
+\[
+BM25(D,Q) =
+\sum_{q \in Q}
+IDF(q)
+\cdot
+\frac{f(q,D)(k_1+1)}
+{f(q,D)+k_1\left(1-b+b\frac{|D|}{avgdl}\right)}
+\]
+
+You do not need to memorize this expression before understanding the idea. Read its pieces like this:
+
+| Formula part | Read it in simple English |
+|---|---|
+| `Σ` (sum) | Do the calculation for each query word, then add the results |
+| `q ∈ Q` | Look at each word in the user's query |
+| `IDF(q)` | Give more weight to a query word that is rare across the collection |
+| `f(q,D)` | Count how often that query word occurs in this chunk |
+| `k1` | Control how quickly the benefit of repeated occurrences levels off |
+| `b` | Control how strongly chunk length affects the score |
+| `|D|` | Length of the chunk currently being scored |
+| `avgdl` | Average length of all chunks in the collection |
+| Fraction as a whole | Calculate the chunk's frequency contribution while limiting repetition and accounting for length |
+
+### Read the formula as one sentence
+
+"For each word in the user's question, BM25 checks how distinctive that word is across all chunks, checks how often it appears in this chunk, reduces the extra reward for excessive repetition, adjusts for the chunk's length, and adds the result to the contributions from the other query words."
+
+## 6.5 One example to make the formula stick
+
+Suppose the knowledge base has two chunks:
+
+| | Chunk A | Chunk B |
+|---|---:|---:|
+| Number of times `agents` appears | 3 | 20 |
+| Chunk length | 100 words | 1,000 words |
+
+A simple count would say Chunk B wins because it contains `agents` more times.
+
+BM25 does not make that decision using the raw count alone. It also asks:
+
+1. Is `agents` rare or common across the whole collection?
+2. Does the 20th occurrence really add much more value than the first few? The repetition benefit saturates.
+3. Is Chunk B much longer than the average chunk? Its score may be adjusted for length.
+
+BM25 then calculates the scores using the whole query and ranks the chunks. **Do not assume Chunk A or B must win from these two numbers alone.**
+
+> **Memory trick:** `IDF` = word importance; `TF` = word matches in this chunk; `k1` = repetition control; `b` = length control. BM25 combines all of them into a relevance score.
+
+# 7. How BM25 retrieves chunks in a RAG application
+
+Let's use a support knowledge base.
+
+User query:
+
+> **"refund policy"**
+
+The knowledge base has these chunks:
+
+| Chunk | Content |
+|---|---|
+| A | Refund policy and eligibility |
+| B | How to request a refund |
+| C | Account password reset |
+| D | Refund policy for annual subscriptions |
+
+BM25 checks query terms against the chunks, calculates scores and returns the highest-ranked chunks.
+
+```text
+        USER QUERY
+       "refund policy"
+             |
+             v
+      BM25 KEYWORD SEARCH
+             |
+       Check query terms
+       "refund" + "policy"
+             |
+             v
+       SCORE EACH CHUNK
+             |
+             v
+       RANK BY SCORE
+             |
+       +-----+-----+-----+
+       |     |     |     |
+       v     v     v     v
+      A     D     B     C
+    Strong Strong Good  Weak
+```
+
+Illustrative ranking only — actual order depends on the corpus, tokenization, term frequencies, IDF values and chunk lengths.
+
+**Important:** BM25 retrieves and ranks chunks. It does not generate the final answer. The LLM uses the retrieved chunks as context to answer the user.
+
+---
+
+# 8. BM25 is a retriever or a re-ranker?
+
+You may hear both descriptions.
+
+- In research literature, BM25 is often described as a ranking function or re-ranking strategy because it scores and orders documents by keyword relevance.
+- In LangChain, `BM25Retriever` is implemented in the retriever category.
+
+A useful distinction:
+
+| Term | Meaning |
+|---|---|
+| Retriever | Finds candidate documents relevant to a query |
+| Ranking function | Assigns relevance scores and orders documents |
+| Re-ranker | Reorders an existing candidate list using another scoring method |
+
+BM25's core job is to score and rank documents using lexical relevance. LangChain exposes it as a retriever for convenient RAG integration.
+
+---
+
+# 9. BM25 limitation: it does not understand synonyms or meaning
+
+This is the most important limitation to remember.
+
+BM25 matches words. It does not know that two different words can have the same meaning.
+
+## Example 1: synonym problem
+
+Document:
+
+> "The medicine can neutralize pathogens."
+
+Query:
+
+> "How does the medicine kill pathogens?"
+
+The query and document share `pathogens`, but `kill` and `neutralize` are different words.
+
+BM25 does not automatically know that `kill` and `neutralize` are related.
+
+A semantic retriever may identify the relationship because it compares meaning.
+
+## Example 2: paraphrase problem
+
+Document:
+
+> "The cathedral has tall stained-glass windows."
+
+Query:
+
+> "Find a structure that feels light and has windows."
+
+The query does not use the exact words `cathedral` or `stained-glass`. BM25 may fail to rank the relevant chunk highly enough.
+
+```text
+DOCUMENT WORDING                 QUERY WORDING
+
+"neutralize pathogens"    !=     "kill pathogens"
+
+"automobile maintenance"  !=     "car repair"
+
+"purchase a vehicle"      !=     "buy a car"
+```
+
+A vector retriever may find these related passages because it compares semantic meaning.
+
+**But vector search has its own weakness:** It may miss exact identifiers, product codes, error messages or rare technical terms where literal matching is important.
+
+---
+
+# 10. BM25 vs. vector search
+
+| Feature | BM25 | Vector search |
+|---|---|---|
+| Search style | Keyword / lexical | Semantic |
+| Understands meaning? | No | Captures semantic similarity |
+| Exact words | Very useful | May be less reliable for exact identifiers |
+| Synonyms | Not automatically | Often handles them better |
+| Embedding model | Not required | Required |
+| Good for | Names, IDs, codes, exact technical terms | Paraphrases, related concepts, natural-language questions |
+| Main limitation | Exact wording dependence | May miss exact lexical details |
+
+### Easy example
+
+Knowledge base contains:
+
+> "Automobile maintenance includes oil changes and brake inspections."
+
+User query:
+
+> "Car service"
+
+- **BM25:** May not retrieve the passage because `car` and `service` do not appear literally.
+- **Vector search:** May retrieve it because `car service` and `automobile maintenance` are semantically related.
+
+Now consider:
+
+> "What is error code ERR-4921?"
+
+- **BM25:** Exact matching of `ERR-4921` can be very useful.
+- **Vector search:** May not reliably prioritize that exact code unless the indexing and model handle it well.
+
+---
+
+# 11. Why BM25 is often combined with vector search: Hybrid Search
+
+CampusX emphasizes that BM25 should generally not be used as the only retrieval method in production when semantic matching is important.
+
+The two approaches complement each other:
+
+- BM25 catches exact keyword matches.
+- Vector search catches related meanings, synonyms and paraphrases.
+
+Combining them is called **hybrid search**.
+
+```text
+                         USER QUERY
+                              |
+                   "How can I fix car issues?"
+                              |
+                  +-----------+-----------+
+                  |                       |
+                  v                       v
+             BM25 SEARCH             VECTOR SEARCH
+             Keyword match            Meaning match
+                  |                       |
+          Exact words found       Related passages found
+                  |                       |
+                  +-----------+-----------+
+                              |
+                              v
+                      MERGE / FUSE RESULTS
+                         (e.g. RRF)
+                              |
+                              v
+                    FINAL RANKED CHUNKS
+                              |
+                              v
+                         LLM ANSWER
+```
+
+### What does each retriever contribute?
+
+| BM25 contributes | Vector search contributes |
+|---|---|
+| Exact terms | Similar concepts |
+| Product IDs | Paraphrases |
+| Error codes | Synonyms |
+| Rare technical names | Natural-language meaning |
+| Literal keyword matches | Semantic relationships |
+
+**Remember:** Hybrid search is the retrieval strategy. An Ensemble Retriever is one component that can combine the outputs of multiple retrievers.
+
+---
+
+# 12. LangChain implementation: BM25Retriever
+
+BM25 does not require an embedding model. It builds its keyword-based scoring from document text.
+
+## 12.1 Install packages
+
+```bash
+uv add langchain-community rank-bm25
+```
+
+Or with pip:
+
+```bash
+pip install langchain-community rank-bm25
+```
+
+## 12.2 Create documents
+
+```python
+from langchain_core.documents import Document
+
+docs = [
+    Document(
+        page_content="Refund policy explains eligibility and conditions.",
+        metadata={"source": "refund_policy.pdf"}
+    ),
+    Document(
+        page_content="To request a refund, submit the refund request form.",
+        metadata={"source": "refund_process.pdf"}
+    ),
+    Document(
+        page_content="Reset your account password using the settings page.",
+        metadata={"source": "account_help.pdf"}
+    ),
+    Document(
+        page_content="Annual subscription refunds follow special conditions.",
+        metadata={"source": "subscription_policy.pdf"}
+    ),
+]
+```
+
+## 12.3 Build the BM25 retriever
+
+```python
+from langchain_community.retrievers import BM25Retriever
+
+retriever = BM25Retriever.from_documents(
+    docs,
+    k=2
+)
+```
+
+What does `k=2` mean?
+
+It asks the retriever to return the top 2 matching documents.
+
+## 12.4 Search with a query
+
+```python
+query = "refund policy"
+
+results = retriever.invoke(query)
+
+for i, doc in enumerate(results, start=1):
+    print(f"Result {i}")
+    print(doc.page_content)
+    print(doc.metadata)
+```
+
+### Understand the flow
+
+```text
+Raw text documents
+       |
+       v
+BM25Retriever.from_documents(docs)
+       |
+       v
+Build keyword-scoring index
+       |
+       v
+retriever.invoke("refund policy")
+       |
+       v
+Calculate relevance scores
+       |
+       v
+Return top-k documents
+```
+
+### Important points
+
+- `from_documents()` builds the retriever from the supplied documents.
+- `k` controls how many results are returned.
+- `invoke()` executes a search.
+- No embedding model is needed.
+- The retriever returns documents, not a generated answer.
+- The `rank-bm25` package is used by this common LangChain community implementation.
+
+> **Version note:** Keep LangChain package versions compatible in your project. Check the current package documentation if an import or API changes.
+
+---
+
+# 13. What happens internally when BM25 is created?
+
+At a high level, BM25 prepares the document collection for keyword scoring.
+
+```text
+DOCUMENTS
+    |
+    v
+TOKENIZATION
+(split text into tokens)
+    |
+    v
+BUILD TERM STATISTICS
+    |
+    +--> How often does each term occur in a chunk? (TF)
+    |
+    +--> In how many chunks does each term occur? (DF / IDF)
+    |
+    +--> How long is each chunk?
+    |
+    v
+BM25 SCORING
+    |
+    v
+QUERY
+    |
+    v
+SCORE AND RANK MATCHING CHUNKS
+```
+
+This is a simplified conceptual view. Actual implementations have their own tokenization and indexing details.
+
+---
+
+# 14. Important clarification: BM25, TF-IDF and embeddings
+
+These terms are related, but they are not interchangeable.
+
+| Term | What it is |
+|---|---|
+| TF | Term frequency: count of a term in one document |
+| IDF | Inverse document frequency: how distinctive a term is across the collection |
+| TF-IDF | A statistical weighting method combining TF and IDF |
+| BM25 | A ranking function that uses IDF and a modified, length-aware term-frequency contribution |
+| Embedding | A dense numerical representation produced by a trained model |
+| Vector search | Search based on similarity between vectors |
+| Hybrid search | Combination of lexical and semantic retrieval |
+
+**Common misconception:** BM25 is not simply an embedding model, and it does not need an embedding model. It is a lexical scoring and ranking method.
+
+---
+
+# 15. Quick revision: the whole topic in one picture
+
+```text
+                 TF-IDF
+                   |
+        +----------+----------+
+        |                     |
+        v                     v
+       TF                    IDF
+  Word count in          Rarity across
+  this chunk             all chunks
+        |                     |
+        +----------+----------+
+                   |
+                   v
+             TF-IDF SCORE
+                   |
+          Two practical issues
+                   |
+        +----------+----------+
+        |                     |
+        v                     v
+  Repetition can          Long documents
+  inflate score           can be favored
+        |                     |
+        v                     v
+  TF SATURATION       LENGTH NORMALIZATION
+        |                     |
+        +----------+----------+
+                   |
+                   v
+                  BM25
+                   |
+          Keyword-based ranking
+                   |
+          Limitation: no semantics
+                   |
+                   v
+          COMBINE WITH VECTOR SEARCH
+                   |
+                   v
+              HYBRID SEARCH
+```
+
+---
+
+# 16. Interview questions and answers
+
+### Q1. What is BM25?
+
+BM25 is a keyword-based ranking function used to score and rank documents according to their relevance to a search query. It considers how often query terms occur, how rare they are across the corpus, and document length.
+
+### Q2. What is TF-IDF?
+
+TF-IDF stands for Term Frequency–Inverse Document Frequency. It gives more weight to terms that occur in a particular document but are relatively rare across the document collection.
+
+### Q3. What is the difference between TF and IDF?
+
+- TF measures how often a word occurs in one document.
+- IDF measures how rare that word is across all documents.
+
+### Q4. Why does a rare word get more importance?
+
+A rare word can help distinguish one topic or document from the rest. A very common word appears almost everywhere and provides less useful information for identifying a particular chunk.
+
+### Q5. Why was BM25 introduced when TF-IDF already existed?
+
+BM25 improves two practical weaknesses of basic TF-IDF-style scoring:
+1. It uses term-frequency saturation so excessive repetition does not increase the score indefinitely.
+2. It normalizes for document length so long documents do not gain an unfair advantage merely because they contain more words.
+
+### Q6. What is term-frequency saturation?
+
+It means that repeated occurrences of a query term continue to help, but each additional occurrence provides a smaller benefit. The score gradually flattens.
+
+### Q7. What is document-length normalization?
+
+It adjusts a document's score based on its length relative to the average document length in the corpus.
+
+### Q8. What are `k1` and `b` in BM25?
+
+- `k1` controls how quickly term-frequency impact saturates.
+- `b` controls the strength of document-length normalization.
+
+### Q9. Does BM25 require an embedding model?
+
+No. BM25 works using tokens, term statistics and keyword-based scoring. It does not need a neural embedding model.
+
+### Q10. Does BM25 understand synonyms?
+
+No, not inherently. It relies on lexical overlap. A query using `car` may fail to match a document using only `automobile`.
+
+### Q11. Why combine BM25 with vector search?
+
+BM25 is strong at exact keyword matching, while vector search is better at semantic similarity. Combining them can improve retrieval coverage.
+
+### Q12. Is BM25 a retriever or a re-ranker?
+
+Its core function is to score and rank documents. Research literature often calls it a ranking function; LangChain exposes it as a retriever.
+
+### Q13. Does BM25 generate the final answer?
+
+No. It returns ranked documents or chunks. The LLM uses the retrieved context to generate the answer.
+
+### Q14. What does `k=3` mean in LangChain's BM25Retriever?
+
+It requests the top 3 matching documents from the retriever.
+
+### Q15. What is the difference between sparse and dense retrieval?
+
+Sparse retrieval represents text using vocabulary-based features, with most values zero. Dense retrieval uses learned embeddings with many non-zero dimensions to represent semantic information.
+
+---
+
+# 17. Common mistakes to avoid
+
+- **Mistake:** TF is measured across all documents.  
+  **Correct:** TF is measured within an individual document or chunk.
+
+- **Mistake:** IDF gives common words more importance.  
+  **Correct:** IDF generally gives rare, distinctive words more importance.
+
+- **Mistake:** BM25 is an embedding model.  
+  **Correct:** BM25 is a statistical keyword-ranking method.
+
+- **Mistake:** BM25 understands synonyms.  
+  **Correct:** It primarily relies on lexical overlap.
+
+- **Mistake:** BM25's `k1` controls the number of retrieved documents.  
+  **Correct:** `k1` controls term-frequency saturation. The `k` argument in LangChain's retriever controls the number of returned documents.
+
+- **Mistake:** BM25 generates answers.  
+  **Correct:** It retrieves and ranks chunks; the LLM generates the answer.
+
+- **Mistake:** More keyword repetitions always mean proportionally more relevance.  
+  **Correct:** BM25 uses saturation to reduce the extra benefit of repeated occurrences.
+
+---
+
+# 18. Memory tricks
+
+| Concept | Easy way to remember |
+|---|---|
+| TF | How many times in this chunk? |
+| IDF | How rare across all chunks? |
+| TF-IDF | Frequent here + rare overall |
+| BM25 | TF-IDF idea with smarter repetition and length handling |
+| `k1` | Keyword repetition control |
+| `b` | Document length adjustment |
+| BM25 | Exact words |
+| Vector search | Similar meaning |
+| Hybrid search | Use both |
+
+### 30-second explanation for an interview
+
+"BM25 is a sparse, keyword-based retriever used in RAG. It is built on the TF-IDF idea: a term is useful when it appears in a chunk and is rare across the corpus. BM25 improves basic term-frequency scoring with saturation, so repeating a word excessively does not keep increasing its impact linearly. It also normalizes for document length. Its limitation is that it does not inherently understand synonyms or paraphrases. Therefore, BM25 is often combined with embedding-based vector search in hybrid retrieval."
+
+---
+
+# 19. Final takeaway
+
+**TF-IDF teaches us which words are important. BM25 turns that keyword-importance idea into a more practical ranking function by handling repetition and document length.**
+
+In a RAG system:
+
+- Use BM25 when exact words, IDs, codes or technical terms matter.
+- Use vector search when meaning, synonyms or paraphrases matter.
+- Consider hybrid search when both types of signals are important.
+
+---
+
+## Source mapping
+
+1. **CampusX Advanced RAG Complete, printed page 137:** Sparse keyword matching versus dense semantic search; TF and IDF; rare-ball analogy.
+2. **Printed page 138:** TF-IDF weaknesses; BM25's term-frequency saturation and document-length normalization; formula and parameter intuition.
+3. **Printed page 139:** Retriever versus re-ranker; exact-keyword limitation; mentor's recommendation; LangChain `BM25Retriever` implementation.
+4. **Printed page 140:** Practical query examples showing BM25's strengths and failures; transition to Ensemble Retriever.
+5. **CampusX Advanced RAG OneNote notes, pages 101–105:** Handwritten explanations of BM25, TF-IDF, term frequency, document frequency, rare words, term-frequency saturation, document-length normalization, `k1`, keyword matching, embeddings and hybrid search.
+
+*These notes simplify the concepts and organize them for revision. Formula implementations and tokenization details can vary by library.*
+
+
 # RAG RETRIEVAL
 
 ```text
