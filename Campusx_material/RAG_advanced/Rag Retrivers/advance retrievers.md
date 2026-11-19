@@ -10,6 +10,7 @@ https://searchministry.au/guides/what-is-contextual-compression
 
 https://enterpriseai.handbook.mihirkjha.com/05-advanced-retrieval-augmented-generation/02-enterprise-retrieval-engineering/01-contextual-compression-retriever/#6-contextual-compression-components
 
+# Contextual Compression Retriever
 <img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/aa5310e7-8f73-42dd-924c-0298abb6537e" />
 
 <img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/f285d170-942a-4d85-b708-85dbca080609" />
@@ -19,7 +20,7 @@ https://enterpriseai.handbook.mihirkjha.com/05-advanced-retrieval-augmented-gene
 
 <img width="1149" height="545" alt="image" src="https://github.com/user-attachments/assets/2cdd343f-855b-491f-8852-8b6817785036" />
 
-# Contextual Compression Retriever
+
 
 A Contextual Compression Retriever improves RAG retrieval by reducing irrelevant information from documents returned by a retriever.
 
