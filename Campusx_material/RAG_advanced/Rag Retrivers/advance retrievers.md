@@ -17,6 +17,8 @@ https://enterpriseai.handbook.mihirkjha.com/05-advanced-retrieval-augmented-gene
 <img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/33e74b69-6e6c-4fa1-b1cf-bb6805e525b9" />
 <img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/a4e920e9-8ab1-48bf-b957-cdc97ca369f4" />
 
+<img width="905" height="579" alt="image" src="https://github.com/user-attachments/assets/dba493f5-8fea-4cde-89c3-a3eea5e2c3ac" />
+
 
 <img width="1149" height="545" alt="image" src="https://github.com/user-attachments/assets/2cdd343f-855b-491f-8852-8b6817785036" />
 
