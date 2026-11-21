@@ -788,6 +788,19 @@ Because retrieval and generation have different needs (small chunks for accuracy
 
 <img width="745" height="573" alt="image" src="https://github.com/user-attachments/assets/cd6c06a4-c6a7-4967-b876-da1383ae1883" />
 <img width="775" height="618" alt="image" src="https://github.com/user-attachments/assets/5c03b70c-0e85-474e-b3c9-1d6aa84a2d27" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/f67af80d-7e22-4e8a-a6ac-5424a11ae736" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/01f91c62-4298-4340-887a-fcd6fda04acc" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/dc26e242-b36b-478b-a37f-eff65456d622" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/5ebd6699-f43e-4d65-a199-717386efe39d" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/d3e801f3-00eb-4805-94ec-59793ec5b778" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/73d9d1df-940f-4b75-81df-6c5253aebb83" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/4b57e9f0-dc6b-4b2f-a6ec-2b3dd1760d5b" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/5276e219-a330-40fd-aee8-63e1894343cc" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/3985b7f0-4109-4b50-bd24-3fe2ba854f4e" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/5d65c4da-9f58-4c55-8b74-f4fcf4773701" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/b9456164-7483-4d41-a16a-b97792306888" />
+
+
 
 ---
 
