@@ -527,6 +527,10 @@ for i, doc in enumerate(pipeline_docs):
 
 
 # Parent Document Retriever 
+<img width="690" height="473" alt="image" src="https://github.com/user-attachments/assets/2c7f7a20-6c21-4882-854b-44b564a049b8" />
+<img width="727" height="481" alt="image" src="https://github.com/user-attachments/assets/92a11758-7bb7-448a-a31b-005891e216c2" />
+
+
 
 <img width="769" height="469" alt="image" src="https://github.com/user-attachments/assets/39ab47f6-0d93-4be3-8c6a-350e974d6dce" />
 <img width="957" height="558" alt="image" src="https://github.com/user-attachments/assets/da7eab16-b5fc-49af-953d-54d0a1119227" />
