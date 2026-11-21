@@ -361,6 +361,14 @@ This pattern minimizes downstream token consumption and drastically cuts total A
 
 ## 6. Production Implementation in Python (LangChain Classic)
 
+<img width="873" height="503" alt="image" src="https://github.com/user-attachments/assets/5aa6c4f0-ac00-40b0-b72b-5ffa16c8ea39" />
+
+<img width="860" height="412" alt="image" src="https://github.com/user-attachments/assets/eaf8c323-e409-44ab-a997-836046f14425" />
+
+<img width="926" height="441" alt="image" src="https://github.com/user-attachments/assets/5f58a2fa-19f5-4d6b-94c3-d7497c83ccab" />
+
+
+
 The following Python implementation demonstrates `LLMChainExtractor`, `EmbeddingsFilter`, and `DocumentCompressorPipeline` using standard `langchain_classic` components:
 
 ```python
