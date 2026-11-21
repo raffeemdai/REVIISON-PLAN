@@ -10,6 +10,10 @@ https://searchministry.au/guides/what-is-contextual-compression
 
 https://enterpriseai.handbook.mihirkjha.com/05-advanced-retrieval-augmented-generation/02-enterprise-retrieval-engineering/01-contextual-compression-retriever/#6-contextual-compression-components
 
+https://cleancodestack.com/langchain-parentdocumentretriever-advanced-rag/
+
+
+
 # Contextual Compression Retriever
 <img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/aa5310e7-8f73-42dd-924c-0298abb6537e" />
 
@@ -520,4 +524,138 @@ for i, doc in enumerate(pipeline_docs):
 ### Q3: Does Contextual Compression mean only reducing the number of documents?
 
 **Answer:** No. While it can drop non-matching documents entirely, its primary goal is to eliminate irrelevant content within documents. Depending on the compressor used (e.g., `LLMChainExtractor`), it can perform fine-grained sentence extraction to shorten chunks while preserving original wording.
+
+
+# Parent Document Retriever 
+
+<img width="769" height="469" alt="image" src="https://github.com/user-attachments/assets/39ab47f6-0d93-4be3-8c6a-350e974d6dce" />
+<img width="957" height="558" alt="image" src="https://github.com/user-attachments/assets/da7eab16-b5fc-49af-953d-54d0a1119227" />
+<img width="820" height="544" alt="image" src="https://github.com/user-attachments/assets/69dea1fa-fae8-4c4f-85e9-1820000b40a4" />
+<img width="567" height="674" alt="image" src="https://github.com/user-attachments/assets/e515fcd0-8ccb-4dcb-a6dc-ea325516e893" />
+<img width="729" height="450" alt="image" src="https://github.com/user-attachments/assets/c4234213-c35b-418d-9491-880607894b0f" />
+<img width="782" height="732" alt="image" src="https://github.com/user-attachments/assets/f65fa590-667a-4037-9fe4-e08cccc609c3" />
+<img width="614" height="560" alt="image" src="https://github.com/user-attachments/assets/3a0d0538-d408-40f7-b2fa-22fd318d2c5e" />
+<img width="731" height="582" alt="image" src="https://github.com/user-attachments/assets/e4f49d98-ae97-47d4-9016-7bb9db0e9126" />
+
+<img width="703" height="632" alt="image" src="https://github.com/user-attachments/assets/58f1e11e-154c-4e10-abde-76f92332ceef" />
+<img width="611" height="599" alt="image" src="https://github.com/user-attachments/assets/1458e06d-7be6-4cfa-8124-e6df7dacd262" />
+<img width="707" height="254" alt="image" src="https://github.com/user-attachments/assets/d1ca2d37-300b-4ea5-a040-2699f49ad6a6" />
+<img width="768" height="415" alt="image" src="https://github.com/user-attachments/assets/c65feb11-2579-449c-b723-2750958719ba" />
+<img width="628" height="525" alt="image" src="https://github.com/user-attachments/assets/78a4db99-3138-4f1b-bdc1-dabe2f902e4b" />
+
+<img width="787" height="418" alt="image" src="https://github.com/user-attachments/assets/fdbbd7a5-bcb8-4b0a-a90b-626a0e9a28fe" />
+<img width="711" height="601" alt="image" src="https://github.com/user-attachments/assets/9f93028c-a028-4b23-a722-87dd53bc1736" />
+
+
+### 🟤 Basic
+
+**Q1. What is the ParentDocumentRetriever?**
+A retriever that **searches on small child chunks but returns their larger parent chunks**. The text used for retrieval is not the same text that is sent to the LLM.
+
+**Q2. What problem does it solve?**
+The chunk-size trade-off. Small chunks give better embeddings and retrieval but too little context. Large chunks give plenty of context but weaker embeddings, so the wrong chunks may be retrieved. Parent document retrieval gets the accuracy of small chunks **and** the information volume of large ones.
+
+**Q3. Name the four components.**
+Parent splitter (makes large chunks), child splitter (makes small chunks from each parent), vector store (stores child embeddings, for example ChromaDB), and document store (a key-value store holding parent chunks by unique ID).
+
+**Q4. What is stored in the vector store and what in the document store?**
+The vector store holds the **child** embeddings, with the parent ID in each child's metadata. The document store holds the **parent text** against its ID. The vector store is for searching, the document store is for returning context.
+
+**Q5. How does a child chunk know which parent it belongs to?**
+Each child's **metadata stores its parent's ID**, so any child can always be traced back to its parent. (In LangChain the metadata key is `doc_id` by default.)
+
+### 🟤 Intermediate
+
+**Q6. Why do large chunks give weaker embeddings?**
+An embedding model compresses text into a **fixed number of dimensions**, and the compression is not lossless. The more text you squeeze in, the more meaning is lost. A 10,000-token text in 768 dimensions is compressed heavily. Ten 1,000-token chunks give ten vectors of 768 dimensions, so each vector represents its text more faithfully. (Many embedding models also have a maximum input length, so very long text may be cut off or rejected.)
+
+**Q7. Why not just use small chunks and send them to the LLM?**
+Small chunks retrieve well, but the retrieved text is too little to give the LLM enough context. In the receipt example, a chunk saying "receipts are only required over $25" doesn't mention that the policy is about business travel or that the meal allowance is $75 per day.
+
+**Q8. Why not just use large chunks?**
+They carry more information, but their embeddings are poorer, so the wrong chunks may be retrieved. They also bring in unrelated text, dilute the relevant passage, and increase token usage.
+
+**Q9. Explain the indexing steps.**
+1. Load the documents, but do not split them yet.
+2. Apply the parent splitter to get parent chunks.
+3. Give each parent a unique ID and store `ID → parent text` in the document store.
+4. Apply the child splitter to each parent, and put the parent ID in each child's metadata.
+5. Embed all child chunks and store them in the vector store.
+
+**Q10. Explain the retrieval steps.**
+1. Embed the query.
+2. Run similarity search over the child embeddings and get the top-k children.
+3. Read the parent ID from each child's metadata.
+4. Look up those IDs in the document store to fetch the parent chunks.
+5. Send the parent chunks (not the children) to the LLM as context.
+
+**Q11. Does the LLM ever see the child chunks?**
+No. Children are only used to **find** the right place. The context that goes to the LLM is made of **parent chunks**.
+
+**Q12. How is it different from regular vector retrieval?**
+In regular retrieval the same chunk does two jobs: it is the searchable unit and the context given to the LLM, so you must compromise on chunk size. Parent document retrieval **separates the unit of search from the unit of context**, so the trade-off disappears.
+
+**Q13. What is the difference between an in-memory and a file-backed document store?**
+An in-memory store keeps parents in RAM, and they are **lost when the program stops**. A file-backed store persists them on disk. For a real application, use a persistent store, otherwise the vector store would point to parent IDs that no longer exist after a restart.
+
+### 🟤 Advanced and design
+
+**Q14. What are the disadvantages?**
+- More storage and more complexity, because you keep two stores (vector store and document store) in sync.
+- If parents are too big, noise and token cost come back.
+- Two splitters to tune instead of one.
+- Several matching children may share one parent, so check that your version returns each parent only once and does not send duplicates to the LLM.
+
+**Q15. How do you choose parent and child sizes?**
+Children should be small enough to give precise embeddings, and parents large enough to give the LLM full context. The guide's example uses parents of about 2,000 characters and children of about 200 characters. For a PDF, think of parents as sections or chapters and children as paragraphs. Treat these as starting points and tune them on real questions.
+
+**Q16. What if you give LangChain only a child splitter and no parent splitter?**
+In LangChain, the full original documents then act as the parents. That works for short documents but can return very large parents for long ones.
+
+**Q17. When should you not use it?**
+When documents are already short, when ordinary chunks already contain enough context, when your token or latency budget is very tight, or when parents would be so large that they add mostly noise.
+
+**Q18. Can it be combined with other techniques?**
+Yes. For example, fetch the parents and then apply **contextual compression** to trim them down to what the query needs.
+
+**Q19. Parent Document Retriever vs Contextual Compression: what is the difference?**
+Parent Document Retriever **expands** context: search small, return bigger. Contextual compression **shrinks** it: retrieve, then keep only the useful parts. They solve opposite problems and can work together.
+
+### 🟤 Scenario
+
+**Q20. A user asks "Do I need a receipt for a $15 lunch?" Compare the approaches.**
+- *Small chunks only:* finds "receipts only required over $25" but loses the travel and meal-allowance context.
+- *Large chunks only:* keeps context but may also bring in flights, hotels and mileage policies.
+- *Parent Document Retriever:* the small child finds the receipt rule, and the parent returns the surrounding meal-allowance policy.
+
+**Q21. Why does the trade-off "disappear"?**
+Because retrieval and generation have different needs (small chunks for accuracy, large chunks for information volume), and the retriever no longer forces them to use the same chunk.
+
+### 🟤 30-second answer
+
+> "The Parent Document Retriever solves the chunk-size trade-off. Small chunks give better embeddings and retrieval, but too little context. Large chunks give more context but weaker embeddings. So I split documents into large parent chunks and small child chunks, embed only the children in a vector store, and keep the parents in a document store by ID. A query searches the children, reads their parent IDs, and returns the parents to the LLM. In short: search on small, answer with large."
+
+### 🟤 Quick recall
+
+| Question | One-line answer |
+|---|---|
+| What is searched? | Small child chunks |
+| What is returned to the LLM? | Larger parent chunks |
+| Where do child embeddings live? | Vector store |
+| Where do parents live? | Document store (key-value, by ID) |
+| How is a child linked to its parent? | Parent ID in the child's metadata |
+| Why not one chunk size? | Small is best for search, large is best for context |
+| Main cost | More storage and complexity |
+
+
+
+
+
+
+
+
+
+
+
+
 
