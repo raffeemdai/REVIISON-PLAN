@@ -787,6 +787,7 @@ Because retrieval and generation have different needs (small chunks for accuracy
 <img width="793" height="674" alt="image" src="https://github.com/user-attachments/assets/4f6f5dac-daf5-46cc-9110-c7b70d40765e" />
 
 <img width="745" height="573" alt="image" src="https://github.com/user-attachments/assets/cd6c06a4-c6a7-4967-b876-da1383ae1883" />
+<img width="775" height="618" alt="image" src="https://github.com/user-attachments/assets/5c03b70c-0e85-474e-b3c9-1d6aa84a2d27" />
 
 ---
 
