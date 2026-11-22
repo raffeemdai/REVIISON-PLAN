@@ -1564,7 +1564,711 @@ These notes combine the relevant explanations and implementation details from th
 
 The code is a beginner-friendly runnable adaptation of the CampusX LangChain Classic + Chroma approach. Model availability, package versions, and import paths can change; verify them in your active environment.
 
+# Multi-Query Retriever — CampusX Advanced RAG Study Notes
+<img width="490" height="584" alt="image" src="https://github.com/user-attachments/assets/64fe5674-f9dd-4bb5-a5cc-268d0df1f04a" />
+<img width="844" height="569" alt="image" src="https://github.com/user-attachments/assets/f6eb0b5d-2015-4094-8684-2627fd39061f" />
+<img width="1100" height="467" alt="image" src="https://github.com/user-attachments/assets/f2480f35-e550-4470-88e7-20a624c38b86" />
+<img width="720" height="405" alt="image" src="https://github.com/user-attachments/assets/26302679-2394-4130-a7f1-606ac452276f" />
 
+
+
+## 15. 🎤 Explain Multi-Query Retriever in an interview — Story format
+
+Use this six-step, color-pin story to explain Multi-Query Retriever clearly in an interview.
+
+### 🔴 1. The story — Medical chatbot example
+
+Imagine I am developing a medical RAG chatbot. Its knowledge base contains information about **physical health, mental health, and immunity**.
+
+A user asks:
+
+> “How can I boost my health?”
+
+It is a broad question that could involve several different topics.
+
+### 🟠 2. Problem with normal similarity search
+
+Normal similarity search uses the user's one original question to search the vector database. Since the query is generic, it may retrieve documents about general or physical health but miss relevant information about mental health or immunity.
+
+**Problem:** One generic query may retrieve only a narrow set of relevant documents and miss useful subtopics.
+
+### 🟡 3. Solution — LLM generates multiple focused queries
+
+Instead of searching only with the original question, I use an LLM to generate multiple focused queries:
+
+Original question: **“How can I boost my health?”**
+
+- How can I improve my physical health?
+- How can I maintain good mental health?
+- How can I improve my immunity?
+
+Each query explores a different aspect of the user's original question.
+
+### 🟢 4. How it works — Step-by-step workflow
+
+```text
+                 User's question
+             “How can I boost my health?”
+                         |
+                         v
+                   LLM Query Rewriter
+                         |
+              Generates focused queries
+                /          |          \
+               v          v           v
+         Physical health  Mental health  Immunity
+               |          |           |
+               v          v           v
+          Vector search  Vector search  Vector search
+               |          |           |
+               v          v           v
+           Results      Results      Results
+                \          |          /
+                 \         |         /
+                         v
+                  Merge retrieved results
+                         |
+                         v
+                 Remove duplicates
+                         |
+                         v
+              Unique relevant documents
+                         |
+                         v
+               LLM generates final answer
+```
+
+**Step by step:**
+
+1. The user asks one question.
+2. The LLM rewrites it into multiple focused queries.
+3. The same base retriever searches for each query.
+4. The retrieval results are combined (merged).
+5. Duplicate documents are removed.
+6. The final LLM uses the unique retrieved documents to generate an answer.
+
+### 🔵 5. Purpose and use cases — When is Multi-Query Retriever useful?
+
+**Purpose:** Improve retrieval coverage by searching multiple perspectives or subtopics represented by one user question.
+
+It is useful when:
+
+- **Medical or health assistants:** A broad question may involve physical health, mental health, nutrition, or immunity.
+- **Enterprise knowledge assistants:** One employee question may relate to policies, procedures, troubleshooting, and documentation.
+- **Customer-support RAG:** A question can be explored from product features, setup steps, common errors, and troubleshooting.
+- **Research assistants:** Search one topic through alternative terms, perspectives, and related subtopics.
+
+Use it when the question is broad, ambiguous in its topic coverage, or likely to benefit from exploring multiple query formulations. It adds an LLM call and multiple retrieval operations, so it may also add cost and latency.
+
+### 🟣 6. Easy memory trick
+
+Remember the sequence:
+
+**Rewrite → Retrieve → Merge → Deduplicate → Answer**
+
+- **Rewrite:** LLM generates several focused queries from the original question.
+- **Retrieve:** Search the vector database separately for each query.
+- **Merge:** Combine the retrieved document lists.
+- **Deduplicate:** Remove repeated documents.
+- **Answer:** Give the unique, relevant context to the answer-generating LLM.
+
+### Interview-ready summary
+
+Imagine I am developing a medical RAG chatbot. A user asks, “How can I boost my health?” Normal similarity search uses this single generic query and may retrieve information about general health but miss mental health or immunity. To improve retrieval coverage, I use Multi-Query Retriever. An LLM generates focused queries for physical health, mental health, and immunity. The retriever searches the vector database for each query, merges the results, and removes duplicates. Finally, the LLM uses the combined unique documents to generate a more complete answer. The goal is to improve retrieval coverage without requiring the user to write several detailed questions.
+
+**Main purpose:** Improve retrieval coverage by searching multiple perspectives of the same user question.
+
+---
+
+## 16. Interview questions and answers
+
+### Q1. What is Multi-Query Retriever?
+
+It uses an LLM to generate multiple alternative queries from one user question, retrieves documents for each query, and merges the results after removing duplicates.
+
+### Q2. Why do we need Multi-Query Retriever?
+
+A generic user query may retrieve only a narrow set of documents. Multiple query variations can improve retrieval coverage.
+
+### Q3. What problem does it solve?
+
+It reduces the dependency on users writing highly specific questions.
+
+### Q4. What are the main steps?
+
+Query rewriting, retrieval for each query, merging, and deduplication.
+
+### Q5. What is the role of the LLM?
+
+The LLM generates alternative query formulations or perspectives.
+
+### Q6. What is the role of the base retriever?
+
+It searches the vector store for each generated query and returns relevant documents.
+
+### Q7. What does `k=3` mean?
+
+The base retriever returns up to three documents for each query.
+
+### Q8. If three queries are generated and k is three, how many retrieval results can we get?
+
+Up to nine results before deduplication.
+
+### Q9. Why is deduplication required?
+
+Different query variations may retrieve the same document. Deduplication prevents repeated documents from unnecessarily occupying the final context.
+
+### Q10. Does Multi-Query change the embedding model?
+
+No. It uses the same embedding and retrieval mechanism configured in the base retriever. It changes the query inputs.
+
+### Q11. What is `include_original=True`?
+
+It tells the retriever to search using the original user question in addition to generated variations.
+
+### Q12. What are the disadvantages?
+
+Additional LLM cost, more retrieval operations, increased latency, duplicate results, and possible query drift.
+
+### Q13. How many queries should we generate?
+
+Start with the default three. Increase the number only when evaluation shows that additional variations improve retrieval quality.
+
+### Q14. How is Multi-Query different from Query Rewriting?
+
+Query rewriting often creates one improved query. Multi-Query deliberately generates multiple alternative queries and retrieves for each.
+
+### Q15. How is Multi-Query different from RAG Fusion?
+
+Multi-Query merges and deduplicates retrieved documents. RAG Fusion uses Reciprocal Rank Fusion to combine ranking evidence from multiple result lists.
+
+### Q16. Can Multi-Query improve answer accuracy?
+
+It can improve the evidence available to the generator by increasing retrieval coverage. However, better retrieval does not automatically guarantee a correct final answer.
+
+## 17. 🧠 Quick revision — Remember this story
+
+**Problem:** One generic query may retrieve only a narrow set of documents.
+
+**Solution:** Use an LLM to generate multiple specific query variations.
+
+**Retrieval:** Run the same base retriever for each variation.
+
+**Merge:** Combine all retrieved documents.
+
+**Deduplicate:** Remove repeated documents.
+
+**Purpose:** Improve retrieval coverage and give the final LLM more relevant context.
+
+### One-line definition
+
+Multi-Query Retriever uses an LLM to generate multiple alternative queries from a single user question, retrieves documents for each query, and merges unique results to improve retrieval coverage.
+## Beginner-friendly explanation — Understand Multi-Query Retriever first
+
+### 1. The story: A medical chatbot
+
+Imagine a medical-consultant RAG chatbot. Its knowledge base contains information about **physical health, mental health, and immunity**.
+
+A user asks:
+
+> How can I boost my health?
+
+The question sounds simple, but it is broad. The user may be asking about exercise, stress, sleep, nutrition, or immunity. A chatbot needs to retrieve information from all the relevant areas before generating a useful answer.
+
+### 2. Problem with normal similarity search
+
+Normal similarity search sends this one generic question to the vector database. The search may find documents mostly about general or physical health, while missing relevant information about mental health or immunity.
+
+**Why?** One query represents only one wording and one search direction. If the wording does not strongly match a relevant document, that document may not appear in the results.
+
+```text
+User: “How can I boost my health?”
+                 |
+                 v
+       One similarity-search query
+                 |
+                 v
+       Narrow set of search results
+                 |
+       Some useful subtopics may be missed
+```
+
+### 3. Solution: Let an LLM generate focused queries
+
+Instead of relying on the user to ask several detailed questions, the LLM rewrites the broad question into multiple focused searches:
+
+- How can I improve my physical health?
+- How can I maintain good mental health?
+- How can I improve my immunity?
+
+The vector database searches for each query separately. Each search can retrieve a different set of relevant documents.
+
+### 4. How it works — step-by-step workflow
+
+```text
+             Original user question
+          “How can I boost my health?”
+                      |
+                      v
+                 LLM Rewriter
+                      |
+          Generates multiple focused queries
+             /          |          \
+            v           v           v
+       Physical       Mental       Immunity
+        health        health         query
+            |           |           |
+            v           v           v
+       Retrieve      Retrieve     Retrieve
+            |           |           |
+            v           v           v
+       Documents     Documents    Documents
+             \          |          /
+              \         |         /
+                       v
+                Merge results
+                       |
+                       v
+             Remove duplicates
+                       |
+                       v
+           Final unique documents
+                       |
+                       v
+             LLM generates answer
+```
+
+**What is happening?** The system searches several angles of the same question, combines the retrieved documents, removes repeated documents, and gives the final LLM more useful context for answering.
+
+### 5. Purpose and use cases — When is Multi-Query Retriever useful?
+
+Use Multi-Query Retriever when:
+
+- The user's question is broad or vague and could have several meanings or subtopics.
+- A single similarity-search query is retrieving too narrow a set of documents.
+- The knowledge base contains related information organized using different terminology.
+- You want to improve retrieval coverage without asking users to rewrite their questions.
+
+**Example use cases:**
+
+| Use case | Example broad question | Focused search angles |
+|---|---|---|
+| Medical information chatbot | How can I boost my health? | Physical health, mental health, immunity |
+| Enterprise knowledge assistant | How do I improve project delivery? | Planning, risks, team coordination, quality |
+| Customer support RAG | My product isn't working | Troubleshooting, error causes, setup, fixes |
+| Research assistant | Explain renewable energy | Solar, wind, storage, grid integration |
+
+Multi-Query Retriever is especially helpful when **retrieval coverage** is the problem. It is not necessarily required for every question; it adds LLM cost and retrieval operations.
+
+### 6. Easy memory trick
+
+Remember the workflow in five words:
+
+> **Rewrite → Retrieve → Merge → Deduplicate → Answer**
+
+- **Rewrite:** LLM creates focused query variations.
+- **Retrieve:** Search the vector database for each query.
+- **Merge:** Combine the retrieved results.
+- **Deduplicate:** Remove repeated documents.
+- **Answer:** Give the final unique documents to the LLM to generate a grounded response.
+
+---
+
+## Original technical notes
+
+The detailed explanation, LangChain implementation, configuration parameters, comparisons, disadvantages, and interview questions follow below.
+
+---
+
+
+## 1. What is Multi-Query Retriever?
+
+**Simple definition:**
+
+Multi-Query Retriever uses an LLM to convert one user question into multiple alternative questions. It retrieves documents for each question and combines the results, removing duplicates.
+
+**In simple words:** Instead of searching the vector database using only one question, we search using multiple versions of the same question to improve retrieval coverage.
+
+## 2. 🔴 What problem does it solve?
+
+Imagine a medical-consultant RAG chatbot.
+
+Its knowledge base contains information about:
+- Physical health
+- Mental health
+- Immunity
+
+A user asks:
+
+**"How can I boost my health?"**
+
+This is a generic question. It covers multiple topics.
+
+A normal similarity retriever searches using this single question and may retrieve only a few documents related to general health or physical health.
+
+It may miss useful information about mental health and immunity.
+
+**The problem:** One generic query may retrieve only a narrow set of relevant documents. Retrieval coverage can be low.
+
+## 3. 🟢 How does Multi-Query Retriever solve this?
+
+Instead of expecting users to write detailed questions, we let an LLM generate more specific questions.
+
+Original question:
+
+"How can I boost my health?"
+
+The LLM generates:
+
+1. How can I improve my physical health?
+2. How can I maintain good mental health?
+3. How can I improve my immunity?
+
+Now the retriever searches the vector database separately for each query.
+
+Each query can retrieve different documents.
+
+Finally, all retrieved documents are merged and duplicate documents are removed.
+
+**Result:** Better coverage across physical health, mental health, and immunity.
+
+## 4. 🔄 How does it work?
+
+```text
+       User's Original Question
+       "How can I boost my health?"
+                   |
+                   v
+             LLM Rewriter
+                   |
+          Generates 3 Queries
+           /       |       \
+          v        v        v
+      Physical   Mental   Immunity
+       Health    Health    Query
+          |        |        |
+          v        v        v
+       Retriever Retriever Retriever
+          |        |        |
+          v        v        v
+       Results   Results  Results
+           \       |       /
+            \      |      /
+                   v
+             Merge Results
+                   |
+                   v
+             Remove Duplicates
+                   |
+                   v
+          Final Retrieved Documents
+                   |
+                   v
+             LLM Answer Generation
+```
+
+## 5. 🟡 Example: How does RAG reduce hallucinations?
+
+Original query:
+
+"How does RAG reduce hallucinations?"
+
+Possible query variations:
+
+1. RAG grounding in LLMs
+2. Retrieval techniques to reduce incorrect answers
+3. Improving factual accuracy using retrieval
+
+Each query approaches the same topic from a different angle.
+
+The embedding model may find different relevant chunks for each variation.
+
+The retriever combines the results to provide broader coverage.
+
+## 6. How does merging and deduplication work?
+
+Suppose three query variations retrieve these chunks:
+
+| Query | Retrieved chunks |
+|---|---|
+| Query 1 | 1, 3, 6 |
+| Query 2 | 3, 5, 8 |
+| Query 3 | 1, 3, 8 |
+
+Before deduplication, there are 9 entries.
+
+After merging and removing duplicates:
+
+**Final unique documents:**
+
+`1, 3, 5, 6, 8`
+
+There are now 5 unique documents.
+
+The same document is not passed repeatedly into the final context.
+
+## 7. Important concept: Only the input changes
+
+This is an important point from CampusX.
+
+The normal retrieval process remains unchanged:
+
+```text
+Query
+  |
+  v
+Embedding
+  |
+  v
+Similarity Search
+  |
+  v
+Top-K Documents
+```
+
+Multi-Query Retriever simply generates multiple query inputs and runs the same retrieval process for each one.
+
+**Remember:** Rewrite → Retrieve → Merge → Deduplicate.
+
+## 8. Important configuration parameters
+
+The Multi-Query Retriever is a wrapper around two components:
+
+1. Base retriever
+2. LLM
+
+| Configuration | Purpose |
+|---|---|
+| `retriever` | Existing retriever used to search documents |
+| `llm` | Generates alternative query variations |
+| `k` | Number of documents retrieved for each query; configured on the base retriever |
+| Custom prompt | Controls how many query variations are generated |
+| `include_original` | Also searches using the original user question |
+
+### Default behavior
+
+- Number of generated queries: 3
+- Original query included: No, by default
+- Documents per query: Controlled by the base retriever's `k`
+
+### Example calculation
+
+If:
+- Generated queries = 3
+- Documents per query (`k`) = 3
+
+Then:
+
+`3 × 3 = 9 retrieval results before deduplication`
+
+The final number of unique documents may be smaller.
+
+## 9. ⚙️ LangChain Classic implementation
+
+### Step 1: Install packages
+
+```bash
+pip install langchain-classic langchain-openai langchain-chroma chromadb
+```
+
+### Step 2: Import required libraries
+
+```python
+from langchain_classic.retrievers.multi_query import MultiQueryRetriever
+from langchain_core.documents import Document
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_chroma import Chroma
+```
+
+### Step 3: Prepare sample documents
+
+```python
+documents = [
+    Document(
+        page_content="Regular exercise improves physical health, heart health, and fitness."
+    ),
+    Document(
+        page_content="Mental health can be improved through stress management, sleep, and mindfulness."
+    ),
+    Document(
+        page_content="A balanced diet and adequate sleep support immunity."
+    ),
+    Document(
+        page_content="Strength training helps improve muscle strength and physical fitness."
+    ),
+    Document(
+        page_content="Meditation and relaxation techniques can reduce stress and anxiety."
+    ),
+    Document(
+        page_content="Vaccination, nutrition, and healthy habits support immune function."
+    )
+]
+```
+
+### Step 4: Create embeddings and vector store
+
+```python
+embeddings = OpenAIEmbeddings(
+    model="text-embedding-3-small"
+)
+
+vectorstore = Chroma.from_documents(
+    documents=documents,
+    embedding=embeddings,
+    collection_name="multi_query_demo"
+)
+```
+
+### Step 5: Create the base retriever
+
+```python
+base_retriever = vectorstore.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 3}
+)
+```
+
+Here, `k=3` means the base retriever returns up to three documents for each query.
+
+### Step 6: Initialize the LLM
+
+```python
+llm = ChatOpenAI(
+    model="gpt-4o-mini",
+    temperature=0.3
+)
+```
+
+A small amount of temperature can help generate varied query formulations.
+
+### Step 7: Create Multi-Query Retriever
+
+```python
+multi_retriever = MultiQueryRetriever.from_llm(
+    retriever=base_retriever,
+    llm=llm
+)
+```
+
+The retriever uses the LLM to generate alternative queries and the base retriever to search for documents.
+
+### Step 8: Invoke the retriever
+
+```python
+query = "How can I improve my health?"
+
+results = multi_retriever.invoke(query)
+
+for i, doc in enumerate(results, 1):
+    print(f"\nDocument {i}:")
+    print(doc.page_content)
+```
+
+**Expected behavior:** The LLM generates different health-related query variations, retrieval runs for each variation, and the final output contains unique documents.
+
+The exact number of returned documents depends on the generated queries, document overlap, and available matching content.
+
+## 10. Including the original query
+
+By default, Multi-Query Retriever searches using generated variations.
+
+If we also want to search with the original question:
+
+```python
+multi_retriever = MultiQueryRetriever.from_llm(
+    retriever=base_retriever,
+    llm=llm,
+    include_original=True
+)
+```
+
+Now retrieval includes:
+- Original user query
+- Generated query 1
+- Generated query 2
+- Generated query 3
+
+That means four retrieval operations when three variations are generated.
+
+It may improve coverage, but it adds retrieval latency.
+
+## 11. Understanding the LangChain code
+
+| Code | Meaning |
+|---|---|
+| `vectorstore.as_retriever()` | Creates the normal retriever |
+| `search_kwargs={"k": 3}` | Retrieves up to three documents per query |
+| `ChatOpenAI()` | Initializes the LLM |
+| `MultiQueryRetriever.from_llm()` | Creates the Multi-Query wrapper |
+| `retriever=base_retriever` | Supplies the existing retrieval mechanism |
+| `llm=llm` | Supplies the query-generation model |
+| `include_original=True` | Includes the original question in retrieval |
+| `.invoke(query)` | Runs the retrieval process |
+
+## 12. 🔴 Disadvantages and trade-offs
+
+### 1. Extra LLM cost
+
+An additional LLM call is required to generate query variations.
+
+### 2. Higher latency
+
+If three queries are generated, the vector store is searched three times.
+
+More generated queries mean more retrieval operations.
+
+### 3. Duplicate documents
+
+Different queries may retrieve the same documents. Deduplication is necessary.
+
+### 4. Query drift
+
+Sometimes the LLM may generate variations that move away from the original question.
+
+This can retrieve irrelevant documents.
+
+### 5. More context
+
+More retrieved documents can increase the context size sent to the final LLM.
+
+**Practical advice:** Start with three variations and evaluate retrieval quality before increasing the number.
+
+## 13. Multi-Query Retriever vs Normal Similarity Search
+
+| Normal Similarity Search | Multi-Query Retriever |
+|---|---|
+| Uses one query | Generates multiple queries |
+| One retrieval operation | Multiple retrieval operations |
+| May have narrow coverage | Can improve retrieval coverage |
+| No query-generation LLM call | Requires an LLM query-generation call |
+| Lower cost and latency | Higher cost and latency |
+| No multi-result deduplication step | Merges and deduplicates results |
+
+## 14. Multi-Query Retriever vs RAG Fusion
+
+| Multi-Query Retriever | RAG Fusion |
+|---|---|
+| Generates multiple query variations | Generates multiple query variations |
+| Retrieves documents for each query | Retrieves documents for each query |
+| Merges and removes duplicates | Combines results using rank-based fusion |
+| Does not preserve ranking evidence in a fusion score | Uses Reciprocal Rank Fusion (RRF) |
+| Simpler approach | More sophisticated result ranking |
+
+**Important:** Multi-Query Retriever uses ordinary merging and deduplication. RAG Fusion uses ranking information from multiple result lists to calculate a combined ranking.
+
+
+
+---
+
+## Source coverage
+
+- CampusX Advanced RAG Complete 2026 PDF:
+  - Section 7.13 — Multi-Query Retriever, printed pages 170–173.
+  - Section 7.14 — Demo: Multi-Query Retriever in LangChain Classic, printed pages 173–174.
+- CampusX Advanced RAG OneNote notes PDF:
+  - Multi-Query Retriever, pages 127–130.
+
+**Excluded as requested:** Section 7.15 — Custom Implementation of Multi-Query Retriever.
 
 
 
