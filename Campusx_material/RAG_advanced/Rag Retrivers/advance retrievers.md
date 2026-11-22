@@ -779,6 +779,9 @@ Because retrieval and generation have different needs (small chunks for accuracy
 
 # Self-Query Retriever
 
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/5dc5764a-76ea-43b8-9000-df2265359015" />
+
+
 <img width="708" height="541" alt="image" src="https://github.com/user-attachments/assets/ba6640bc-4fea-4cab-b6e8-267a8e4eabf2" />
 <img width="780" height="535" alt="image" src="https://github.com/user-attachments/assets/2436e105-1691-4c51-8fa3-bdd6e05a8da3" />
 <img width="774" height="380" alt="image" src="https://github.com/user-attachments/assets/71bc9581-72eb-4932-8f5b-c25b6496bd24" />
