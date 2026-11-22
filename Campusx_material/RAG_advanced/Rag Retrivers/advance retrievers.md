@@ -12,6 +12,8 @@ https://enterpriseai.handbook.mihirkjha.com/05-advanced-retrieval-augmented-gene
 
 https://cleancodestack.com/langchain-parentdocumentretriever-advanced-rag/
 
+<img width="1063" height="1479" alt="image" src="https://github.com/user-attachments/assets/6f3ac22b-5286-4902-bf8a-909d61f9d0c3" />
+
 
 
 # Contextual Compression Retriever
