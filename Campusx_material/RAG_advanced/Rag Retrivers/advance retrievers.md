@@ -1569,6 +1569,16 @@ The code is a beginner-friendly runnable adaptation of the CampusX LangChain Cla
 <img width="844" height="569" alt="image" src="https://github.com/user-attachments/assets/f6eb0b5d-2015-4094-8684-2627fd39061f" />
 <img width="1100" height="467" alt="image" src="https://github.com/user-attachments/assets/f2480f35-e550-4470-88e7-20a624c38b86" />
 <img width="720" height="405" alt="image" src="https://github.com/user-attachments/assets/26302679-2394-4130-a7f1-606ac452276f" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/be6f7ab5-e382-45f8-bd82-88fb5d5d966c" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/b2bff1cc-db9d-4f1b-8099-e53c34d06ecd" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/6cfe423d-15b5-41e4-a37e-0e984d07b1ce" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/7266a652-2596-42a8-8c88-5335ef2b72b1" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/91f0641f-c860-4088-b3bf-d2ba24ca6827" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/1d94b80a-f332-4c26-b83e-3c4186a9139e" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/254c1bc0-3f36-4141-be6e-a347f01bcbae" />
+
+
+
 
 
 
