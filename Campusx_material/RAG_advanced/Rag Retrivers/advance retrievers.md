@@ -1567,6 +1567,8 @@ These notes combine the relevant explanations and implementation details from th
 The code is a beginner-friendly runnable adaptation of the CampusX LangChain Classic + Chroma approach. Model availability, package versions, and import paths can change; verify them in your active environment.
 
 # Multi-Query Retriever — CampusX Advanced RAG Study Notes
+<img width="1681" height="936" alt="image" src="https://github.com/user-attachments/assets/5adc619d-fb88-4a6e-b7ba-95201261ed77" />
+
 <img width="490" height="584" alt="image" src="https://github.com/user-attachments/assets/64fe5674-f9dd-4bb5-a5cc-268d0df1f04a" />
 <img width="844" height="569" alt="image" src="https://github.com/user-attachments/assets/f6eb0b5d-2015-4094-8684-2627fd39061f" />
 <img width="1100" height="467" alt="image" src="https://github.com/user-attachments/assets/f2480f35-e550-4470-88e7-20a624c38b86" />
