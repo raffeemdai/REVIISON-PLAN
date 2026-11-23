@@ -1,3 +1,10 @@
+https://mlpills.substack.com/p/issue-115-reranking-in-your-rag-pipeline
+
+https://dataaspirant.com/blog/reranking/
+
+https://searchministry.au/guides/what-is-cross-encoder-reranking
+
+
 <img width="870" height="549" alt="image" src="https://github.com/user-attachments/assets/e807d25e-98cf-49ba-a327-0432fb8b9459" />
 
 <img width="640" height="427" alt="image" src="https://github.com/user-attachments/assets/74217873-ad90-40c3-b1b4-7a1c63e313cb" />
@@ -14,7 +21,20 @@
 <img width="1140" height="569" alt="image" src="https://github.com/user-attachments/assets/8ca234a6-b3c9-4ece-aa53-b43d3dcca25d" />
 <img width="650" height="579" alt="image" src="https://github.com/user-attachments/assets/ad84f49d-29c7-4ced-b70a-52a28860e0c5" />
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a42e7631-8f8b-4b33-b9e8-a840ff3466d5" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/9d0f987f-3a5b-444c-ab94-2f44b8be5ef1" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/a4745b10-ae12-4685-8c31-c3242bdd49ec" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/6e6f0643-261f-4d5b-95a6-9c70680cd921" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/a0a62617-733c-4059-a247-7181a04bc532" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/d5548906-2ce3-4722-9e0e-f2e7be558bc2" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/4bd74802-50e3-44d9-a4f3-8a35a37fb9de" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/97814a6c-c54b-4e31-a527-602dd58a765f" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/fa28f831-6ac6-4bad-8a53-6d9faeaad4d6" />
 
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/6811ba88-ae42-45d8-b8df-138a7092ce6b" />
+
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/d0056ae3-1b80-480c-b892-83b5cf7aafca" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/6b567b94-293a-4fe1-880a-0d35089bfce6" />
+<img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/974af2c3-342a-4500-bd36-975a03861c86" />
 
 # RAG Re-Ranking --- Interview Guide
 
