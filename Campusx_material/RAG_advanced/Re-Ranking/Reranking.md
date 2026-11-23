@@ -8,6 +8,13 @@
 <img width="1730" height="909" alt="image" src="https://github.com/user-attachments/assets/14fc7174-3d5f-427c-a350-643f9852c0ce" />
 <img width="968" height="437" alt="image" src="https://github.com/user-attachments/assets/eb770156-9b70-48e7-a008-6b754f49a3e9" />
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/69943baa-aff0-44c1-9a14-61b4dd1282d5" />
+<img width="1109" height="555" alt="image" src="https://github.com/user-attachments/assets/85fb705d-4204-40ca-9df3-40a8d74247c4" />
+<img width="1147" height="573" alt="image" src="https://github.com/user-attachments/assets/d770e063-95de-4a4b-828d-1ba0498cde18" />
+<img width="1048" height="583" alt="image" src="https://github.com/user-attachments/assets/bfc872a6-0ed0-4686-a7c9-cc49570530e7" />
+<img width="1140" height="569" alt="image" src="https://github.com/user-attachments/assets/8ca234a6-b3c9-4ece-aa53-b43d3dcca25d" />
+<img width="650" height="579" alt="image" src="https://github.com/user-attachments/assets/ad84f49d-29c7-4ced-b70a-52a28860e0c5" />
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a42e7631-8f8b-4b33-b9e8-a840ff3466d5" />
+
 
 # RAG Re-Ranking --- Interview Guide
 
