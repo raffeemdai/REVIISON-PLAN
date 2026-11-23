@@ -2,6 +2,11 @@
 
 <img width="1105" height="618" alt="image" src="https://github.com/user-attachments/assets/4ac2b625-f174-49fb-8c65-8c3078fdbc30" />
 
+
+https://medium.com/@shubhamnagar234/document-loaders-in-langchain-load-text-pdfs-web-pages-and-csvs-part-10-dbeef0e9f26b
+
+
+
 https://blogs.timerring.com/posts/langchain-and-rag-best-practices/?utm_source=chatgpt.com#gsc.tab=0
 
 ###  Maximum Marginal Relevance (MMR) #
