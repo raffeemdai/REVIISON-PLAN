@@ -7,6 +7,10 @@
 
 refer : https://medium.com/@dewasheesh.rana/the-definitive-guide-to-agentic-rag-text-splitting-chunking-a75766ee307c
 
+https://medium.com/@shubhamnagar234/document-loaders-in-langchain-load-text-pdfs-web-pages-and-csvs-part-10-dbeef0e9f26b
+
+
+
 dailydoseds : https://www.dailydoseofds.com/p/5-chunking-strategies-for-rag/
 
 
