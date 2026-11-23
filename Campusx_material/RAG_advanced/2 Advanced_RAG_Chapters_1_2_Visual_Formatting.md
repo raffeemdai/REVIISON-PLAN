@@ -1,3 +1,9 @@
+good blog for RAG n langchain
+
+https://medium.com/@shubhamnagar234/document-loaders-in-langchain-load-text-pdfs-web-pages-and-csvs-part-10-dbeef0e9f26b
+
+
+
 # 📘 Advanced RAG --- Chapters 1 & 2 Complete Study Notes
 
 > **VISUAL GUIDE**  
