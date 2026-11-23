@@ -1,3 +1,7 @@
+good medium blog:
+
+https://medium.com/@shubhamnagar234/document-loaders-in-langchain-load-text-pdfs-web-pages-and-csvs-part-10-dbeef0e9f26b
+
 # LangChain Output Parsers: Short Notes
 
 ## 1. What & Why
