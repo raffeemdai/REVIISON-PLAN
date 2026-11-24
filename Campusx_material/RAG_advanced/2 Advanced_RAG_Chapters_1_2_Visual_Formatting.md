@@ -14,6 +14,7 @@ https://medium.com/@shubhamnagar234/document-loaders-in-langchain-load-text-pdfs
 <img width="686" height="286" alt="image" src="https://github.com/user-attachments/assets/f2f44e3e-7bc6-498e-9e96-4883854b0c93" />
 <img width="690" height="581" alt="image" src="https://github.com/user-attachments/assets/18d28cea-74ca-4d88-88b7-0424fe26051f" />
 <img width="631" height="105" alt="image" src="https://github.com/user-attachments/assets/f03cfc28-64b5-4efc-8240-04da85bff045" />
+<img width="1199" height="1312" alt="image" src="https://github.com/user-attachments/assets/235021da-4321-4cb8-8e52-082e9af41247" />
 
 
 # 📘 Advanced RAG --- Chapters 1 & 2 Complete Study Notes
