@@ -1,6 +1,9 @@
 good blog for RAG n langchain
 
 https://medium.com/@shubhamnagar234/document-loaders-in-langchain-load-text-pdfs-web-pages-and-csvs-part-10-dbeef0e9f26b
+
+<img width="2752" height="1536" alt="image" src="https://github.com/user-attachments/assets/16e8ecb0-d923-4687-bf79-bdc2fd9bf8b5" />
+
 <img width="744" height="431" alt="image" src="https://github.com/user-attachments/assets/12d6a696-8a62-4054-903a-a5efefb68962" />
 
 <img width="668" height="394" alt="image" src="https://github.com/user-attachments/assets/db5749dc-e999-4520-8213-98aaa0d2acb7" />
@@ -1087,6 +1090,12 @@ the same thing.
 ------------------------------------------------------------------------
 
 ## 📌 2.4 The unified output: the `Document` object
+
+<img width="712" height="352" alt="image" src="https://github.com/user-attachments/assets/05e99952-92ff-49aa-8dd9-00cecdb8cae8" />
+
+
+<img width="695" height="521" alt="image" src="https://github.com/user-attachments/assets/248bee9f-9d46-466d-8471-4dea3b96a860" />
+
 LangChain loaders commonly return a list of `Document` objects. Each
 object has two central fields:
 
