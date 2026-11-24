@@ -1000,6 +1000,7 @@ generation.
 <img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/05323916-3b33-4f5e-b130-07371fd47306" />
 <img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/dc96c883-2983-48fa-bd1f-0618592d4f2e" />
 <img width="1376" height="768" alt="image" src="https://github.com/user-attachments/assets/3acafc4e-fd07-4bcd-a750-f92bcfcf9e02" />
+<img width="687" height="497" alt="image" src="https://github.com/user-attachments/assets/922ef3fe-d149-4356-95f1-7eabcc391437" />
 
 ## 📘 Chapter map
 This chapter explains how raw information becomes usable documents for a
