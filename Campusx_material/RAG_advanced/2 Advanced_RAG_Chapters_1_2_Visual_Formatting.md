@@ -1329,7 +1329,32 @@ images, tables, diagrams, multi-column layouts, and mixed content.
 Different libraries use different parsers and trade off text quality,
 metadata, image handling, and speed.
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/92567e4f-33a5-4a60-a9c3-4e4a7303e319" />
+
+
 ### 🔹 Loader comparison
+
+## 🔹 Loader Comparison
+
+| Loader | Typical Strength | Limitation / Caution |
+|---|---|---|
+| **`PyPDFLoader`** | Straightforward page-wise text extraction | Complex layouts, tables, and image text may be missed or poorly represented. |
+| **`PDFMinerLoader`** | Can support image extraction/OCR configurations and text extraction | May be slower when OCR is involved; output text order/quality must be checked. |
+| **`PDFPlumberLoader`** | Often provides richer PDF metadata and page-by-page output | Extracted text can have spacing/layout problems; not automatically a structured table or image-description solution. |
+| **Mathpix-related loader** | Specialized for PDFs with mathematical notation | Requires its relevant setup/service and should be selected when math extraction is important. |
+
+---
+
+## 🔹 Quick Memory Trick
+
+| Loader | Remember It As |
+|---|---|
+| **PyPDFLoader** | Simple page-wise extraction |
+| **PDFMinerLoader** | Text extraction + OCR configurations |
+| **PDFPlumberLoader** | Metadata + layout-aware extraction |
+| **Mathpix** | Mathematical equations |
+
+> 💡 **Memory Tip:** PyPDF = Simple, PDFMiner = Extraction, PDFPlumber = Layout, Mathpix = Maths.
   -----------------------------------------------------------------------
   Loader                  Typical strength        Limitation / caution
   ----------------------- ----------------------- -----------------------
