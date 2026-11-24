@@ -1,7 +1,16 @@
 good blog for RAG n langchain
 
 https://medium.com/@shubhamnagar234/document-loaders-in-langchain-load-text-pdfs-web-pages-and-csvs-part-10-dbeef0e9f26b
+<img width="744" height="431" alt="image" src="https://github.com/user-attachments/assets/12d6a696-8a62-4054-903a-a5efefb68962" />
 
+<img width="668" height="394" alt="image" src="https://github.com/user-attachments/assets/db5749dc-e999-4520-8213-98aaa0d2acb7" />
+<img width="513" height="141" alt="image" src="https://github.com/user-attachments/assets/5a1c3684-5cbb-419b-a7a7-52bbf61b03e8" />
+<img width="634" height="288" alt="image" src="https://github.com/user-attachments/assets/5d050593-3fc6-4514-ba2b-643f0df1553b" />
+<img width="678" height="371" alt="image" src="https://github.com/user-attachments/assets/493d4b36-fef5-47c6-a12f-388d182addf5" />
+<img width="486" height="150" alt="image" src="https://github.com/user-attachments/assets/3433dae8-adb1-49d2-b067-0779d9e1daae" />
+<img width="686" height="286" alt="image" src="https://github.com/user-attachments/assets/f2f44e3e-7bc6-498e-9e96-4883854b0c93" />
+<img width="690" height="581" alt="image" src="https://github.com/user-attachments/assets/18d28cea-74ca-4d88-88b7-0424fe26051f" />
+<img width="631" height="105" alt="image" src="https://github.com/user-attachments/assets/f03cfc28-64b5-4efc-8240-04da85bff045" />
 
 
 # 📘 Advanced RAG --- Chapters 1 & 2 Complete Study Notes
