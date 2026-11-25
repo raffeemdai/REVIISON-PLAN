@@ -1,3 +1,8 @@
+## docling install and setup and few code examples:
+
+https://docling.org/examples/
+
+https://docling.org/install/#step-by-step-with-pip
 
  ## good udemy course for Docling for Multimodal Rag he is from IIT : 
  https://kgptalkie.com/learning-paths/ai-agent-mastery  HIS UDMEY COURSES
