@@ -1,4 +1,4 @@
-## docling install and setup and few code examples:
+## docling install and setup and few code examples:   updated nov 2026 
 
 https://docling.org/examples/
 
@@ -47,10 +47,13 @@ github  for the above : https://github.com/chinnovinosoft/RAG-Retrieval-Augmente
 
 
 Good video on DOcling:
+this material is dec 2025 
 
 https://www.youtube.com/watch?v=w-Ru0VL6IT8
 
 https://github.com/docling-project/docling 
+
+https://github.com/sudarshan-koirala/youtube-stuffs/blob/main/document-parsers/docling.ipynb
 
 
 
