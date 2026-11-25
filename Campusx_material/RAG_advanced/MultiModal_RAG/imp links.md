@@ -40,6 +40,11 @@ github  for the above : https://github.com/chinnovinosoft/RAG-Retrieval-Augmente
 <img width="797" height="669" alt="image" src="https://github.com/user-attachments/assets/4b0c5d5d-93c9-4873-8b25-aaeadd78a04b" />
 
 
+Good video on DOcling:
+
+https://www.youtube.com/watch?v=w-Ru0VL6IT8
+
+https://github.com/docling-project/docling 
 
 
 
