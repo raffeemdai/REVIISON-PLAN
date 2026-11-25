@@ -1,5 +1,85 @@
 # Docling + LangChain + Qdrant Complete Guide
+# What is Docling?
 
+Docling is an open-source document understanding framework developed by IBM that converts complex documents into structured representations suitable for AI applications and Retrieval-Augmented Generation (RAG).
+
+It supports:
+
+- PDF
+- DOCX
+- PPTX
+- HTML
+- Images
+- Scanned Documents
+
+Unlike traditional PDF loaders, Docling understands:
+
+- Document hierarchy
+- Headings
+- Tables
+- Lists
+- Images
+- Layout information
+- Reading order
+
+This makes it ideal for enterprise RAG systems.
+
+---
+
+# Why Do We Need Docling?
+
+## Traditional PDF Loaders
+
+Common loaders:
+
+```python
+PyPDFLoader
+PDFPlumber
+UnstructuredPDFLoader
+```
+
+Traditional Approach:
+
+```text
+PDF
+ ↓
+Extract Raw Text
+ ↓
+Character Splitter
+ ↓
+Embeddings
+ ↓
+Vector DB
+```
+
+### Problems
+
+1. Broken tables
+2. Lost headings
+3. Wrong reading order
+4. No layout understanding
+5. Poor chunk quality
+
+---
+
+# How Docling Solves This
+
+```text
+PDF
+ ↓
+Docling
+ ↓
+Document Object
+ ↓
+Structured Elements
+ ├── Headings
+ ├── Paragraphs
+ ├── Tables
+ ├── Lists
+ └── Images
+```
+
+---
 ## 1. What is Docling?
 
 Docling is an open-source document understanding framework that converts PDFs, DOCX, PPTX, HTML, images, and text documents into structured representations for AI and RAG applications.
