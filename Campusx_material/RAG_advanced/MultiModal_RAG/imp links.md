@@ -14,3 +14,10 @@ same trainer udemy course  : Master Langchain v1 and Ollama - Chatbot, RAG and A
 
 
 https://dataaspirant.com/blog/multimodal-llms/
+
+
+
+## praveen reddy learnings multimodal rag using docling
+https://www.youtube.com/watch?v=YXg1GncQ6mU&list=PLird-0KNeOgbXZMIrlJfu9K-hLaxakn8f&index=20
+
+github  for the above : https://github.com/chinnovinosoft/RAG-Retrieval-Augmented-Generation/tree/main/RAG-19-MultiModal%20RAG
