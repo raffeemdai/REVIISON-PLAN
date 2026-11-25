@@ -978,6 +978,14 @@ generation.
 
 # 📘 Chapter 2 --- Document Loaders
 
+<img width="754" height="583" alt="image" src="https://github.com/user-attachments/assets/151a71b4-cd0f-4a10-9297-e8f8715f4fdb" />
+<img width="773" height="471" alt="image" src="https://github.com/user-attachments/assets/e7186318-57c3-48bb-a90c-1c4ff5a3012a" />
+<img width="765" height="476" alt="image" src="https://github.com/user-attachments/assets/8b7ac3e5-ef57-4d13-adf0-51d12da9568e" />
+<img width="815" height="704" alt="image" src="https://github.com/user-attachments/assets/e5b1f393-a049-4139-93a3-45131694d29f" />
+<img width="797" height="669" alt="image" src="https://github.com/user-attachments/assets/4b0c5d5d-93c9-4873-8b25-aaeadd78a04b" />
+
+
+
 
 <img width="2752" height="1536" alt="image" src="https://github.com/user-attachments/assets/16e8ecb0-d923-4687-bf79-bdc2fd9bf8b5" />
 
