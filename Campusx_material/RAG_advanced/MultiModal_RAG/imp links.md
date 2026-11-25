@@ -4,6 +4,12 @@ https://docling.org/examples/
 
 https://docling.org/install/#step-by-step-with-pip
 
+### official doclinc  refer this official 
+https://docling-project.github.io/
+https://docling-project.github.io/docling/getting_started/installation/  
+
+concepts  : https://docling-project.github.io/docling/concepts/
+
  ## good udemy course for Docling for Multimodal Rag he is from IIT : 
  https://kgptalkie.com/learning-paths/ai-agent-mastery  HIS UDMEY COURSES
 https://capgemini.udemy.com/course/deep-agent/learn/lecture/54650713#questions
