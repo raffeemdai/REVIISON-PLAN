@@ -1,10 +1,13 @@
 
- good udemy course for Docling for Multimodal Rag he is from IIT : https://kgptalkie.com/learning-paths/ai-agent-mastery  HIS UDMEY COURSES
+ ## good udemy course for Docling for Multimodal Rag he is from IIT : 
+ https://kgptalkie.com/learning-paths/ai-agent-mastery  HIS UDMEY COURSES
 https://capgemini.udemy.com/course/deep-agent/learn/lecture/54650713#questions
 
 same trainer udemy course  : Master Langchain v1 and Ollama - Chatbot, RAG and AI Agents   : https://capgemini.udemy.com/course/ollama-and-langchain/learn/lecture/53075829#overview
-## TOPICS : BULK MULTIMODEL EXTRACTION USING DOCLING
 
+ TOPICS : BULK MULTIMODEL EXTRACTION USING DOCLING
+
+https://github.com/laxmimerit/Langchain-and-Ollama/
 ## in realtime Docling is used with llm for Multimodal rag
 
 
