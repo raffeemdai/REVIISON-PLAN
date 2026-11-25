@@ -6,6 +6,7 @@ https://capgemini.udemy.com/course/deep-agent/learn/lecture/54650713#questions
 same trainer udemy course  : Master Langchain v1 and Ollama - Chatbot, RAG and AI Agents   : https://capgemini.udemy.com/course/ollama-and-langchain/learn/lecture/53075829#overview
 
  TOPICS : BULK MULTIMODEL EXTRACTION USING DOCLING
+ github : https://github.com/laxmimerit/Langchain-and-Ollama/blob/main/08.%20Document%20Loaders/5-Docling-IBM.ipynb
 
 https://github.com/laxmimerit/Langchain-and-Ollama/
 ## in realtime Docling is used with llm for Multimodal rag
