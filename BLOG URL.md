@@ -1,3 +1,8 @@
+
+### my blog :
+
+https://raffeemdai.github.io/Advanced_RAG_LangChain_Docling_Study_Dashboard.html
+
 langgraph good blog:
 
 https://shafiqulai.github.io/blogs/blog_8.html
