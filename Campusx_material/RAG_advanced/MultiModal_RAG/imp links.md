@@ -37,6 +37,18 @@ https://github.com/laxmimerit/Langchain-and-Ollama/
 
 
 ## Note : we can replace CLIP  with Gemini Embedding 2 with same architecture n solution
+## below is from campusx
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/35acc0d6-28de-41d5-9f76-3ce9cadbc942" />
+in the above architecture This graphical architecture is based on your uploaded strategy2_multimodal_embeddings.ipynb, including the actual libraries and configurations used.
+
+Important distinction: CLIP performs cross-modal embedding and retrieval. ChatOpenAI (gpt-5-mini) receives the retrieved text and images and generates the final answer.
+
+Your notebook uses:
+- OpenCLIP — ViT-B-32
+- Chroma — shared collection multimodal
+- Recursive text splitting — 1,000 chunk size, 200 overlap
+- Retriever — top 6 results
+- GPT-5-mini — answer generation
 https://dataaspirant.com/blog/multimodal-llms/
 
 
