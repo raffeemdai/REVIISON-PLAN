@@ -16,6 +16,8 @@ https://capgemini.udemy.com/course/deep-agent/learn/lecture/54650713#questions
 in the above course section 8 covers differnet types multimodal impementation
 
 in his course he covered 3rd solution bcz its cheap
+5 ways of implementing rag from above udemy
+https://github.com/laxmimerit/Multi-Agent-Deep-RAG/blob/main/00%20Introduction/02_00_Five_Ways_of_Multimodal_RAG.pdf
 
 <img width="1698" height="926" alt="image" src="https://github.com/user-attachments/assets/37fb8192-6876-4fe2-ab45-471d71765ad7" />
 
