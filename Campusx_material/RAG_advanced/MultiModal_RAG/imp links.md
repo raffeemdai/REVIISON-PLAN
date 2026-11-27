@@ -37,7 +37,7 @@ https://github.com/laxmimerit/Langchain-and-Ollama/
 
 
 ## Note : we can replace CLIP  with Gemini Embedding 2 with same architecture n solution
-## below is from campusx
+## below is from campusx CLIP
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/35acc0d6-28de-41d5-9f76-3ce9cadbc942" />
 in the above architecture This graphical architecture is based on your uploaded strategy2_multimodal_embeddings.ipynb, including the actual libraries and configurations used.
 
@@ -51,8 +51,44 @@ Your notebook uses:
 - GPT-5-mini — answer generation
 https://dataaspirant.com/blog/multimodal-llms/
 
+## solution2 using gemini embedding2
+
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/49c40dc2-d2df-4c17-a86b-8e1b2a23ee19" />
+
+The architecture above illustrates how Gemini Embedding 2 replaces separate CLIP text and image encoders with a unified multimodal embedding model.
+
+Key differences from your CLIP notebook:
+1. One embedding model handles text, images, PDFs, audio and video.
+2. All modalities map into a shared semantic embedding space.
+3. Chroma, Qdrant or Pinecone can store the vectors and metadata.
+4. The same Gemini Embedding 2 model embeds user queries.
+5. A separate Gemini LLM generates the final answer.
+Important: For independently searchable text and image elements, generate separate embeddings and retain their metadata. A combined multimodal input can instead produce an aggregated embedding.
+
+###  When can we avoid Docling? using gemini embedding2
+
+| Scenario | Recommendation |
+|---|---|
+| Simple PDF, few pages | Direct Gemini embedding |
+| Standalone images | Direct Gemini embedding |
+| Audio/video search | Direct Gemini embedding |
+| Simple text documents | Direct Gemini embedding |
+| Complex enterprise PDFs | Docling recommended |
+| PDFs with complex tables | Docling recommended |
+| Multi-column PDFs | Docling recommended |
+| Need structured chunks and page references | Docling recommended |
 
 
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/f3a5837d-7520-411a-8277-17878c062861" />
+
+The diagram shows the simplified architecture:
+
+* **Python:** File ingestion, validation, metadata management and splitting when needed.
+* **Gemini Embedding 2:** Unified multimodal embeddings.
+* **Chroma / Qdrant / Pinecone:** Vector storage and similarity search.
+* **Gemini LLM:** Final answer generation using retrieved content.
+
+> **Remember:** Removing Docling does not mean removing preprocessing. Python still needs to manage document ingestion, metadata, page references and large-document handling.
 ## praveen reddy learnings multimodal rag using docling
 https://www.youtube.com/watch?v=YXg1GncQ6mU&list=PLird-0KNeOgbXZMIrlJfu9K-hLaxakn8f&index=20
 
