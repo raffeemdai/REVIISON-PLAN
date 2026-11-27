@@ -13,6 +13,12 @@ concepts  : https://docling-project.github.io/docling/concepts/
  ## good udemy course for Docling for Multimodal Rag he is from IIT : 
  https://kgptalkie.com/learning-paths/ai-agent-mastery  HIS UDMEY COURSES
 https://capgemini.udemy.com/course/deep-agent/learn/lecture/54650713#questions
+in the above course section 8 covers differnet types multimodal impementation
+
+in his course he covered 3rd solution bcz its cheap
+
+<img width="1698" height="926" alt="image" src="https://github.com/user-attachments/assets/37fb8192-6876-4fe2-ab45-471d71765ad7" />
+
 
 same trainer udemy course  : Master Langchain v1 and Ollama - Chatbot, RAG and AI Agents   : https://capgemini.udemy.com/course/ollama-and-langchain/learn/lecture/53075829#overview
 
