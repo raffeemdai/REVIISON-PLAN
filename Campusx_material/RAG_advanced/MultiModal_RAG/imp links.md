@@ -36,7 +36,10 @@ https://dataaspirant.com/blog/multimodal-llms/
 https://www.youtube.com/watch?v=YXg1GncQ6mU&list=PLird-0KNeOgbXZMIrlJfu9K-hLaxakn8f&index=20
 
 github  for the above : https://github.com/chinnovinosoft/RAG-Retrieval-Augmented-Generation/tree/main/RAG-19-MultiModal%20RAG
+#### note the above github is using docling core 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/fc4f94c4-3cf6-42b4-9f5a-b0e68d552f7d" />
+
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/952bf209-751e-478d-ac82-089361d48bfd" />
 
 
 ## dolinc material:
