@@ -36,7 +36,7 @@ https://github.com/laxmimerit/Langchain-and-Ollama/
 2) Using specialized embedding models like Gemini Embedding 2 which natively support multi model embeddings.
 
 
-Note : we can replace CLIP  with Gemini Embedding 2 with same architecture n solution
+## Note : we can replace CLIP  with Gemini Embedding 2 with same architecture n solution
 https://dataaspirant.com/blog/multimodal-llms/
 
 
