@@ -2,6 +2,7 @@
 in interview  if they ask alternatives 1.CLIP 2. Docling Hybrid Multimodal   3. Gemini Embedding
 
 for CLIP refer  Krishnaik: https://www.youtube.com/watch?v=BV0YUeam4y8
+
 for docling refer praveen reddy learnings 
 
 ## comparison bench mark Rag Multimodal RAG
