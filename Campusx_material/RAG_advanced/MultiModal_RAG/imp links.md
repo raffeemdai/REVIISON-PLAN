@@ -1,6 +1,9 @@
 ## comparison bench mark Rag Multimodal RAG
 
 https://medium.com/@vishwa.jith360/benchmarking-multimodal-rag-embeddings-and-techniques-31ad01fdec15
+<img width="670" height="604" alt="image" src="https://github.com/user-attachments/assets/e1bcf68f-a89e-41e7-852c-810540296bc5" />
+<img width="715" height="303" alt="image" src="https://github.com/user-attachments/assets/5f8691c7-65b3-4ee1-b660-cfbb282cf1f2" />
+<img width="652" height="303" alt="image" src="https://github.com/user-attachments/assets/188ba57b-21b0-4f1c-9df4-14ffe48a9aed" />
 
 <img width="686" height="480" alt="image" src="https://github.com/user-attachments/assets/49cb308e-88ea-4177-9f2e-6d73c269c6dc" />
 
