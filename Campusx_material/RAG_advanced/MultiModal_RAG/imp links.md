@@ -1,3 +1,10 @@
+## comparison bench mark Rag Multimodal RAG
+
+https://medium.com/@vishwa.jith360/benchmarking-multimodal-rag-embeddings-and-techniques-31ad01fdec15
+
+https://github.com/Vishwa360/multimodal_embeddings_benchmark
+
+
 ## docling install and setup and few code examples:   updated nov 2026 
 
 https://docling.org/examples/
