@@ -2,6 +2,8 @@
 
 https://medium.com/@vishwa.jith360/benchmarking-multimodal-rag-embeddings-and-techniques-31ad01fdec15
 
+<img width="686" height="480" alt="image" src="https://github.com/user-attachments/assets/49cb308e-88ea-4177-9f2e-6d73c269c6dc" />
+
 https://github.com/Vishwa360/multimodal_embeddings_benchmark
 
 
